@@ -26,7 +26,7 @@ export default {
   },
   profile: {
     available: 'Disponibilă', unavailable: 'Momentan indisponibilă', age: 'Vârstă', years: '{n} ani', height: 'Înălțime',
-    origin: 'Origine', city: 'Oraș', languages: 'Limbi', servicesTitle: 'Te însoțesc cu plăcere la', rates: 'Tarife',
+    origin: 'Naționalitate', city: 'Oraș', languages: 'Limbi', servicesTitle: 'Te însoțesc cu plăcere la', rates: 'Tarife',
     write: 'Scrie un mesaj', save: 'Salvează', saved: 'Salvat', notFound: 'Din păcate, acest profil nu mai este disponibil.',
     backToList: 'Înapoi la prezentare', call: 'Sună', sms: 'SMS', email: 'E-mail', whatsapp: 'WhatsApp',
     lockedTitle: 'Profilul complet este vizibil doar pentru membri.',
@@ -57,10 +57,11 @@ export default {
     onlyEscorts: 'Doar conturile de escort își pot crea un profil propriu.',
   },
   editor: {
+    chooseNationality: 'Alege naționalitatea', search: 'Caută…', noResults: 'Niciun rezultat', addLanguage: 'Adaugă o limbă', removeLanguage: 'Elimină limba', noLanguages: 'Nicio limbă selectată', chooseServices: 'Alege serviciile', noServices: 'Niciun serviciu selectat', selected: '{n} selectate', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Se încarcă… {done}/{total}',
-    name: 'Nume', age: 'Vârstă (min. 18)', city: 'Oraș', origin: 'Origine', height: 'Înălțime (cm)', accent: 'Culoare de accent',
+    name: 'Nume', age: 'Vârstă (min. 18)', city: 'Oraș', origin: 'Naționalitate', height: 'Înălțime (cm)', accent: 'Culoare de accent',
     tagline: 'Descriere scurtă', bio: 'Despre mine (separă paragrafele cu un rând gol – fiecare devine o bulă)',
-    languages: 'Limbi (separate prin virgulă)', services: 'Servicii (separate prin virgulă)', whatsapp: 'Număr WhatsApp', phone: 'Telefon',
+    languages: 'Limbi', services: 'Servicii', whatsapp: 'Număr WhatsApp', phone: 'Telefon',
     email: 'E-mail de contact', sort: 'Ordine (mai mic = mai sus)', status: 'Stare', published: 'Publicat',
     available: 'Disponibilă', verified: 'Verificată', featured: 'Evidențiată', rates: 'Tarife',
     rateLabel: 'ex. 1 oră', ratePrice: 'ex. 300 €', addRow: '+ Rând', removeRow: 'Șterge rândul', photos: 'Fotografii',
@@ -80,6 +81,14 @@ export default {
     lastLogin: 'Ultima autentificare', ownProfile: 'profil propriu', role: 'Tip',
   },
   notFound: { title: 'Nu e nimic aici.', text: 'Această pagină nu (mai) există.', back: 'La prezentare' },
+  levels: { native: 'Nativ', fluent: 'Fluent', good: 'Bine', basic: 'Începător' },
+  services: {
+    title: 'Servicii.', text: 'Alege ce oferi. Selecția ta apare pe profil.', back: 'Înapoi', save: 'Salvează',
+    groups: { companion: 'Companie', tender: 'Tandrețe', massage: 'Masaje', oral: 'Oral', intercourse: 'Sex', extras: 'Extra' },
+    items: {
+      dinner_date: 'Cină romantică', events: 'Însoțire la evenimente', travel: 'Însoțire în călătorii', overnight: 'Noapte întreagă', weekend: 'Weekend', gfe: 'Experiență de iubită', kissing: 'Sărutări', french_kissing: 'Sărut franțuzesc', cuddling: 'Îmbrățișări', shower: 'Duș împreună', striptease: 'Striptease', lingerie: 'Lenjerie', erotic_massage: 'Masaj erotic', body_to_body: 'Masaj body to body', tantra: 'Masaj tantric', handjob: 'Masturbare manuală', oral_condom: 'Oral cu prezervativ', oral_without: 'Oral fără prezervativ', cunnilingus: 'Cunnilingus', sixty_nine: '69', intercourse: 'Act sexual', multiple: 'Mai multe runde', positions: 'Poziții diferite', anal: 'Anal', roleplay: 'Jocuri de rol', toys: 'Jucării', dominant: 'Dominantă', submissive: 'Supusă', fetish: 'Fetiș', duo: 'Duo cu o prietenă', couples: 'Cupluri',
+    },
+  },
   errors: {
     too_many_photos: 'Maximum 20 de fotografii per profil.',
     forbidden: 'Nu ai permisiunea.', self_admin: 'Nu îți poți elimina propriile drepturi de admin.',

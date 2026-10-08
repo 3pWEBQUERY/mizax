@@ -88,12 +88,13 @@ export default function TopBar({ onSearch, searchOpen }) {
 
   useEffect(() => setMenu(false), [pathname]);
 
-  const isSub = pathname.startsWith('/escort/');
+  const isSub = pathname.startsWith('/escort/') || pathname === '/me/services';
   const tabs = [
     { to: '/', label: t('nav.discover') },
     { to: '/favorites', label: t('nav.favorites') },
   ];
-  const active = pathname === '/favorites' ? '/favorites' : pathname === '/' || isSub ? '/' : null;
+  const active =
+    pathname === '/favorites' ? '/favorites' : pathname === '/' || pathname.startsWith('/escort/') ? '/' : null;
   const initial = user ? user.name.trim().charAt(0).toUpperCase() || 'M' : null;
 
   return (
@@ -105,7 +106,7 @@ export default function TopBar({ onSearch, searchOpen }) {
           aria-label={isSub ? t('nav.back') : t('nav.home')}
           onClick={() => {
             if (isSub && window.history.state?.idx > 0) navigate(-1);
-            else navigate('/');
+            else navigate(pathname === '/me/services' ? '/me' : '/');
           }}
         >
           <AnimatePresence mode="wait" initial={false}>

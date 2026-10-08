@@ -26,7 +26,7 @@ export default {
   },
   profile: {
     available: 'Elérhető', unavailable: 'Jelenleg nem elérhető', age: 'Életkor', years: '{n} év', height: 'Magasság',
-    origin: 'Származás', city: 'Város', languages: 'Nyelvek', servicesTitle: 'Szívesen elkísérlek', rates: 'Díjak',
+    origin: 'Állampolgárság', city: 'Város', languages: 'Nyelvek', servicesTitle: 'Szívesen elkísérlek', rates: 'Díjak',
     write: 'Üzenet írása', save: 'Mentés', saved: 'Elmentve', notFound: 'Sajnos ez a profil már nem elérhető.',
     backToList: 'Vissza az áttekintéshez', call: 'Hívás', sms: 'SMS', email: 'E-mail', whatsapp: 'WhatsApp',
     lockedTitle: 'A teljes profil csak tagok számára látható.',
@@ -57,10 +57,11 @@ export default {
     onlyEscorts: 'Saját profilt csak escort-fiókok hozhatnak létre.',
   },
   editor: {
+    chooseNationality: 'Állampolgárság kiválasztása', search: 'Keresés…', noResults: 'Nincs találat', addLanguage: 'Nyelv hozzáadása', removeLanguage: 'Nyelv eltávolítása', noLanguages: 'Még nincs kiválasztott nyelv', chooseServices: 'Szolgáltatások kiválasztása', noServices: 'Még nincs kiválasztott szolgáltatás', selected: '{n} kiválasztva', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Feltöltés… {done}/{total}',
-    name: 'Név', age: 'Életkor (min. 18)', city: 'Város', origin: 'Származás', height: 'Magasság (cm)', accent: 'Kiemelő szín',
+    name: 'Név', age: 'Életkor (min. 18)', city: 'Város', origin: 'Állampolgárság', height: 'Magasság (cm)', accent: 'Kiemelő szín',
     tagline: 'Rövid leírás', bio: 'Rólam (a bekezdéseket üres sorral válaszd el – mindegyikből buborék lesz)',
-    languages: 'Nyelvek (vesszővel elválasztva)', services: 'Szolgáltatások (vesszővel elválasztva)', whatsapp: 'WhatsApp-szám', phone: 'Telefon',
+    languages: 'Nyelvek', services: 'Szolgáltatások', whatsapp: 'WhatsApp-szám', phone: 'Telefon',
     email: 'Kapcsolati e-mail', sort: 'Sorrend (kisebb = előrébb)', status: 'Állapot', published: 'Közzétéve',
     available: 'Elérhető', verified: 'Ellenőrzött', featured: 'Kiemelt', rates: 'Díjak',
     rateLabel: 'pl. 1 óra', ratePrice: 'pl. 300 €', addRow: '+ Sor', removeRow: 'Sor törlése', photos: 'Fotók',
@@ -80,6 +81,14 @@ export default {
     lastLogin: 'Utolsó belépés', ownProfile: 'saját profil', role: 'Típus',
   },
   notFound: { title: 'Itt nincs semmi.', text: 'Ez az oldal nem létezik (már).', back: 'Az áttekintéshez' },
+  levels: { native: 'Anyanyelv', fluent: 'Folyékony', good: 'Jó', basic: 'Alapszint' },
+  services: {
+    title: 'Szolgáltatások.', text: 'Válaszd ki, mit kínálsz. A választásod megjelenik a profilodon.', back: 'Vissza', save: 'Mentés',
+    groups: { companion: 'Társaság', tender: 'Gyengédség', massage: 'Masszázsok', oral: 'Orális', intercourse: 'Együttlét', extras: 'Extrák' },
+    items: {
+      dinner_date: 'Vacsorarandi', events: 'Kísérés rendezvényekre', travel: 'Utazási kísérő', overnight: 'Egész éjszaka', weekend: 'Hétvége', gfe: 'Barátnő-élmény', kissing: 'Csók', french_kissing: 'Francia csók', cuddling: 'Összebújás', shower: 'Közös zuhanyzás', striptease: 'Sztriptíz', lingerie: 'Fehérnemű', erotic_massage: 'Erotikus masszázs', body_to_body: 'Body-to-body masszázs', tantra: 'Tantra masszázs', handjob: 'Kézi kényeztetés', oral_condom: 'Orális óvszerrel', oral_without: 'Orális óvszer nélkül', cunnilingus: 'Cunnilingus', sixty_nine: '69', intercourse: 'Közösülés', multiple: 'Többszöri együttlét', positions: 'Különböző pózok', anal: 'Anál', roleplay: 'Szerepjáték', toys: 'Szexjátékok', dominant: 'Domináns', submissive: 'Alázatos', fetish: 'Fétis', duo: 'Duó barátnővel', couples: 'Párok',
+    },
+  },
   errors: {
     too_many_photos: 'Profilonként legfeljebb 20 fotó.',
     forbidden: 'Nincs jogosultságod.', self_admin: 'A saját admin jogodat nem veheted el.',

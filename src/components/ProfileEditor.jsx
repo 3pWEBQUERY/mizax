@@ -2,6 +2,10 @@ import { motion } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { useToast } from './Toast.jsx';
 import { ChevronL, ChevronR, TrashIcon, SpinnerIcon } from './Icons.jsx';
+import NationalityField from './fields/NationalityField.jsx';
+import LanguagesField from './fields/LanguagesField.jsx';
+import PhoneField from './fields/PhoneField.jsx';
+import ServicesPage, { ServicesField } from './fields/ServicesPage.jsx';
 import { api } from '../lib/api.js';
 import { useT, errorText } from '../lib/i18n.jsx';
 
@@ -13,8 +17,8 @@ const empty = {
   bio: '',
   height: '',
   nationality: '',
-  languages: '',
-  services: '',
+  languages: [],
+  services: [],
   rates: [{ label: '', price: '' }],
   phone: '',
   whatsapp: '',
@@ -33,8 +37,8 @@ function toForm(e, defaults) {
     ...empty,
     ...e,
     height: e.height || '',
-    languages: (e.languages || []).join(', '),
-    services: (e.services || []).join(', '),
+    languages: e.languages || [],
+    services: e.services || [],
     rates: e.rates?.length ? e.rates : [{ label: '', price: '' }],
   };
 }
@@ -62,7 +66,17 @@ export const endpoints = {
 export const MAX_PHOTOS = 20;
 const BATCH = 4;
 
-export default function ProfileEditor({ escort, mode = 'admin', storage = true, defaults, onSaved, onDeleted }) {
+export default function ProfileEditor({
+  escort,
+  mode = 'admin',
+  storage = true,
+  defaults,
+  onSaved,
+  onDeleted,
+  servicesOpen: servicesOpenProp,
+  onOpenServices,
+  onCloseServices,
+}) {
   const t = useT();
   const toast = useToast();
   const ep = endpoints[mode];
@@ -70,21 +84,40 @@ export default function ProfileEditor({ escort, mode = 'admin', storage = true, 
   const [busy, setBusy] = useState(false);
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
   const flip = (k) => () => setForm((f) => ({ ...f, [k]: !f[k] }));
+  const setValue = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
 
-  async function save(e) {
-    e.preventDefault();
+  // Leistungs-Seite: im eigenen Profil über die URL (/me/services), in der Verwaltung lokal
+  const [servicesLocal, setServicesLocal] = useState(false);
+  const servicesOpen = servicesOpenProp ?? servicesLocal;
+  const openServices = onOpenServices || (() => setServicesLocal(true));
+  const closeServices = onCloseServices || (() => setServicesLocal(false));
+
+  async function persist(data) {
     setBusy(true);
     try {
-      const body = { ...form, age: Number(form.age), height: form.height ? Number(form.height) : null };
+      const body = { ...data, age: Number(data.age), height: data.height ? Number(data.height) : null };
       const { method, path } = ep.save(escort);
       const saved = await api(path, { method, body });
       toast(t('editor.saved'));
       await onSaved?.(saved);
+      return true;
     } catch (err) {
       toast(errorText(t, err));
+      return false;
     } finally {
       setBusy(false);
     }
+  }
+
+  function save(e) {
+    e.preventDefault();
+    persist(form);
+  }
+
+  async function saveServices(services) {
+    const next = { ...form, services };
+    setForm(next);
+    if (await persist(next)) closeServices();
   }
 
   async function remove() {
@@ -120,7 +153,7 @@ export default function ProfileEditor({ escort, mode = 'admin', storage = true, 
           <input className="input" value={form.city} onChange={set('city')} />
         </Field>
         <Field label={t('editor.origin')}>
-          <input className="input" value={form.nationality} onChange={set('nationality')} />
+          <NationalityField value={form.nationality} onChange={setValue('nationality')} />
         </Field>
         <Field label={t('editor.height')}>
           <input className="input" type="number" value={form.height} onChange={set('height')} />
@@ -134,17 +167,17 @@ export default function ProfileEditor({ escort, mode = 'admin', storage = true, 
         <Field label={t('editor.bio')} full>
           <textarea className="input" value={form.bio} onChange={set('bio')} maxLength={5000} />
         </Field>
-        <Field label={t('editor.languages')}>
-          <input className="input" value={form.languages} onChange={set('languages')} />
+        <Field label={t('editor.languages')} full>
+          <LanguagesField value={form.languages} onChange={setValue('languages')} />
         </Field>
-        <Field label={t('editor.services')}>
-          <input className="input" value={form.services} onChange={set('services')} />
+        <Field label={t('editor.services')} full>
+          <ServicesField value={form.services} onOpen={openServices} />
         </Field>
         <Field label={t('editor.whatsapp')}>
-          <input className="input" value={form.whatsapp} onChange={set('whatsapp')} placeholder="+49 …" />
+          <PhoneField id="pf-whatsapp" whatsapp value={form.whatsapp} onChange={setValue('whatsapp')} />
         </Field>
         <Field label={t('editor.phone')}>
-          <input className="input" value={form.phone} onChange={set('phone')} placeholder="+49 …" />
+          <PhoneField id="pf-phone" value={form.phone} onChange={setValue('phone')} />
         </Field>
         <Field label={t('editor.email')}>
           <input className="input" type="email" value={form.email} onChange={set('email')} />
@@ -213,6 +246,7 @@ export default function ProfileEditor({ escort, mode = 'admin', storage = true, 
           {busy ? <SpinnerIcon /> : escort ? t('editor.save') : t('editor.create')}
         </button>
       </div>
+      <ServicesPage open={servicesOpen} value={form.services} onSave={saveServices} onBack={closeServices} />
     </form>
   );
 }

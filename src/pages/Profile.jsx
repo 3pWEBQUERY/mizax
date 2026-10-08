@@ -4,22 +4,23 @@ import { Link, useParams } from 'react-router-dom';
 import Page from '../components/Page.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
 import { Photo } from '../components/Media.jsx';
-import { CheckIcon, ChatIcon, PhoneIcon, MailIcon, HeartIcon, CloseIcon, ChevronL, ChevronR, LockIcon } from '../components/Icons.jsx';
-import { useT } from '../lib/i18n.jsx';
+import { CheckIcon, ChatIcon, PhoneIcon, MailIcon, HeartIcon, CloseIcon, ChevronL, ChevronR, LockIcon, WhatsAppIcon } from '../components/Icons.jsx';
+import { useI18n } from '../lib/i18n.jsx';
+import { countryName, flag, languageName, parseLanguage, serviceLabel } from '../lib/catalog.js';
 import { useAuth } from '../lib/auth.jsx';
 import { useEscort, useFavorites, toggleFavorite, preloadImage } from '../lib/store.js';
 import { useDock, useDockState } from '../lib/dock.jsx';
 import { contactLinks } from '../lib/contact.js';
 import { layoutTransition } from '../lib/motion.js';
 
-const kindIcon = { whatsapp: ChatIcon, call: PhoneIcon, mail: MailIcon, sms: ChatIcon };
+const kindIcon = { whatsapp: WhatsAppIcon, call: PhoneIcon, mail: MailIcon, sms: ChatIcon };
 
 export default function Profile() {
   const { slug } = useParams();
   const { escort, error } = useEscort(slug);
   const favs = useFavorites();
   const { inputRef } = useDockState();
-  const t = useT();
+  const { t, locale } = useI18n();
   const { user } = useAuth();
   const [active, setActive] = useState(0);
   const locked = Boolean(escort && !escort.full);
@@ -86,9 +87,20 @@ export default function Profile() {
   const facts = [
     [t('profile.age'), t('profile.years', { n: escort.age })],
     [t('profile.height'), escort.height ? `${escort.height} cm` : null],
-    [t('profile.origin'), escort.nationality],
+    [
+      t('profile.origin'),
+      /^[A-Z]{2}$/.test(escort.nationality || '')
+        ? `${flag(escort.nationality)} ${countryName(escort.nationality, locale)}`
+        : escort.nationality,
+    ],
     [t('profile.city'), escort.city],
-    [t('profile.languages'), escort.languages?.join(', ')],
+    [
+      t('profile.languages'),
+      (escort.languages || [])
+        .map(parseLanguage)
+        .map((l) => (l.code ? `${languageName(l.code, locale)} · ${t(`levels.${l.level}`)}` : l.raw))
+        .join('\n'),
+    ],
   ].filter(([, v]) => v);
   let i = 0;
 
@@ -193,11 +205,11 @@ export default function Profile() {
 
             {escort.services?.length > 0 && (
               <Bubble i={i++} style={{ width: '100%' }}>
-                <div className="bubble-label">{t('profile.servicesTitle')}</div>
+                <div className="bubble-label">{t('editor.services')}</div>
                 <div className="tags">
                   {escort.services.map((s) => (
                     <span className="tag" key={s}>
-                      {s}
+                      {serviceLabel(t, s)}
                     </span>
                   ))}
                 </div>

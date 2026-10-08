@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Page from '../components/Page.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
 import ProfileEditor from '../components/ProfileEditor.jsx';
@@ -15,6 +15,13 @@ export default function MyProfile() {
   const { user, ready } = useAuth();
   const [escort, setEscort] = useState(undefined); // undefined = lädt, null = noch keins
   const [storage, setStorage] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const servicesOpen = location.pathname === '/me/services';
+  const closeServices = () => {
+    if (location.state?.fromEditor) navigate(-1);
+    else navigate('/me', { replace: true });
+  };
 
   useEffect(() => {
     if (!user || user.role !== 'escort') return;
@@ -24,7 +31,7 @@ export default function MyProfile() {
       .catch(() => {});
   }, [user]);
 
-  if (ready && !user) return <Navigate to="/login" replace state={{ from: '/me' }} />;
+  if (ready && !user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
 
   if (user && user.role !== 'escort') {
     return (
@@ -69,6 +76,9 @@ export default function MyProfile() {
             escort={escort}
             storage={storage}
             defaults={{ name: user.name }}
+            servicesOpen={servicesOpen}
+            onOpenServices={() => navigate('/me/services', { state: { fromEditor: true } })}
+            onCloseServices={closeServices}
             onSaved={(e) => {
               setEscort(e);
               loadEscorts(true).catch(() => {});

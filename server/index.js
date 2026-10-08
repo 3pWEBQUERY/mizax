@@ -9,7 +9,7 @@ import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { query, migrate, hasDb } from './db.js';
 import { hasStorage, putObject, getObject, deleteObject } from './storage.js';
-import { seedIfEmpty, slugify } from './seed.js';
+import { seedIfEmpty, normalizeLegacy, slugify } from './seed.js';
 import {
   attachUser,
   requireUser,
@@ -655,6 +655,7 @@ async function start() {
       try {
         await migrate();
         await seedIfEmpty();
+        await normalizeLegacy();
         const adminEmail = await ensureAdmin();
         if (!adminEmail) console.warn('[admin] ADMIN_EMAIL/ADMIN_PASSWORD fehlen – kein Admin-Konto angelegt');
         break;

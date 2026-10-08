@@ -26,7 +26,7 @@ export default {
   },
   profile: {
     available: 'Dostępna', unavailable: 'Obecnie niedostępna', age: 'Wiek', years: '{n} lat', height: 'Wzrost',
-    origin: 'Pochodzenie', city: 'Miasto', languages: 'Języki', servicesTitle: 'Chętnie będę ci towarzyszyć', rates: 'Cennik',
+    origin: 'Narodowość', city: 'Miasto', languages: 'Języki', servicesTitle: 'Chętnie będę ci towarzyszyć', rates: 'Cennik',
     write: 'Napisz wiadomość', save: 'Zapisz', saved: 'Zapisano', notFound: 'Niestety ten profil nie jest już dostępny.',
     backToList: 'Powrót do przeglądu', call: 'Zadzwoń', sms: 'SMS', email: 'E-mail', whatsapp: 'WhatsApp',
     lockedTitle: 'Pełny profil jest widoczny tylko dla członków.',
@@ -57,10 +57,11 @@ export default {
     onlyEscorts: 'Tylko konta escort mogą tworzyć własny profil.',
   },
   editor: {
+    chooseNationality: 'Wybierz narodowość', search: 'Szukaj…', noResults: 'Brak wyników', addLanguage: 'Dodaj język', removeLanguage: 'Usuń język', noLanguages: 'Nie wybrano jeszcze języków', chooseServices: 'Wybierz usługi', noServices: 'Nie wybrano jeszcze usług', selected: 'Wybrano: {n}', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Przesyłanie… {done}/{total}',
-    name: 'Imię', age: 'Wiek (min. 18)', city: 'Miasto', origin: 'Pochodzenie', height: 'Wzrost (cm)', accent: 'Kolor akcentu',
+    name: 'Imię', age: 'Wiek (min. 18)', city: 'Miasto', origin: 'Narodowość', height: 'Wzrost (cm)', accent: 'Kolor akcentu',
     tagline: 'Krótki opis', bio: 'O mnie (oddziel akapity pustą linią – każdy stanie się dymkiem)',
-    languages: 'Języki (oddzielone przecinkami)', services: 'Usługi (oddzielone przecinkami)', whatsapp: 'Numer WhatsApp', phone: 'Telefon',
+    languages: 'Języki', services: 'Usługi', whatsapp: 'Numer WhatsApp', phone: 'Telefon',
     email: 'E-mail kontaktowy', sort: 'Kolejność (mniejsza = wyżej)', status: 'Status', published: 'Opublikowany',
     available: 'Dostępna', verified: 'Zweryfikowana', featured: 'Wyróżniona', rates: 'Cennik',
     rateLabel: 'np. 1 godzina', ratePrice: 'np. 300 €', addRow: '+ Wiersz', removeRow: 'Usuń wiersz', photos: 'Zdjęcia',
@@ -80,6 +81,14 @@ export default {
     lastLogin: 'Ostatnie logowanie', ownProfile: 'własny profil', role: 'Typ',
   },
   notFound: { title: 'Nic tu nie ma.', text: 'Ta strona nie istnieje (już).', back: 'Do przeglądu' },
+  levels: { native: 'Ojczysty', fluent: 'Biegły', good: 'Dobry', basic: 'Podstawowy' },
+  services: {
+    title: 'Usługi.', text: 'Wybierz, co oferujesz. Twój wybór pojawi się na profilu.', back: 'Wstecz', save: 'Zapisz',
+    groups: { companion: 'Towarzystwo', tender: 'Czułość', massage: 'Masaże', oral: 'Oral', intercourse: 'Seks', extras: 'Dodatki' },
+    items: {
+      dinner_date: 'Randka przy kolacji', events: 'Towarzystwo na wydarzeniach', travel: 'Towarzystwo w podróży', overnight: 'Cała noc', weekend: 'Weekend', gfe: 'Doświadczenie dziewczyny', kissing: 'Pocałunki', french_kissing: 'Pocałunki z języczkiem', cuddling: 'Przytulanie', shower: 'Wspólny prysznic', striptease: 'Striptiz', lingerie: 'Bielizna', erotic_massage: 'Masaż erotyczny', body_to_body: 'Masaż body to body', tantra: 'Masaż tantryczny', handjob: 'Masturbacja ręczna', oral_condom: 'Seks oralny z prezerwatywą', oral_without: 'Seks oralny bez prezerwatywy', cunnilingus: 'Cunnilingus', sixty_nine: '69', intercourse: 'Stosunek', multiple: 'Wielokrotny stosunek', positions: 'Różne pozycje', anal: 'Anal', roleplay: 'Odgrywanie ról', toys: 'Zabawki', dominant: 'Dominacja', submissive: 'Uległość', fetish: 'Fetysz', duo: 'Duet z przyjaciółką', couples: 'Pary',
+    },
+  },
   errors: {
     too_many_photos: 'Maksymalnie 20 zdjęć na profil.',
     forbidden: 'Brak uprawnień.', self_admin: 'Nie możesz odebrać sobie uprawnień administratora.',

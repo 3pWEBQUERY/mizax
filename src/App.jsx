@@ -50,7 +50,7 @@ function Shell() {
       <LayoutGroup>
         <div className="pages">
           <AnimatePresence initial={false}>
-            <Routes location={location} key={location.pathname}>
+            <Routes location={location} key={location.pathname.startsWith('/me') ? '/me' : location.pathname}>
               <Route path="/" element={<Home />} />
               <Route path="/favorites" element={<Favorites />} />
               <Route path="/favoriten" element={<Navigate to="/favorites" replace />} />
@@ -58,6 +58,7 @@ function Shell() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/me" element={<MyProfile />} />
+              <Route path="/me/services" element={<MyProfile />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

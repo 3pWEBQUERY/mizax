@@ -26,7 +26,7 @@ export default {
   },
   profile: {
     available: 'Available', unavailable: 'Currently unavailable', age: 'Age', years: '{n} years', height: 'Height',
-    origin: 'Origin', city: 'City', languages: 'Languages', servicesTitle: 'I’d love to join you for', rates: 'Rates',
+    origin: 'Nationality', city: 'City', languages: 'Languages', servicesTitle: 'I’d love to join you for', rates: 'Rates',
     write: 'Write a message', save: 'Save', saved: 'Saved', notFound: 'Sorry, this profile is no longer available.',
     backToList: 'Back to overview', call: 'Call', sms: 'SMS', email: 'Email', whatsapp: 'WhatsApp',
     lockedTitle: 'The full profile is visible to members only.',
@@ -57,10 +57,11 @@ export default {
     onlyEscorts: 'Only escort accounts can create their own profile.',
   },
   editor: {
+    chooseNationality: 'Choose nationality', search: 'Search…', noResults: 'No results', addLanguage: 'Add language', removeLanguage: 'Remove language', noLanguages: 'No languages selected yet', chooseServices: 'Choose services', noServices: 'No services selected yet', selected: '{n} selected', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Uploading… {done}/{total}',
-    name: 'Name', age: 'Age (min. 18)', city: 'City', origin: 'Origin', height: 'Height (cm)', accent: 'Accent colour',
+    name: 'Name', age: 'Age (min. 18)', city: 'City', origin: 'Nationality', height: 'Height (cm)', accent: 'Accent colour',
     tagline: 'Short description', bio: 'About me (separate paragraphs with a blank line – each becomes a bubble)',
-    languages: 'Languages (comma-separated)', services: 'Services (comma-separated)', whatsapp: 'WhatsApp number', phone: 'Phone',
+    languages: 'Languages', services: 'Services', whatsapp: 'WhatsApp number', phone: 'Phone',
     email: 'Contact email', sort: 'Sort order (lower = further up)', status: 'Status', published: 'Published',
     available: 'Available', verified: 'Verified', featured: 'Featured', rates: 'Rates',
     rateLabel: 'e.g. 1 hour', ratePrice: 'e.g. €300', addRow: '+ Row', removeRow: 'Remove row', photos: 'Photos',
@@ -80,6 +81,14 @@ export default {
     lastLogin: 'Last login', ownProfile: 'own profile', role: 'Type',
   },
   notFound: { title: 'Nothing here.', text: 'This page doesn’t exist (anymore).', back: 'To overview' },
+  levels: { native: 'Native', fluent: 'Fluent', good: 'Good', basic: 'Basic' },
+  services: {
+    title: 'Services.', text: 'Choose what you offer. Your selection appears on your profile.', back: 'Back', save: 'Save',
+    groups: { companion: 'Companionship', tender: 'Tenderness', massage: 'Massages', oral: 'Oral', intercourse: 'Intercourse', extras: 'Extras' },
+    items: {
+      dinner_date: 'Dinner date', events: 'Event companion', travel: 'Travel companion', overnight: 'Overnight', weekend: 'Weekend', gfe: 'Girlfriend experience', kissing: 'Kissing', french_kissing: 'French kissing', cuddling: 'Cuddling', shower: 'Shower together', striptease: 'Striptease', lingerie: 'Lingerie', erotic_massage: 'Erotic massage', body_to_body: 'Body-to-body massage', tantra: 'Tantra massage', handjob: 'Hand relief', oral_condom: 'Oral with condom', oral_without: 'Oral without condom', cunnilingus: 'Cunnilingus', sixty_nine: '69', intercourse: 'Intercourse', multiple: 'Multiple rounds', positions: 'Various positions', anal: 'Anal', roleplay: 'Role play', toys: 'Toys', dominant: 'Dominant', submissive: 'Submissive', fetish: 'Fetish', duo: 'Duo with a friend', couples: 'Couples',
+    },
+  },
   errors: {
     too_many_photos: 'Maximum 20 photos per profile.',
     forbidden: 'No permission.', self_admin: 'You can’t remove your own admin rights.',

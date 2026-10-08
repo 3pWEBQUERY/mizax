@@ -26,7 +26,7 @@ export default {
   },
   profile: {
     available: 'Disponible', unavailable: 'No disponible ahora', age: 'Edad', years: '{n} años', height: 'Altura',
-    origin: 'Origen', city: 'Ciudad', languages: 'Idiomas', servicesTitle: 'Te acompaño con gusto a', rates: 'Tarifas',
+    origin: 'Nacionalidad', city: 'Ciudad', languages: 'Idiomas', servicesTitle: 'Te acompaño con gusto a', rates: 'Tarifas',
     write: 'Escribir mensaje', save: 'Guardar', saved: 'Guardado', notFound: 'Lo sentimos, este perfil ya no está disponible.',
     backToList: 'Volver al resumen', call: 'Llamar', sms: 'SMS', email: 'Correo', whatsapp: 'WhatsApp',
     lockedTitle: 'El perfil completo solo es visible para miembros.',
@@ -57,10 +57,11 @@ export default {
     onlyEscorts: 'Solo las cuentas de escort pueden crear un perfil propio.',
   },
   editor: {
+    chooseNationality: 'Elegir nacionalidad', search: 'Buscar…', noResults: 'Sin resultados', addLanguage: 'Añadir idioma', removeLanguage: 'Quitar idioma', noLanguages: 'Aún no hay idiomas', chooseServices: 'Elegir servicios', noServices: 'Aún no hay servicios', selected: '{n} seleccionados', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Subiendo… {done}/{total}',
-    name: 'Nombre', age: 'Edad (mín. 18)', city: 'Ciudad', origin: 'Origen', height: 'Altura (cm)', accent: 'Color de acento',
+    name: 'Nombre', age: 'Edad (mín. 18)', city: 'Ciudad', origin: 'Nacionalidad', height: 'Altura (cm)', accent: 'Color de acento',
     tagline: 'Descripción breve', bio: 'Sobre mí (separa los párrafos con una línea en blanco: cada uno será una burbuja)',
-    languages: 'Idiomas (separados por comas)', services: 'Servicios (separados por comas)', whatsapp: 'Número de WhatsApp', phone: 'Teléfono',
+    languages: 'Idiomas', services: 'Servicios', whatsapp: 'Número de WhatsApp', phone: 'Teléfono',
     email: 'Correo de contacto', sort: 'Orden (menor = más arriba)', status: 'Estado', published: 'Publicado',
     available: 'Disponible', verified: 'Verificado', featured: 'Destacado', rates: 'Tarifas',
     rateLabel: 'p. ej. 1 hora', ratePrice: 'p. ej. 300 €', addRow: '+ Fila', removeRow: 'Eliminar fila', photos: 'Fotos',
@@ -80,6 +81,14 @@ export default {
     lastLogin: 'Último acceso', ownProfile: 'perfil propio', role: 'Tipo',
   },
   notFound: { title: 'Aquí no hay nada.', text: 'Esta página no existe (o ya no existe).', back: 'Al resumen' },
+  levels: { native: 'Nativo', fluent: 'Fluido', good: 'Bueno', basic: 'Básico' },
+  services: {
+    title: 'Servicios.', text: 'Elige lo que ofreces. Tu selección aparecerá en tu perfil.', back: 'Atrás', save: 'Guardar',
+    groups: { companion: 'Compañía', tender: 'Ternura', massage: 'Masajes', oral: 'Oral', intercourse: 'Sexo', extras: 'Extras' },
+    items: {
+      dinner_date: 'Cena romántica', events: 'Acompañante para eventos', travel: 'Acompañante de viaje', overnight: 'Noche completa', weekend: 'Fin de semana', gfe: 'Experiencia de novia', kissing: 'Besos', french_kissing: 'Besos con lengua', cuddling: 'Caricias', shower: 'Ducha juntos', striptease: 'Striptease', lingerie: 'Lencería', erotic_massage: 'Masaje erótico', body_to_body: 'Masaje cuerpo a cuerpo', tantra: 'Masaje tántrico', handjob: 'Masturbación', oral_condom: 'Oral con preservativo', oral_without: 'Oral sin preservativo', cunnilingus: 'Cunnilingus', sixty_nine: '69', intercourse: 'Relación sexual', multiple: 'Varias veces', positions: 'Varias posturas', anal: 'Anal', roleplay: 'Juegos de rol', toys: 'Juguetes', dominant: 'Dominante', submissive: 'Sumisa', fetish: 'Fetichismo', duo: 'Dúo con una amiga', couples: 'Parejas',
+    },
+  },
   errors: {
     too_many_photos: 'Máximo 20 fotos por perfil.',
     forbidden: 'Sin permiso.', self_admin: 'No puedes quitarte tus propios permisos de admin.',
