@@ -2,8 +2,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
-  HomeIcon, BackIcon, SunIcon, MoonIcon, UserIcon, EditIcon, LogoutIcon, LoginIcon, HeartIcon,
+  HomeIcon, BackIcon, SunIcon, MoonIcon, UserIcon, EditIcon, LogoutIcon, LoginIcon, HeartIcon, SearchIcon,
 } from './Icons.jsx';
+import { useDockState } from '../lib/dock.jsx';
 import { useI18n, LOCALES, dictionaries } from '../lib/i18n.jsx';
 import { useTheme } from '../lib/theme.jsx';
 import { useAuth } from '../lib/auth.jsx';
@@ -73,20 +74,19 @@ function ThemeSwitch() {
   );
 }
 
-export default function TopBar({ onSearch }) {
+export default function TopBar({ onSearch, searchOpen }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { t, locale } = useI18n();
-  const { theme, toggle } = useTheme();
+  const { t } = useI18n();
   const { user, logout } = useAuth();
   const toast = useToast();
-  const [menu, setMenu] = useState(null); // 'lang' | 'account' | null
-  const langRef = useRef(null);
+  const { query, city } = useDockState();
+  const filtered = Boolean(query.trim() || city);
+  const [menu, setMenu] = useState(false);
   const accRef = useRef(null);
-  useOutside(langRef, menu === 'lang', () => setMenu(null));
-  useOutside(accRef, menu === 'account', () => setMenu(null));
+  useOutside(accRef, menu, () => setMenu(false));
 
-  useEffect(() => setMenu(null), [pathname]);
+  useEffect(() => setMenu(false), [pathname]);
 
   const isSub = pathname.startsWith('/escort/');
   const tabs = [
@@ -133,43 +133,17 @@ export default function TopBar({ onSearch }) {
       </nav>
 
       <div className="topbar-right">
-        <div className="menu-anchor" ref={langRef}>
-          <button
-            type="button"
-            className="tool-btn hide-mobile"
-            aria-label={t('menu.language')}
-            aria-expanded={menu === 'lang'}
-            onClick={() => setMenu(menu === 'lang' ? null : 'lang')}
-          >
-            {locale.toUpperCase()}
-          </button>
-          <AnimatePresence>
-            {menu === 'lang' && (
-              <motion.div className="menu lang-popover" {...menuMotion}>
-                <div className="menu-label">{t('menu.language')}</div>
-                <LanguagePicker id="top-lang" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <button type="button" className="tool-btn round hide-mobile" aria-label={t('menu.theme')} onClick={toggle}>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span
-              key={theme}
-              initial={{ opacity: 0, rotate: -60, scale: 0.6 }}
-              animate={{ opacity: 1, rotate: 0, scale: 1 }}
-              exit={{ opacity: 0, rotate: 60, scale: 0.6 }}
-              transition={{ duration: 0.25 }}
-              style={{ display: 'grid' }}
-            >
-              {theme === 'dark' ? <MoonIcon /> : <SunIcon />}
-            </motion.span>
-          </AnimatePresence>
-        </button>
-
-        <button type="button" className="search-pill" onClick={onSearch}>
-          {t('nav.search')}
+        <button
+          type="button"
+          className={`search-pill ${searchOpen ? 'active' : ''}`}
+          onClick={onSearch}
+          data-search-toggle
+          aria-expanded={searchOpen}
+          aria-label={t('nav.search')}
+        >
+          <SearchIcon />
+          <span className="search-label">{t('nav.search')}</span>
+          {filtered && !searchOpen && <span className="search-dot" />}
         </button>
 
         <div className="menu-anchor" ref={accRef}>
@@ -177,13 +151,13 @@ export default function TopBar({ onSearch }) {
             type="button"
             className="avatar"
             aria-label={t('nav.account')}
-            aria-expanded={menu === 'account'}
-            onClick={() => setMenu(menu === 'account' ? null : 'account')}
+            aria-expanded={menu}
+            onClick={() => setMenu(!menu)}
           >
             {initial || <UserIcon width={22} height={22} />}
           </button>
           <AnimatePresence>
-            {menu === 'account' && (
+            {menu && (
               <motion.div className="menu" {...menuMotion}>
                 {user ? (
                   <>
@@ -239,7 +213,7 @@ export default function TopBar({ onSearch }) {
                       type="button"
                       className="menu-item danger"
                       onClick={async () => {
-                        setMenu(null);
+                        setMenu(false);
                         await logout();
                         toast(t('auth.loggedOut'));
                         if (pathname === '/me' || pathname === '/favorites') navigate('/');

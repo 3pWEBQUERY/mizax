@@ -140,3 +140,9 @@ export const LoginIcon = (p) => (
     <path d="M10 4.5H6.5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H10M14 16l4-4-4-4M18 12H8" />
   </svg>
 );
+export const SearchIcon = (p) => (
+  <svg {...base} width={17} height={17} strokeWidth={2} {...p}>
+    <circle cx="11" cy="11" r="6.5" />
+    <path d="M20 20l-4.2-4.2" />
+  </svg>
+);

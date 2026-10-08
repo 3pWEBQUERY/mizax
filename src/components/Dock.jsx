@@ -13,8 +13,31 @@ const SpeechRecognition =
 
 const spring = { type: 'spring', stiffness: 380, damping: 32 };
 
+const wrapVariants = {
+  hidden: { opacity: 0, transition: { duration: 0.25 } },
+  show: { opacity: 1, transition: { duration: 0.3 } },
+};
+
+const formVariants = {
+  hidden: {
+    y: 36,
+    opacity: 0,
+    scale: 0.96,
+    filter: 'blur(8px)',
+    transition: { duration: 0.22, ease: [0.4, 0, 1, 1] },
+  },
+  show: {
+    y: 0,
+    opacity: 1,
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: { type: 'spring', stiffness: 380, damping: 30 },
+  },
+};
+
 export default function Dock() {
-  const { config, query, setQuery, city, setCity, inputRef } = useDockState();
+  const { config, query, setQuery, city, setCity, inputRef, searchOpen, setSearchOpen } = useDockState();
+  const formRef = useRef(null);
   const { escorts } = useEscorts();
   const toast = useToast();
   const t = useT();
@@ -31,6 +54,32 @@ export default function Dock() {
     setOpen(false);
     setMessage('');
   }, [mode, escort?.slug]);
+
+  const searchVisible = mode === 'search' && searchOpen;
+
+  // Suchleiste: Fokus beim Öffnen, schließen bei Klick außerhalb oder Escape
+  useEffect(() => {
+    if (!searchVisible) {
+      setOpen(false);
+      return;
+    }
+    const focusTimer = window.setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 120);
+    const onDown = (e) => {
+      if (formRef.current?.contains(e.target)) return;
+      if (e.target.closest?.('[data-search-toggle]')) return;
+      setSearchOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') setSearchOpen(false);
+    };
+    document.addEventListener('pointerdown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener('pointerdown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [searchVisible, inputRef, setSearchOpen]);
 
   const cities = useMemo(() => {
     const m = new Map();
@@ -97,152 +146,181 @@ export default function Dock() {
     setMessage('');
   }
 
-  if (mode === 'hidden') return null;
+  const visible = mode === 'message' || searchVisible;
 
   const links = mode === 'message' && escort && !locked ? contactLinks(escort, message.trim(), t) : [];
 
   return (
-    <div className="dock-wrap">
-      <motion.form
-        className="dock"
-        onSubmit={(e) => {
-          if (mode === 'message') send(e);
-          else {
-            e.preventDefault();
-            inputRef.current?.blur();
-          }
-        }}
-        initial={{ y: 40, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ ...spring, delay: 0.15 }}
-      >
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              className="dock-pop"
-              initial={{ opacity: 0, y: 10, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 8, scale: 0.98 }}
-              transition={spring}
-            >
-              {mode === 'message' ? (
-                <>
-                  <div className="dock-pop-title">{t('dock.contact')}</div>
-                  {links.length ? (
-                    links.map((l) => (
-                      <a
-                        key={l.kind}
-                        className="chip"
-                        href={l.href}
-                        target={l.kind === 'whatsapp' ? '_blank' : undefined}
-                        rel="noreferrer"
-                      >
-                        <span>{l.label}</span>
-                      </a>
-                    ))
-                  ) : (
-                    <div className="dock-pop-title">{locked ? t('dock.noteLocked') : t('dock.noContact')}</div>
-                  )}
-                </>
-              ) : (
-                <>
-                  <div className="dock-pop-title">{t('dock.chooseCity')}</div>
-                  <CityChip label={t('dock.allCities')} active={!city} onClick={() => { setCity(''); setOpen(false); }} />
-                  {cities.map(([c, n]) => (
-                    <CityChip
-                      key={c}
-                      label={c}
-                      count={n}
-                      active={city === c}
-                      onClick={() => {
-                        setCity(city === c ? '' : c);
-                        setOpen(false);
-                      }}
-                    />
-                  ))}
-                </>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <div className="dock-bar">
-          <div className="dock-input-wrap">
-            <input
-              ref={inputRef}
-              className="dock-input"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              onFocus={() => {
-                if (locked) {
-                  inputRef.current?.blur();
-                  navigate('/login');
-                }
-              }}
-              readOnly={locked}
-              aria-label={placeholder}
-              enterKeyHint={mode === 'message' ? 'send' : 'search'}
-            />
-            <AnimatePresence initial={false}>
-              {!value && (
-                <motion.span
-                  key={placeholder}
-                  className="dock-placeholder"
-                  initial={{ opacity: 0, y: 8, filter: 'blur(4px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, y: -8, filter: 'blur(4px)' }}
-                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          key={mode}
+          className="dock-wrap"
+          variants={wrapVariants}
+          initial="hidden"
+          animate="show"
+          exit="hidden"
+        >
+          <motion.form
+            ref={formRef}
+            className="dock"
+            variants={formVariants}
+            onSubmit={(e) => {
+              if (mode === 'message') send(e);
+              else {
+                e.preventDefault();
+                inputRef.current?.blur();
+                setSearchOpen(false);
+              }
+            }}
+          >
+            <AnimatePresence>
+              {open && (
+                <motion.div
+                  className="dock-pop"
+                  initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                  transition={spring}
                 >
-                  {placeholder}
-                </motion.span>
+                  {mode === 'message' ? (
+                    <>
+                      <div className="dock-pop-title">{t('dock.contact')}</div>
+                      {links.length ? (
+                        links.map((l) => (
+                          <a
+                            key={l.kind}
+                            className="chip"
+                            href={l.href}
+                            target={l.kind === 'whatsapp' ? '_blank' : undefined}
+                            rel="noreferrer"
+                          >
+                            <span>{l.label}</span>
+                          </a>
+                        ))
+                      ) : (
+                        <div className="dock-pop-title">
+                          {locked ? t('dock.noteLocked') : t('dock.noContact')}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div className="dock-pop-title">{t('dock.chooseCity')}</div>
+                      <CityChip
+                        label={t('dock.allCities')}
+                        active={!city}
+                        onClick={() => {
+                          setCity('');
+                          setOpen(false);
+                        }}
+                      />
+                      {cities.map(([c, n]) => (
+                        <CityChip
+                          key={c}
+                          label={c}
+                          count={n}
+                          active={city === c}
+                          onClick={() => {
+                            setCity(city === c ? '' : c);
+                            setOpen(false);
+                          }}
+                        />
+                      ))}
+                    </>
+                  )}
+                </motion.div>
               )}
             </AnimatePresence>
-          </div>
 
-          {mode === 'search' && value && (
-            <button type="button" className="dock-btn" aria-label={t('dock.clear')} onClick={() => setQuery('')}>
-              <CloseIcon width={18} height={18} />
-            </button>
-          )}
-          <button
-            type="button"
-            className={`dock-btn ${open || (mode === 'search' && city) ? 'on' : ''}`}
-            aria-label={mode === 'message' ? t('dock.contactOptions') : t('dock.filterCity')}
-            onClick={() => setOpen((o) => !o)}
-          >
-            <motion.span animate={{ rotate: open ? 45 : 0 }} transition={spring} style={{ display: 'grid' }}>
-              <PlusIcon />
-            </motion.span>
-          </button>
-          {mode === 'message' && message.trim() ? (
-            <button type="submit" className="dock-btn send" aria-label={t('dock.send')}>
-              <SendIcon width={20} height={20} />
-            </button>
-          ) : (
-            <button
-              type="button"
-              className={`dock-btn ${listening ? 'listening' : ''}`}
-              aria-label={t('dock.voice')}
-              onClick={toggleMic}
-            >
-              <MicIcon />
-            </button>
-          )}
-        </div>
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={note}
-            className="dock-note"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-          >
-            {note}
-          </motion.div>
-        </AnimatePresence>
-      </motion.form>
-    </div>
+            <div className="dock-bar">
+              <div className="dock-input-wrap">
+                <input
+                  ref={inputRef}
+                  className="dock-input"
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  onFocus={() => {
+                    if (locked) {
+                      inputRef.current?.blur();
+                      navigate('/login');
+                    }
+                  }}
+                  readOnly={locked}
+                  aria-label={placeholder}
+                  enterKeyHint={mode === 'message' ? 'send' : 'search'}
+                />
+                <AnimatePresence initial={false}>
+                  {!value && (
+                    <motion.span
+                      key={placeholder}
+                      className="dock-placeholder"
+                      initial={{ opacity: 0, y: 8, filter: 'blur(4px)' }}
+                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, y: -8, filter: 'blur(4px)' }}
+                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      {placeholder}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {mode === 'search' && value && (
+                <button
+                  type="button"
+                  className="dock-btn"
+                  aria-label={t('dock.clear')}
+                  onClick={() => setQuery('')}
+                >
+                  <CloseIcon width={18} height={18} />
+                </button>
+              )}
+              <button
+                type="button"
+                className={`dock-btn ${open || (mode === 'search' && city) ? 'on' : ''}`}
+                aria-label={mode === 'message' ? t('dock.contactOptions') : t('dock.filterCity')}
+                onClick={() => setOpen((o) => !o)}
+              >
+                <motion.span
+                  animate={{ rotate: open ? 45 : 0 }}
+                  transition={spring}
+                  style={{ display: 'grid' }}
+                >
+                  <PlusIcon />
+                </motion.span>
+              </button>
+              {mode === 'message' && message.trim() ? (
+                <button type="submit" className="dock-btn send" aria-label={t('dock.send')}>
+                  <SendIcon width={20} height={20} />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={`dock-btn ${listening ? 'listening' : ''}`}
+                  aria-label={t('dock.voice')}
+                  onClick={toggleMic}
+                >
+                  <MicIcon />
+                </button>
+              )}
+            </div>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={note}
+                className="dock-note"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+              >
+                {note}
+              </motion.div>
+            </AnimatePresence>
+          </motion.form>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

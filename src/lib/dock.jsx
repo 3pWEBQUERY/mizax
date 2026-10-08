@@ -6,10 +6,12 @@ export function DockProvider({ children }) {
   const [config, setConfig] = useState({ mode: 'search' });
   const [query, setQuery] = useState('');
   const [city, setCity] = useState('');
+  // Suchleiste ist standardmäßig versteckt und erscheint erst über den Suchen-Button
+  const [searchOpen, setSearchOpen] = useState(false);
   const inputRef = useRef(null);
   const value = useMemo(
-    () => ({ config, setConfig, query, setQuery, city, setCity, inputRef }),
-    [config, query, city],
+    () => ({ config, setConfig, query, setQuery, city, setCity, inputRef, searchOpen, setSearchOpen }),
+    [config, query, city, searchOpen],
   );
   return <DockCtx.Provider value={value}>{children}</DockCtx.Provider>;
 }

@@ -26,24 +26,27 @@ function Backdrop() {
 function Shell() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { inputRef, config } = useDockState();
+  const { config, searchOpen, setSearchOpen } = useDockState();
 
   // Profile sofort im Hintergrund laden, damit jeder Seitenwechsel ohne Wartezeit läuft
   useEffect(() => {
     loadEscorts().catch(() => {});
   }, []);
 
-  const focusSearch = () => {
-    const away = config.mode !== 'search';
-    if (away) navigate('/');
-    setTimeout(() => inputRef.current?.focus(), away ? 350 : 0);
+  const toggleSearch = () => {
+    if (searchOpen) {
+      setSearchOpen(false);
+      return;
+    }
+    if (config.mode !== 'search') navigate('/');
+    setSearchOpen(true);
   };
 
   return (
     <div className="app">
       <Backdrop />
       <Clock />
-      <TopBar onSearch={focusSearch} />
+      <TopBar onSearch={toggleSearch} searchOpen={searchOpen} />
       <LayoutGroup>
         <div className="pages">
           <AnimatePresence initial={false}>
