@@ -905,8 +905,7 @@ img {
     position: relative;
     top: 0;
     width: 100%;
-    max-width: min(460px, calc(50vh * 0.75));
-    max-width: min(460px, calc(50svh * 0.75));
+    max-width: 560px;
     margin: 0 auto;
   }
   .profile-hero .thumb {
