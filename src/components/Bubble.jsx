@@ -16,10 +16,11 @@ export function Bubble({ i = 0, children, className = '', style, instant = false
   );
 }
 
-export function Rise({ i = 0, children, className = '', as = 'div', style, instant = false }) {
+export function Rise({ i = 0, children, className = '', as = 'div', style, instant = false, ...rest }) {
   const Comp = motion[as];
   return (
     <Comp
+      {...rest}
       className={className}
       variants={rise}
       initial={instant ? false : 'hidden'}

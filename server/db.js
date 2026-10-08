@@ -59,5 +59,27 @@ export async function migrate() {
 
     CREATE INDEX IF NOT EXISTS escort_photos_escort_idx ON escort_photos (escort_id, position);
     CREATE INDEX IF NOT EXISTS escorts_list_idx ON escorts (published, featured DESC, sort, created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS users (
+      id            SERIAL PRIMARY KEY,
+      email         TEXT NOT NULL,
+      password_hash TEXT NOT NULL,
+      name          TEXT NOT NULL,
+      role          TEXT NOT NULL CHECK (role IN ('member', 'escort')),
+      locale        TEXT NOT NULL DEFAULT 'de',
+      created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+      last_login_at TIMESTAMPTZ
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS users_email_idx ON users (lower(email));
+
+    ALTER TABLE escorts ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE;
+    CREATE UNIQUE INDEX IF NOT EXISTS escorts_user_idx ON escorts (user_id) WHERE user_id IS NOT NULL;
+
+    CREATE TABLE IF NOT EXISTS favorites (
+      user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      escort_id  INTEGER NOT NULL REFERENCES escorts(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (user_id, escort_id)
+    );
   `);
 }

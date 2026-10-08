@@ -1,46 +1,17 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Page from '../components/Page.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
 import { Placeholder } from '../components/Media.jsx';
 import { useToast } from '../components/Toast.jsx';
-import { ChevronL, ChevronR, TrashIcon, SpinnerIcon, PlusIcon } from '../components/Icons.jsx';
+import ProfileEditor from '../components/ProfileEditor.jsx';
+import { SpinnerIcon, PlusIcon } from '../components/Icons.jsx';
 import { api, getToken, setToken } from '../lib/api.js';
 import { loadEscorts } from '../lib/store.js';
 import { useDock } from '../lib/dock.jsx';
+import { useI18n, errorText } from '../lib/i18n.jsx';
 
-const empty = {
-  name: '',
-  age: 21,
-  city: '',
-  tagline: '',
-  bio: '',
-  height: '',
-  nationality: '',
-  languages: 'Deutsch, Englisch',
-  services: '',
-  rates: [{ label: '1 Stunde', price: '' }],
-  phone: '',
-  whatsapp: '',
-  email: '',
-  accent: '#6d4aff',
-  verified: false,
-  available: true,
-  featured: false,
-  published: true,
-  sort: 0,
-};
-
-function toForm(e) {
-  return {
-    ...empty,
-    ...e,
-    height: e.height || '',
-    languages: (e.languages || []).join(', '),
-    services: (e.services || []).join(', '),
-    rates: e.rates?.length ? e.rates : [{ label: '', price: '' }],
-  };
-}
+const fade = { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } };
 
 export default function Admin() {
   useDock({ mode: 'hidden' });
@@ -63,7 +34,7 @@ export default function Admin() {
     <Page>
       <AnimatePresence mode="wait" initial={false}>
         {authed ? (
-          <motion.div key="panel" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="panel" {...fade}>
             <Dashboard
               status={status}
               onLogout={() => {
@@ -73,8 +44,8 @@ export default function Admin() {
             />
           </motion.div>
         ) : (
-          <motion.div key="login" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Login onDone={() => setAuthed(true)} />
+          <motion.div key="login" {...fade}>
+            <AdminLogin onDone={() => setAuthed(true)} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -82,7 +53,8 @@ export default function Admin() {
   );
 }
 
-function Login({ onDone }) {
+function AdminLogin({ onDone }) {
+  const { t } = useI18n();
   const [pw, setPw] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -96,38 +68,36 @@ function Login({ onDone }) {
       setToken(token);
       onDone();
     } catch (err) {
-      setError(err.message);
+      setError(errorText(t, err));
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <div className="bubbles" style={{ marginTop: '12vh' }}>
-      <Bubble i={0}>Verwaltung.</Bubble>
-      <Bubble i={1}>Melde dich mit dem Admin-Passwort an, um Profile und Fotos zu verwalten.</Bubble>
-      <Rise i={2} style={{ width: '100%' }}>
-        <form onSubmit={submit} style={{ display: 'flex', gap: 10, width: '100%' }}>
-          <input
-            className="input"
-            type="password"
-            placeholder="Passwort"
-            value={pw}
-            onChange={(e) => setPw(e.target.value)}
-            autoFocus
-            style={{ borderRadius: 999, height: 58, padding: '0 22px', fontSize: 17 }}
-          />
-          <button className="white-btn" disabled={busy || !pw}>
-            {busy ? <SpinnerIcon /> : 'Anmelden'}
-          </button>
-        </form>
+    <div className="auth">
+      <div className="bubbles">
+        <Bubble i={0}>{t('admin.title')}</Bubble>
+        <Bubble i={1}>{t('admin.loginText')}</Bubble>
+      </div>
+      <Rise i={2} as="form" className="auth-form" onSubmit={submit}>
+        <input
+          className="auth-input"
+          type="password"
+          placeholder={t('admin.password')}
+          aria-label={t('admin.password')}
+          value={pw}
+          onChange={(e) => setPw(e.target.value)}
+          autoFocus
+        />
+        <button className="white-btn auth-submit" disabled={busy || !pw}>
+          {busy ? <SpinnerIcon /> : t('admin.login')}
+        </button>
       </Rise>
       <AnimatePresence>
         {error && (
-          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-            <div className="bubble" style={{ color: 'var(--danger)' }}>
-              {error}
-            </div>
+          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} style={{ marginTop: 12 }}>
+            <div className="bubble auth-error">{error}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -136,6 +106,49 @@ function Login({ onDone }) {
 }
 
 function Dashboard({ status, onLogout }) {
+  const { t } = useI18n();
+  const [tab, setTab] = useState('profiles');
+
+  return (
+    <>
+      <div className="admin-head">
+        <h1 className="admin-title">{t('admin.manage')}</h1>
+        <div className="status-row">
+          {status && (
+            <>
+              <span className="badge">{status.db ? `● ${t('admin.dbOk')}` : `○ ${t('admin.dbNo')}`}</span>
+              <span className="badge">{status.storage ? `● ${t('admin.bucketOk')}` : `○ ${t('admin.bucketNo')}`}</span>
+            </>
+          )}
+          <button className="badge" onClick={onLogout}>
+            {t('admin.logout')}
+          </button>
+        </div>
+      </div>
+
+      <div className="tabs" role="tablist">
+        {[
+          ['profiles', t('admin.tabProfiles')],
+          ['users', t('admin.tabUsers')],
+        ].map(([k, label]) => (
+          <button key={k} type="button" role="tab" aria-selected={tab === k} className={tab === k ? 'active' : ''} onClick={() => setTab(k)}>
+            {tab === k && <motion.span layoutId="admin-tab" className="chip-bg" transition={{ type: 'spring', stiffness: 420, damping: 36 }} />}
+            <span>{label}</span>
+          </button>
+        ))}
+      </div>
+
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div key={tab} {...fade} transition={{ duration: 0.2 }}>
+          {tab === 'profiles' ? <Profiles status={status} /> : <Users />}
+        </motion.div>
+      </AnimatePresence>
+    </>
+  );
+}
+
+function Profiles({ status }) {
+  const { t } = useI18n();
   const toast = useToast();
   const [list, setList] = useState(null);
   const [selected, setSelected] = useState(null); // id | 'new' | null
@@ -148,342 +161,128 @@ function Dashboard({ status, onLogout }) {
   }, []);
 
   useEffect(() => {
-    refresh().catch((e) => toast(e.message));
-  }, [refresh, toast]);
+    refresh().catch((e) => toast(errorText(t, e)));
+  }, [refresh, toast, t]);
 
   const current = selected === 'new' ? null : list?.find((e) => e.id === selected);
 
   return (
-    <>
-      <div className="admin-head">
-        <h1 className="admin-title">Profile verwalten</h1>
-        <div className="status-row">
-          {status && (
-            <>
-              <span className="badge">{status.db ? '● Postgres verbunden' : '○ Keine Datenbank'}</span>
-              <span className="badge">{status.storage ? '● Bucket verbunden' : '○ Kein Bucket'}</span>
-            </>
-          )}
-          <button className="badge light" onClick={() => setSelected('new')}>
-            <PlusIcon width={14} height={14} /> Neues Profil
-          </button>
-          <button className="badge" onClick={onLogout}>
-            Abmelden
-          </button>
-        </div>
-      </div>
-
-      <div className="admin-grid">
-        <div className="panel">
-          <div className="admin-list">
-            {!list && <div className="empty">Lädt…</div>}
-            {list?.map((e) => (
-              <button
-                key={e.id}
-                className={`admin-item ${selected === e.id ? 'active' : ''}`}
-                onClick={() => setSelected(e.id)}
-              >
-                <div className="admin-thumb">
-                  {e.photos[0] ? <img src={e.photos[0].thumb} alt="" /> : <Placeholder escort={e} />}
-                </div>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontWeight: 600 }}>
-                    {e.name}, {e.age}
-                  </div>
-                  <div className="meta">
-                    {e.city || '–'} · {e.photos.length} Fotos{e.published ? '' : ' · versteckt'}
-                  </div>
-                </div>
-              </button>
-            ))}
-            {list && !list.length && <div className="empty">Noch keine Profile.</div>}
-          </div>
-        </div>
-
-        <div className="panel" style={{ padding: 20 }}>
-          <AnimatePresence mode="wait" initial={false}>
-            {selected ? (
-              <motion.div
-                key={selected}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.25 }}
-              >
-                <Editor
-                  escort={current}
-                  storage={status?.storage}
-                  onSaved={async (e) => {
-                    await refresh();
-                    setSelected(e.id);
-                  }}
-                  onDeleted={async () => {
-                    await refresh();
-                    setSelected(null);
-                  }}
-                />
-              </motion.div>
-            ) : (
-              <motion.div key="none" className="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                Wähle links ein Profil oder lege ein neues an.
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    </>
-  );
-}
-
-function Editor({ escort, storage, onSaved, onDeleted }) {
-  const toast = useToast();
-  const [form, setForm] = useState(() => (escort ? toForm(escort) : { ...empty }));
-  const [busy, setBusy] = useState(false);
-  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
-  const flip = (k) => () => setForm((f) => ({ ...f, [k]: !f[k] }));
-
-  async function save(e) {
-    e.preventDefault();
-    setBusy(true);
-    try {
-      const body = { ...form, age: Number(form.age), height: form.height ? Number(form.height) : null };
-      const saved = escort
-        ? await api(`/api/admin/escorts/${escort.id}`, { method: 'PUT', admin: true, body })
-        : await api('/api/admin/escorts', { method: 'POST', admin: true, body });
-      toast('Gespeichert');
-      await onSaved(saved);
-    } catch (err) {
-      toast(err.message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function remove() {
-    if (!escort || !confirm(`Profil „${escort.name}“ wirklich löschen?`)) return;
-    try {
-      await api(`/api/admin/escorts/${escort.id}`, { method: 'DELETE', admin: true });
-      toast('Profil gelöscht');
-      await onDeleted();
-    } catch (err) {
-      toast(err.message);
-    }
-  }
-
-  const setRate = (idx, key, val) =>
-    setForm((f) => ({ ...f, rates: f.rates.map((r, i) => (i === idx ? { ...r, [key]: val } : r)) }));
-
-  return (
-    <form onSubmit={save}>
-      <div className="form">
-        <Field label="Name">
-          <input className="input" value={form.name} onChange={set('name')} required />
-        </Field>
-        <Field label="Alter (mind. 18)">
-          <input className="input" type="number" min={18} max={99} value={form.age} onChange={set('age')} required />
-        </Field>
-        <Field label="Stadt">
-          <input className="input" value={form.city} onChange={set('city')} />
-        </Field>
-        <Field label="Herkunft">
-          <input className="input" value={form.nationality} onChange={set('nationality')} />
-        </Field>
-        <Field label="Größe (cm)">
-          <input className="input" type="number" value={form.height} onChange={set('height')} />
-        </Field>
-        <Field label="Akzentfarbe (Platzhalter)">
-          <input className="input" type="color" value={form.accent} onChange={set('accent')} style={{ height: 46, padding: 6 }} />
-        </Field>
-        <Field label="Kurzbeschreibung" full>
-          <input className="input" value={form.tagline} onChange={set('tagline')} />
-        </Field>
-        <Field label="Über mich (Absätze mit Leerzeile trennen – jeder Absatz wird eine Bubble)" full>
-          <textarea className="input" value={form.bio} onChange={set('bio')} />
-        </Field>
-        <Field label="Sprachen (kommagetrennt)">
-          <input className="input" value={form.languages} onChange={set('languages')} />
-        </Field>
-        <Field label="Leistungen (kommagetrennt)">
-          <input className="input" value={form.services} onChange={set('services')} />
-        </Field>
-        <Field label="WhatsApp-Nummer">
-          <input className="input" value={form.whatsapp} onChange={set('whatsapp')} placeholder="+49 …" />
-        </Field>
-        <Field label="Telefon">
-          <input className="input" value={form.phone} onChange={set('phone')} placeholder="+49 …" />
-        </Field>
-        <Field label="E-Mail">
-          <input className="input" type="email" value={form.email} onChange={set('email')} />
-        </Field>
-        <Field label="Sortierung (klein = weiter vorne)">
-          <input className="input" type="number" value={form.sort} onChange={set('sort')} />
-        </Field>
-      </div>
-
-      <div className="section-title">Status</div>
-      <div className="toggles">
-        {[
-          ['published', 'Veröffentlicht'],
-          ['available', 'Verfügbar'],
-          ['verified', 'Verifiziert'],
-          ['featured', 'Hervorgehoben'],
-        ].map(([k, label]) => (
-          <button type="button" key={k} className={`toggle ${form[k] ? 'on' : ''}`} onClick={flip(k)}>
-            {label}
-          </button>
-        ))}
-      </div>
-
-      <div className="section-title">Honorar</div>
-      {form.rates.map((r, idx) => (
-        <div className="rate-row" key={idx}>
-          <input className="input" placeholder="z. B. 1 Stunde" value={r.label} onChange={(e) => setRate(idx, 'label', e.target.value)} />
-          <input className="input" placeholder="z. B. 300 €" value={r.price} onChange={(e) => setRate(idx, 'price', e.target.value)} />
-          <button
-            type="button"
-            className="mini-btn danger"
-            style={{ width: 40, height: 46, borderRadius: 14 }}
-            onClick={() => setForm((f) => ({ ...f, rates: f.rates.filter((_, i) => i !== idx) }))}
-            aria-label="Zeile entfernen"
-          >
-            <TrashIcon />
-          </button>
-        </div>
-      ))}
-      <button
-        type="button"
-        className="toggle"
-        onClick={() => setForm((f) => ({ ...f, rates: [...f.rates, { label: '', price: '' }] }))}
-      >
-        + Zeile
-      </button>
-
-      <div className="section-title">Fotos</div>
-      {escort ? (
-        <Photos escort={escort} storage={storage} onChange={onSaved} />
-      ) : (
-        <div className="meta" style={{ color: 'var(--muted)' }}>
-          Speichere das Profil zuerst, danach kannst du Fotos hochladen.
-        </div>
-      )}
-
-      <div className="form-actions">
-        {escort && (
-          <button type="button" className="ghost-btn danger-btn" onClick={remove}>
-            Löschen
-          </button>
-        )}
-        {escort && (
-          <a className="ghost-btn" href={`/escort/${escort.slug}`} target="_blank" rel="noreferrer">
-            Ansehen
-          </a>
-        )}
-        <button className="white-btn" disabled={busy}>
-          {busy ? <SpinnerIcon /> : escort ? 'Speichern' : 'Profil anlegen'}
+    <div className="admin-grid">
+      <div className="panel">
+        <button className="menu-item" onClick={() => setSelected('new')} style={{ marginBottom: 6 }}>
+          <PlusIcon width={18} height={18} /> {t('admin.newProfile')}
         </button>
+        <div className="admin-list">
+          {!list && <div className="empty">{t('admin.loading')}</div>}
+          {list?.map((e) => (
+            <button key={e.id} className={`admin-item ${selected === e.id ? 'active' : ''}`} onClick={() => setSelected(e.id)}>
+              <div className="admin-thumb">
+                {e.photos[0] ? <img src={e.photos[0].thumb} alt="" /> : <Placeholder escort={e} />}
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontWeight: 600 }}>
+                  {e.name}, {e.age}
+                </div>
+                <div className="meta">
+                  {e.city || '–'} · {t('admin.photosCount', { n: e.photos.length })}
+                  {e.published ? '' : ` · ${t('admin.hidden')}`}
+                  {e.userId ? ` · ${t('admin.ownProfile')}` : ''}
+                </div>
+              </div>
+            </button>
+          ))}
+          {list && !list.length && <div className="empty">{t('admin.noProfiles')}</div>}
+        </div>
       </div>
-    </form>
-  );
-}
 
-function Field({ label, full, children }) {
-  return (
-    <div className={`field ${full ? 'full' : ''}`}>
-      <label>{label}</label>
-      {children}
+      <div className="panel" style={{ padding: 20 }}>
+        <AnimatePresence mode="wait" initial={false}>
+          {selected ? (
+            <motion.div
+              key={selected}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.25 }}
+            >
+              <ProfileEditor
+                mode="admin"
+                escort={current}
+                storage={status?.storage}
+                onSaved={async (e) => {
+                  await refresh();
+                  setSelected(e.id);
+                }}
+                onDeleted={async () => {
+                  await refresh();
+                  setSelected(null);
+                }}
+              />
+            </motion.div>
+          ) : (
+            <motion.div key="none" className="empty" {...fade}>
+              {t('admin.select')}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
 
-function Photos({ escort, storage, onChange }) {
+function Users() {
+  const { t, locale } = useI18n();
   const toast = useToast();
-  const inputRef = useRef(null);
-  const [busy, setBusy] = useState(false);
-  const [over, setOver] = useState(false);
+  const [users, setUsers] = useState(null);
 
-  async function upload(files) {
-    const imgs = [...files].filter((f) => f.type.startsWith('image/'));
-    if (!imgs.length) return;
-    setBusy(true);
-    try {
-      const form = new FormData();
-      imgs.forEach((f) => form.append('photos', f));
-      const saved = await api(`/api/admin/escorts/${escort.id}/photos`, { method: 'POST', admin: true, form });
-      toast(`${imgs.length} Foto${imgs.length > 1 ? 's' : ''} hochgeladen`);
-      await onChange(saved);
-    } catch (err) {
-      toast(err.message);
-    } finally {
-      setBusy(false);
-    }
-  }
+  useEffect(() => {
+    api('/api/admin/users', { admin: true })
+      .then(setUsers)
+      .catch((e) => toast(errorText(t, e)));
+  }, [toast, t]);
 
-  async function move(idx, dir) {
-    const ids = escort.photos.map((p) => p.id);
-    const j = idx + dir;
-    if (j < 0 || j >= ids.length) return;
-    [ids[idx], ids[j]] = [ids[j], ids[idx]];
-    const saved = await api(`/api/admin/escorts/${escort.id}/photos/order`, { method: 'PUT', admin: true, body: { ids } });
-    await onChange(saved);
-  }
-
-  async function del(id) {
-    const saved = await api(`/api/admin/photos/${id}`, { method: 'DELETE', admin: true });
-    await onChange(saved);
-  }
+  const fmt = (d) =>
+    d ? new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(d)) : '–';
 
   return (
-    <div className="photo-grid">
-      {escort.photos.map((p, idx) => (
-        <motion.div layout key={p.id} className="photo-item">
-          <img src={p.thumb} alt="" />
-          {idx === 0 && (
-            <span className="badge light" style={{ position: 'absolute', top: 6, left: 6, fontSize: 11 }}>
-              Titelbild
-            </span>
-          )}
-          <div className="photo-actions">
-            <button type="button" className="mini-btn" onClick={() => move(idx, -1)} aria-label="Nach vorne">
-              <ChevronL width={16} height={16} />
-            </button>
-            <button type="button" className="mini-btn danger" onClick={() => del(p.id)} aria-label="Foto löschen">
-              <TrashIcon />
-            </button>
-            <button type="button" className="mini-btn" onClick={() => move(idx, 1)} aria-label="Nach hinten">
-              <ChevronR width={16} height={16} />
-            </button>
-          </div>
-        </motion.div>
-      ))}
-      <button
-        type="button"
-        className={`dropzone ${over ? 'over' : ''}`}
-        disabled={busy || !storage}
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setOver(true);
-        }}
-        onDragLeave={() => setOver(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setOver(false);
-          upload(e.dataTransfer.files);
-        }}
-      >
-        {busy ? <SpinnerIcon /> : storage ? 'Fotos hierher ziehen oder klicken' : 'Bucket nicht verbunden'}
-      </button>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        multiple
-        hidden
-        onChange={(e) => {
-          upload(e.target.files);
-          e.target.value = '';
-        }}
-      />
+    <div className="panel" style={{ padding: 16 }}>
+      {!users ? (
+        <div className="empty">{t('admin.loading')}</div>
+      ) : !users.length ? (
+        <div className="empty">{t('admin.noUsers')}</div>
+      ) : (
+        <div className="table-wrap">
+          <table className="users-table">
+            <thead>
+              <tr>
+                <th>{t('auth.name')}</th>
+                <th>{t('auth.email')}</th>
+                <th>{t('admin.role')}</th>
+                <th>{t('admin.registered')}</th>
+                <th>{t('admin.lastLogin')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((u) => (
+                <tr key={u.id}>
+                  <td>{u.name}</td>
+                  <td className="muted">{u.email}</td>
+                  <td>
+                    <span className={`role-badge ${u.role}`}>{t(`menu.${u.role}`)}</span>
+                    {u.slug && (
+                      <a href={`/escort/${u.slug}`} target="_blank" rel="noreferrer" style={{ marginLeft: 8, fontSize: 13, textDecoration: 'underline' }}>
+                        {t('me.view')}
+                      </a>
+                    )}
+                  </td>
+                  <td className="muted">{fmt(u.created_at)}</td>
+                  <td className="muted">{fmt(u.last_login_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

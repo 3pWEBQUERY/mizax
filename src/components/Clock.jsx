@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
-
-const days = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-const months = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sept.', 'Okt.', 'Nov.', 'Dez.'];
+import { useI18n } from '../lib/i18n.jsx';
 
 export function useNow() {
   const [now, setNow] = useState(() => new Date());
@@ -12,16 +10,18 @@ export function useNow() {
   return now;
 }
 
-export function formatParts(d) {
+export function formatParts(d, locale = 'de') {
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   return {
-    day: days[d.getDay()],
-    date: `${d.getDate()}. ${months[d.getMonth()]}`,
-    time: `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`,
+    day: cap(new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(d)),
+    date: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' }).format(d),
+    time: new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', hour12: false }).format(d),
   };
 }
 
 export default function Clock() {
-  const p = formatParts(useNow());
+  const { locale } = useI18n();
+  const p = formatParts(useNow(), locale);
   return (
     <div className="clock" aria-hidden="true">
       {p.day}

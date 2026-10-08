@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import { Bubble, Rise } from './Bubble.jsx';
+import { LanguagePicker } from './TopBar.jsx';
+import { useT } from '../lib/i18n.jsx';
 
 const KEY = 'mizax.age-ok';
 
@@ -14,6 +16,7 @@ function accepted() {
 
 export default function AgeGate() {
   const [ok, setOk] = useState(accepted);
+  const t = useT();
 
   return (
     <AnimatePresence>
@@ -24,14 +27,11 @@ export default function AgeGate() {
           exit={{ opacity: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }}
           role="dialog"
           aria-modal="true"
-          aria-label="Altersbestätigung"
+          aria-label={t('gate.aria')}
         >
           <div className="bubbles">
-            <Bubble i={0}>Hey, willkommen bei Mizax.</Bubble>
-            <Bubble i={1}>
-              Diese Seite enthält Inhalte, die nur für Erwachsene bestimmt sind. Bitte bestätige, dass du
-              mindestens 18 Jahre alt bist.
-            </Bubble>
+            <Bubble i={0}>{t('gate.hello')}</Bubble>
+            <Bubble i={1}>{t('gate.text')}</Bubble>
             <Rise i={2} className="actions">
               <button
                 type="button"
@@ -46,11 +46,14 @@ export default function AgeGate() {
                   setOk(true);
                 }}
               >
-                Ich bin 18 oder älter
+                {t('gate.confirm')}
               </button>
-              <a className="ghost-btn" href="https://www.google.de" rel="noreferrer">
-                Verlassen
+              <a className="ghost-btn" href="https://www.google.com" rel="noreferrer">
+                {t('gate.leave')}
               </a>
+            </Rise>
+            <Rise i={3} style={{ width: '100%', maxWidth: 300, marginTop: 8 }}>
+              <LanguagePicker id="gate-lang" />
             </Rise>
           </div>
         </motion.div>

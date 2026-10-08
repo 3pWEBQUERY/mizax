@@ -1,11 +1,10 @@
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import Page from '../components/Page.jsx';
-import { Bubble, Rise } from '../components/Bubble.jsx';
 import EscortCard, { GridSkeleton } from '../components/EscortCard.jsx';
 import { useEscorts } from '../lib/store.js';
 import { useDock, useDockState } from '../lib/dock.jsx';
-import { formatParts, useNow } from '../components/Clock.jsx';
+import { useT } from '../lib/i18n.jsx';
 
 let introPlayed = false;
 
@@ -17,13 +16,14 @@ export function filterEscorts(list, query, city) {
       (!q ||
         e.name.toLowerCase().includes(q) ||
         e.city.toLowerCase().includes(q) ||
-        e.tagline.toLowerCase().includes(q) ||
-        e.services.some((s) => s.toLowerCase().includes(q))),
+        (e.tagline || '').toLowerCase().includes(q) ||
+        (e.services || []).some((s) => s.toLowerCase().includes(q))),
   );
 }
 
 export function CityChips({ escorts }) {
   const { city, setCity } = useDockState();
+  const t = useT();
   const cities = useMemo(() => {
     const m = new Map();
     escorts.forEach((e) => e.city && m.set(e.city, (m.get(e.city) || 0) + 1));
@@ -40,7 +40,7 @@ export function CityChips({ escorts }) {
               <motion.span layoutId="city-pill" className="chip-bg" transition={{ type: 'spring', stiffness: 420, damping: 36 }} />
             )}
             <span>
-              {c || 'Alle'}
+              {c || t('home.all')}
               <small>{n}</small>
             </span>
           </button>
@@ -75,48 +75,27 @@ export default function Home() {
   useDock({ mode: 'search' });
   const { escorts, error } = useEscorts();
   const { query, city } = useDockState();
-  const now = useNow();
+  const t = useT();
   const [instant] = useState(() => introPlayed);
-  const [stamp] = useState(() => formatParts(new Date()).time);
   useEffect(() => {
     introPlayed = true;
   }, []);
 
   const filtered = useMemo(() => (escorts ? filterEscorts(escorts, query, city) : []), [escorts, query, city]);
-  const p = formatParts(now);
 
   return (
     <Page>
-      <div className="bubbles">
-        <Rise i={0} className="clock-inline bubble-label" instant={instant}>
-          {p.day}, {p.date} · {p.time}
-        </Rise>
-        <Bubble i={0} instant={instant}>Hey, ich bin Mizax.</Bubble>
-        <Bubble i={1} instant={instant}>
-          Ich zeige dir ausgewählte Begleitungen in deiner Stadt – diskret, stilvoll und persönlich.
-        </Bubble>
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
-          <Rise i={2} className="bubble-time" instant={instant}>
-            {stamp}
-          </Rise>
-          <Bubble i={2} instant={instant}>
-            Wähle ein Profil, um mehr zu erfahren, oder suche unten nach Name und Stadt.
-          </Bubble>
-        </div>
-      </div>
-
       {escorts && <CityChips escorts={escorts} />}
 
       {error && !escorts ? (
-        <div className="empty">Profile konnten nicht geladen werden. {error.message}</div>
+        <div className="empty">{t('home.loadError')}</div>
       ) : !escorts ? (
         <GridSkeleton />
       ) : filtered.length ? (
         <EscortGrid list={filtered} instant={instant} />
       ) : (
         <motion.div className="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          Keine Profile gefunden{query ? ` für „${query}“` : ''}
-          {city ? ` in ${city}` : ''}.
+          {t('home.empty')}
         </motion.div>
       )}
     </Page>

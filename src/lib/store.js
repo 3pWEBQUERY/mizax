@@ -3,9 +3,10 @@ import { api } from './api.js';
 
 // ---------- Profil-Cache: sofortige Seitenwechsel ohne Ladezustand ----------
 
-const bySlug = new Map();
+let bySlug = new Map();
 let list = null;
 let listPromise = null;
+let generation = 0;
 const listeners = new Set();
 const emit = () => listeners.forEach((l) => l());
 
@@ -16,10 +17,16 @@ export function subscribe(fn) {
 
 export function loadEscorts(force = false) {
   if (listPromise && !force) return listPromise;
+  const gen = generation;
   listPromise = api('/api/escorts')
     .then((rows) => {
+      if (gen !== generation) return rows;
       list = rows;
-      rows.forEach((e) => bySlug.set(e.slug, e));
+      rows.forEach((e) => {
+        const prev = bySlug.get(e.slug);
+        // ein bereits geladenes Vollprofil nicht durch Kartendaten ersetzen
+        if (!prev || e.full || !prev.full) bySlug.set(e.slug, e);
+      });
       emit();
       return rows;
     })
@@ -28,6 +35,15 @@ export function loadEscorts(force = false) {
       throw err;
     });
   return listPromise;
+}
+
+// Nach Login/Logout: alles verwerfen, weil sich die sichtbaren Daten ändern
+export function resetEscorts() {
+  generation++;
+  bySlug = new Map();
+  inflight.clear();
+  listPromise = null;
+  return loadEscorts(true);
 }
 
 export function useEscorts() {
@@ -39,17 +55,16 @@ export function useEscorts() {
   return { escorts: data, error };
 }
 
-export function getCachedEscort(slug) {
-  return bySlug.get(slug) || null;
-}
-
 const inflight = new Map();
 export function prefetchEscort(slug) {
   if (inflight.has(slug)) return inflight.get(slug);
+  const gen = generation;
   const p = api(`/api/escorts/${encodeURIComponent(slug)}`)
     .then((e) => {
-      bySlug.set(slug, e);
-      emit();
+      if (gen === generation) {
+        bySlug.set(slug, e);
+        emit();
+      }
       return e;
     })
     .finally(() => setTimeout(() => inflight.delete(slug), 30000));
@@ -74,28 +89,41 @@ export function preloadImage(src) {
   img.src = src;
 }
 
-// ---------- Favoriten (lokal im Browser) ----------
+// ---------- Favoriten (serverseitig pro Konto) ----------
 
-const FAV_KEY = 'mizax.favorites';
-let favs = (() => {
-  try {
-    return new Set(JSON.parse(localStorage.getItem(FAV_KEY) || '[]'));
-  } catch {
-    return new Set();
-  }
-})();
+let favs = new Set();
 const favListeners = new Set();
+const favEmit = () => favListeners.forEach((l) => l());
 
-export function toggleFavorite(slug) {
-  favs = new Set(favs);
-  if (favs.has(slug)) favs.delete(slug);
-  else favs.add(slug);
-  try {
-    localStorage.setItem(FAV_KEY, JSON.stringify([...favs]));
-  } catch {
-    /* ignore */
+export async function loadFavorites(loggedIn) {
+  if (!loggedIn) {
+    favs = new Set();
+    favEmit();
+    return;
   }
-  favListeners.forEach((l) => l());
+  try {
+    favs = new Set(await api('/api/me/favorites'));
+  } catch {
+    favs = new Set();
+  }
+  favEmit();
+}
+
+export async function toggleFavorite(slug) {
+  const had = favs.has(slug);
+  favs = new Set(favs);
+  if (had) favs.delete(slug);
+  else favs.add(slug);
+  favEmit();
+  try {
+    await api(`/api/me/favorites/${encodeURIComponent(slug)}`, { method: had ? 'DELETE' : 'PUT' });
+  } catch (err) {
+    favs = new Set(favs);
+    if (had) favs.add(slug);
+    else favs.delete(slug);
+    favEmit();
+    throw err;
+  }
 }
 
 export function useFavorites() {

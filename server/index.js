@@ -9,6 +9,20 @@ import { fileURLToPath } from 'node:url';
 import { query, migrate, hasDb } from './db.js';
 import { hasStorage, putObject, getObject, deleteObject } from './storage.js';
 import { seedIfEmpty, slugify } from './seed.js';
+import {
+  attachUser,
+  requireUser,
+  requireEscort,
+  rateLimit,
+  register,
+  login,
+  setSession,
+  clearSession,
+  userOut,
+  sign,
+  verifySigned,
+  httpError,
+} from './auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.join(__dirname, '..', 'dist');
@@ -62,7 +76,28 @@ function escortOut(row, photos = []) {
     featured: row.featured,
     published: row.published,
     sort: row.sort,
+    userId: row.user_id,
     photos: photos.map(photoOut),
+    full: true,
+  };
+}
+
+// Für nicht angemeldete Besucher: nur die Daten der Karte
+function cardOut(e) {
+  return {
+    id: e.id,
+    slug: e.slug,
+    name: e.name,
+    age: e.age,
+    city: e.city,
+    accent: e.accent,
+    verified: e.verified,
+    available: e.available,
+    featured: e.featured,
+    photos: e.photos,
+    tagline: '',
+    services: [],
+    full: false,
   };
 }
 
@@ -80,70 +115,182 @@ async function loadPhotos(ids) {
   return map;
 }
 
-async function listEscorts({ includeUnpublished = false, q = '', city = '' } = {}) {
-  const where = [];
-  const params = [];
-  if (!includeUnpublished) where.push('published = true');
-  if (q) {
-    params.push(`%${q}%`);
-    where.push(`(name ILIKE $${params.length} OR city ILIKE $${params.length} OR tagline ILIKE $${params.length})`);
-  }
-  if (city) {
-    params.push(city);
-    where.push(`city = $${params.length}`);
-  }
+async function listEscorts({ includeUnpublished = false } = {}) {
   const { rows } = await query(
-    `SELECT * FROM escorts ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
+    `SELECT * FROM escorts ${includeUnpublished ? '' : 'WHERE published = true'}
      ORDER BY featured DESC, sort ASC, created_at DESC`,
-    params,
   );
   const photos = await loadPhotos(rows.map((r) => r.id));
   return rows.map((r) => escortOut(r, photos.get(r.id) || []));
 }
 
-// ---------- Admin-Auth (stateless HMAC-Token) ----------
-
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
-const SECRET =
-  process.env.SESSION_SECRET ||
-  crypto.createHash('sha256').update(`mizax:${ADMIN_PASSWORD}`).digest('hex');
-
-function sign(payload) {
-  return crypto.createHmac('sha256', SECRET).update(payload).digest('base64url');
-}
-
-function issueToken() {
-  const exp = Date.now() + 1000 * 60 * 60 * 24 * 7;
-  const payload = `admin.${exp}`;
-  return `${payload}.${sign(payload)}`;
-}
-
-function verifyToken(token = '') {
-  const idx = token.lastIndexOf('.');
-  if (idx < 0) return false;
-  const payload = token.slice(0, idx);
-  const sig = token.slice(idx + 1);
-  const expected = sign(payload);
-  if (sig.length !== expected.length) return false;
-  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return false;
-  const exp = Number(payload.split('.')[1]);
-  return Number.isFinite(exp) && exp > Date.now();
-}
-
-function requireAdmin(req, res, next) {
-  const token = (req.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  if (!ADMIN_PASSWORD || !verifyToken(token)) {
-    return res.status(401).json({ error: 'Nicht autorisiert' });
-  }
-  next();
+async function getEscortById(id) {
+  const { rows } = await query('SELECT * FROM escorts WHERE id = $1', [id]);
+  if (!rows[0]) return null;
+  const photos = await loadPhotos([id]);
+  return escortOut(rows[0], photos.get(id) || []);
 }
 
 function requireDb(req, res, next) {
-  if (!hasDb()) return res.status(503).json({ error: 'Datenbank nicht verbunden (DATABASE_URL fehlt)' });
+  if (!hasDb()) return next(httpError(503, 'db_unavailable', 'Datenbank nicht verbunden'));
   next();
 }
 
+// ---------- Admin-Auth (Passwort aus ADMIN_PASSWORD) ----------
+
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
+
+function requireAdmin(req, res, next) {
+  const token = (req.get('authorization') || '').replace(/^Bearer\s+/i, '');
+  const parts = ADMIN_PASSWORD && verifySigned(token);
+  if (!parts || parts[0] !== 'admin') return next(httpError(401, 'unauthorized', 'Nicht autorisiert'));
+  next();
+}
+
+// ---------- Profil-Eingaben ----------
+
+const toList = (v) =>
+  (Array.isArray(v) ? v : String(v || '').split(','))
+    .map((s) => String(s).trim())
+    .filter(Boolean)
+    .slice(0, 30);
+
+function escortInput(body) {
+  const age = Number(body.age);
+  if (!body.name || !String(body.name).trim()) throw httpError(400, 'name_required', 'Name fehlt');
+  if (!Number.isInteger(age) || age < 18 || age > 99) {
+    throw httpError(400, 'age_min', 'Alter muss mindestens 18 sein');
+  }
+  const rates = Array.isArray(body.rates)
+    ? body.rates
+        .filter((r) => r && (r.label || r.price))
+        .slice(0, 20)
+        .map((r) => ({ label: String(r.label || '').slice(0, 60), price: String(r.price || '').slice(0, 40) }))
+    : [];
+  const str = (v, n = 200) => String(v || '').trim().slice(0, n);
+  return {
+    name: str(body.name, 60),
+    age,
+    city: str(body.city, 80),
+    tagline: str(body.tagline, 200),
+    bio: str(body.bio, 5000),
+    height: body.height ? Number(body.height) || null : null,
+    nationality: str(body.nationality, 80),
+    languages: toList(body.languages),
+    services: toList(body.services),
+    rates: JSON.stringify(rates),
+    phone: str(body.phone, 40),
+    whatsapp: str(body.whatsapp, 40),
+    email: str(body.email, 200),
+    accent: /^#[0-9a-fA-F]{6}$/.test(body.accent || '') ? body.accent : '#6d4aff',
+    verified: Boolean(body.verified),
+    available: body.available === undefined ? true : Boolean(body.available),
+    featured: Boolean(body.featured),
+    published: body.published === undefined ? true : Boolean(body.published),
+    sort: Number(body.sort) || 0,
+  };
+}
+
+const FIELDS = [
+  'name', 'age', 'city', 'tagline', 'bio', 'height', 'nationality', 'languages', 'services',
+  'rates', 'phone', 'whatsapp', 'email', 'accent', 'verified', 'available', 'featured',
+  'published', 'sort',
+];
+// Diese Felder darf nur die Verwaltung setzen
+const SELF_FIELDS = FIELDS.filter((f) => !['verified', 'featured', 'sort'].includes(f));
+
+async function uniqueSlug(base, excludeId = 0) {
+  let slug = base || 'profil';
+  for (let i = 2; ; i++) {
+    const { rows } = await query('SELECT 1 FROM escorts WHERE slug = $1 AND id <> $2', [slug, excludeId]);
+    if (!rows.length) return slug;
+    slug = `${base}-${i}`;
+  }
+}
+
+async function insertEscort(data, extra = {}) {
+  const slug = await uniqueSlug(slugify(`${data.name} ${data.city}`));
+  const all = { ...data, ...extra, slug };
+  const cols = Object.keys(all);
+  const { rows } = await query(
+    `INSERT INTO escorts (${cols.join(',')}) VALUES (${cols.map((_, i) => '$' + (i + 1)).join(',')}) RETURNING id`,
+    cols.map((c) => all[c]),
+  );
+  return rows[0].id;
+}
+
+async function updateEscort(id, data, fields) {
+  const sets = fields.map((f, i) => `${f} = $${i + 2}`).join(', ');
+  const { rowCount } = await query(`UPDATE escorts SET ${sets}, updated_at = now() WHERE id = $1`, [
+    id,
+    ...fields.map((f) => data[f]),
+  ]);
+  return rowCount > 0;
+}
+
+// ---------- Fotos ----------
+
+async function savePhotos(escortId, files = []) {
+  if (!hasStorage()) throw httpError(503, 'storage_unavailable', 'Bucket nicht verbunden');
+  const { rows: maxRows } = await query(
+    'SELECT COALESCE(MAX(position), -1)::int AS m FROM escort_photos WHERE escort_id = $1',
+    [escortId],
+  );
+  let position = maxRows[0].m + 1;
+  for (const file of files) {
+    if (!/^image\//.test(file.mimetype)) continue;
+    const base = sharp(file.buffer, { failOn: 'none' }).rotate();
+    const large = await base
+      .clone()
+      .resize({ width: 1600, height: 2400, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 82 })
+      .toBuffer({ resolveWithObject: true });
+    const small = await base
+      .clone()
+      .resize({ width: 640, height: 960, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 78 })
+      .toBuffer();
+    const key = `escorts/${escortId}/${crypto.randomUUID()}`;
+    await putObject(`${key}.webp`, large.data, 'image/webp');
+    await putObject(`${key}_sm.webp`, small, 'image/webp');
+    await query(
+      'INSERT INTO escort_photos (escort_id, key, width, height, position) VALUES ($1,$2,$3,$4,$5)',
+      [escortId, key, large.info.width, large.info.height, position++],
+    );
+  }
+}
+
+async function reorderPhotos(escortId, ids) {
+  for (let i = 0; i < ids.length; i++) {
+    await query('UPDATE escort_photos SET position = $1 WHERE id = $2 AND escort_id = $3', [
+      i,
+      Number(ids[i]),
+      escortId,
+    ]);
+  }
+}
+
+async function deletePhoto(photoId, escortId = null) {
+  const { rows } = await query(
+    `DELETE FROM escort_photos WHERE id = $1 ${escortId ? 'AND escort_id = $2' : ''} RETURNING key, escort_id`,
+    escortId ? [photoId, escortId] : [photoId],
+  );
+  if (!rows[0]) throw httpError(404, 'not_found', 'Nicht gefunden');
+  await Promise.allSettled([deleteObject(`${rows[0].key}.webp`), deleteObject(`${rows[0].key}_sm.webp`)]);
+  return rows[0].escort_id;
+}
+
+async function deleteEscort(id) {
+  const { rows } = await query('SELECT key FROM escort_photos WHERE escort_id = $1', [id]);
+  await query('DELETE FROM escorts WHERE id = $1', [id]);
+  await Promise.allSettled(
+    rows.flatMap((r) => [deleteObject(`${r.key}.webp`), deleteObject(`${r.key}_sm.webp`)]),
+  );
+}
+
 // ---------- Öffentliche API ----------
+
+app.use('/api', attachUser);
 
 app.get('/api/health', (req, res) => {
   res.json({ ok: true, db: hasDb(), storage: hasStorage() });
@@ -153,23 +300,9 @@ app.get(
   '/api/escorts',
   requireDb,
   wrap(async (req, res) => {
-    const q = String(req.query.q || '').trim().slice(0, 80);
-    const city = String(req.query.city || '').trim().slice(0, 80);
-    const escorts = await listEscorts({ q, city });
-    res.set('Cache-Control', 'public, max-age=15, stale-while-revalidate=60');
-    res.json(escorts);
-  }),
-);
-
-app.get(
-  '/api/cities',
-  requireDb,
-  wrap(async (req, res) => {
-    const { rows } = await query(
-      `SELECT city, count(*)::int AS n FROM escorts WHERE published = true AND city <> ''
-       GROUP BY city ORDER BY n DESC, city`,
-    );
-    res.json(rows);
+    const escorts = await listEscorts();
+    res.set('Cache-Control', 'private, max-age=0');
+    res.json(req.user ? escorts : escorts.map(cardOut));
   }),
 );
 
@@ -180,10 +313,11 @@ app.get(
     const { rows } = await query('SELECT * FROM escorts WHERE slug = $1 AND published = true', [
       req.params.slug,
     ]);
-    if (!rows[0]) return res.status(404).json({ error: 'Profil nicht gefunden' });
+    if (!rows[0]) throw httpError(404, 'not_found', 'Profil nicht gefunden');
     const photos = await loadPhotos([rows[0].id]);
-    res.set('Cache-Control', 'public, max-age=15, stale-while-revalidate=60');
-    res.json(escortOut(rows[0], photos.get(rows[0].id) || []));
+    const escort = escortOut(rows[0], photos.get(rows[0].id) || []);
+    res.set('Cache-Control', 'private, max-age=0');
+    res.json(req.user ? escort : cardOut(escort));
   }),
 );
 
@@ -209,17 +343,172 @@ app.get(
   }),
 );
 
+// ---------- Konto ----------
+
+app.post(
+  '/api/auth/register',
+  rateLimit(20),
+  requireDb,
+  wrap(async (req, res) => {
+    const user = await register(req.body || {});
+    setSession(req, res, user.id);
+    res.status(201).json({ user: userOut(user) });
+  }),
+);
+
+app.post(
+  '/api/auth/login',
+  rateLimit(30),
+  requireDb,
+  wrap(async (req, res) => {
+    const user = await login(req.body || {});
+    setSession(req, res, user.id);
+    res.json({ user: userOut(user) });
+  }),
+);
+
+app.post('/api/auth/logout', (req, res) => {
+  clearSession(res);
+  res.json({ ok: true });
+});
+
+app.get('/api/auth/me', (req, res) => {
+  res.set('Cache-Control', 'private, no-store');
+  res.json({ user: userOut(req.user) });
+});
+
+app.put(
+  '/api/auth/locale',
+  requireUser,
+  wrap(async (req, res) => {
+    const locale = String(req.body?.locale || '');
+    if (['de', 'en', 'fr', 'es', 'hu', 'pl', 'ro'].includes(locale)) {
+      await query('UPDATE users SET locale = $1 WHERE id = $2', [locale, req.user.id]);
+    }
+    res.json({ ok: true });
+  }),
+);
+
+// ---------- Favoriten ----------
+
+app.get(
+  '/api/me/favorites',
+  requireUser,
+  wrap(async (req, res) => {
+    const { rows } = await query(
+      `SELECT e.slug FROM favorites f JOIN escorts e ON e.id = f.escort_id
+       WHERE f.user_id = $1 ORDER BY f.created_at DESC`,
+      [req.user.id],
+    );
+    res.set('Cache-Control', 'private, no-store');
+    res.json(rows.map((r) => r.slug));
+  }),
+);
+
+app.put(
+  '/api/me/favorites/:slug',
+  requireUser,
+  wrap(async (req, res) => {
+    await query(
+      `INSERT INTO favorites (user_id, escort_id)
+       SELECT $1, id FROM escorts WHERE slug = $2 ON CONFLICT DO NOTHING`,
+      [req.user.id, req.params.slug],
+    );
+    res.json({ ok: true });
+  }),
+);
+
+app.delete(
+  '/api/me/favorites/:slug',
+  requireUser,
+  wrap(async (req, res) => {
+    await query(
+      'DELETE FROM favorites WHERE user_id = $1 AND escort_id = (SELECT id FROM escorts WHERE slug = $2)',
+      [req.user.id, req.params.slug],
+    );
+    res.json({ ok: true });
+  }),
+);
+
+// ---------- Eigenes Escort-Profil ----------
+
+async function ownEscortId(userId) {
+  const { rows } = await query('SELECT id FROM escorts WHERE user_id = $1', [userId]);
+  return rows[0]?.id || null;
+}
+
+async function requireOwnEscort(req) {
+  const id = await ownEscortId(req.user.id);
+  if (!id) throw httpError(404, 'profile_missing', 'Bitte speichere zuerst dein Profil');
+  return id;
+}
+
+app.get(
+  '/api/me/profile',
+  requireEscort,
+  wrap(async (req, res) => {
+    const id = await ownEscortId(req.user.id);
+    res.set('Cache-Control', 'private, no-store');
+    res.json(id ? await getEscortById(id) : null);
+  }),
+);
+
+app.put(
+  '/api/me/profile',
+  requireEscort,
+  wrap(async (req, res) => {
+    const data = escortInput(req.body || {});
+    let id = await ownEscortId(req.user.id);
+    if (id) {
+      await updateEscort(id, data, SELF_FIELDS);
+    } else {
+      const own = Object.fromEntries(SELF_FIELDS.map((f) => [f, data[f]]));
+      id = await insertEscort(own, { user_id: req.user.id, sort: 100 });
+    }
+    res.json(await getEscortById(id));
+  }),
+);
+
+app.post(
+  '/api/me/profile/photos',
+  requireEscort,
+  upload.array('photos', 12),
+  wrap(async (req, res) => {
+    const id = await requireOwnEscort(req);
+    await savePhotos(id, req.files);
+    res.json(await getEscortById(id));
+  }),
+);
+
+app.put(
+  '/api/me/profile/photos/order',
+  requireEscort,
+  wrap(async (req, res) => {
+    const id = await requireOwnEscort(req);
+    await reorderPhotos(id, Array.isArray(req.body?.ids) ? req.body.ids : []);
+    res.json(await getEscortById(id));
+  }),
+);
+
+app.delete(
+  '/api/me/photos/:id',
+  requireEscort,
+  wrap(async (req, res) => {
+    const id = await requireOwnEscort(req);
+    await deletePhoto(Number(req.params.id), id);
+    res.json(await getEscortById(id));
+  }),
+);
+
 // ---------- Admin API ----------
 
-app.post('/api/admin/login', (req, res) => {
-  if (!ADMIN_PASSWORD) {
-    return res.status(503).json({ error: 'ADMIN_PASSWORD ist auf dem Server nicht gesetzt' });
-  }
-  const pw = String(req.body?.password || '');
-  const a = crypto.createHash('sha256').update(pw).digest();
+app.post('/api/admin/login', rateLimit(20), (req, res, next) => {
+  if (!ADMIN_PASSWORD) return next(httpError(503, 'admin_disabled', 'ADMIN_PASSWORD fehlt'));
+  const a = crypto.createHash('sha256').update(String(req.body?.password || '')).digest();
   const b = crypto.createHash('sha256').update(ADMIN_PASSWORD).digest();
-  if (!crypto.timingSafeEqual(a, b)) return res.status(401).json({ error: 'Falsches Passwort' });
-  res.json({ token: issueToken() });
+  if (!crypto.timingSafeEqual(a, b)) return next(httpError(401, 'wrong_password', 'Falsches Passwort'));
+  const payload = `admin.${Date.now() + 1000 * 60 * 60 * 24 * 7}`;
+  res.json({ token: `${payload}.${sign(payload)}` });
 });
 
 app.get('/api/admin/status', requireAdmin, (req, res) => {
@@ -235,84 +524,28 @@ app.get(
   }),
 );
 
-const toList = (v) =>
-  Array.isArray(v)
-    ? v.map((s) => String(s).trim()).filter(Boolean)
-    : String(v || '')
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean);
-
-function escortInput(body) {
-  const age = Number(body.age);
-  if (!body.name || !String(body.name).trim()) throw Object.assign(new Error('Name fehlt'), { status: 400 });
-  if (!Number.isInteger(age) || age < 18) {
-    throw Object.assign(new Error('Alter muss mindestens 18 sein'), { status: 400 });
-  }
-  const rates = Array.isArray(body.rates)
-    ? body.rates
-        .filter((r) => r && (r.label || r.price))
-        .map((r) => ({ label: String(r.label || ''), price: String(r.price || '') }))
-    : [];
-  return {
-    name: String(body.name).trim(),
-    age,
-    city: String(body.city || '').trim(),
-    tagline: String(body.tagline || '').trim(),
-    bio: String(body.bio || '').trim(),
-    height: body.height ? Number(body.height) || null : null,
-    nationality: String(body.nationality || '').trim(),
-    languages: toList(body.languages),
-    services: toList(body.services),
-    rates: JSON.stringify(rates),
-    phone: String(body.phone || '').trim(),
-    whatsapp: String(body.whatsapp || '').trim(),
-    email: String(body.email || '').trim(),
-    accent: /^#[0-9a-fA-F]{6}$/.test(body.accent || '') ? body.accent : '#6d4aff',
-    verified: Boolean(body.verified),
-    available: body.available === undefined ? true : Boolean(body.available),
-    featured: Boolean(body.featured),
-    published: body.published === undefined ? true : Boolean(body.published),
-    sort: Number(body.sort) || 0,
-  };
-}
-
-const FIELDS = [
-  'name', 'age', 'city', 'tagline', 'bio', 'height', 'nationality', 'languages', 'services',
-  'rates', 'phone', 'whatsapp', 'email', 'accent', 'verified', 'available', 'featured',
-  'published', 'sort',
-];
-
-async function uniqueSlug(base, excludeId = 0) {
-  let slug = base || 'profil';
-  for (let i = 2; ; i++) {
-    const { rows } = await query('SELECT 1 FROM escorts WHERE slug = $1 AND id <> $2', [slug, excludeId]);
-    if (!rows.length) return slug;
-    slug = `${base}-${i}`;
-  }
-}
-
-async function getEscortById(id) {
-  const { rows } = await query('SELECT * FROM escorts WHERE id = $1', [id]);
-  if (!rows[0]) return null;
-  const photos = await loadPhotos([id]);
-  return escortOut(rows[0], photos.get(id) || []);
-}
+app.get(
+  '/api/admin/users',
+  requireAdmin,
+  requireDb,
+  wrap(async (req, res) => {
+    const { rows } = await query(
+      `SELECT u.id, u.email, u.name, u.role, u.locale, u.created_at, u.last_login_at, e.slug
+       FROM users u LEFT JOIN escorts e ON e.user_id = u.id
+       ORDER BY u.created_at DESC LIMIT 500`,
+    );
+    res.json(rows);
+  }),
+);
 
 app.post(
   '/api/admin/escorts',
   requireAdmin,
   requireDb,
   wrap(async (req, res) => {
-    const data = escortInput(req.body);
-    const slug = await uniqueSlug(slugify(`${data.name} ${data.city}`));
-    const cols = ['slug', ...FIELDS];
-    const vals = [slug, ...FIELDS.map((f) => data[f])];
-    const { rows } = await query(
-      `INSERT INTO escorts (${cols.join(',')}) VALUES (${cols.map((_, i) => '$' + (i + 1)).join(',')}) RETURNING id`,
-      vals,
-    );
-    res.status(201).json(await getEscortById(rows[0].id));
+    const data = escortInput(req.body || {});
+    const id = await insertEscort(Object.fromEntries(FIELDS.map((f) => [f, data[f]])));
+    res.status(201).json(await getEscortById(id));
   }),
 );
 
@@ -322,13 +555,9 @@ app.put(
   requireDb,
   wrap(async (req, res) => {
     const id = Number(req.params.id);
-    const data = escortInput(req.body);
-    const sets = FIELDS.map((f, i) => `${f} = $${i + 2}`).join(', ');
-    const { rowCount } = await query(
-      `UPDATE escorts SET ${sets}, updated_at = now() WHERE id = $1`,
-      [id, ...FIELDS.map((f) => data[f])],
-    );
-    if (!rowCount) return res.status(404).json({ error: 'Nicht gefunden' });
+    if (!(await updateEscort(id, escortInput(req.body || {}), FIELDS))) {
+      throw httpError(404, 'not_found', 'Nicht gefunden');
+    }
     res.json(await getEscortById(id));
   }),
 );
@@ -338,12 +567,7 @@ app.delete(
   requireAdmin,
   requireDb,
   wrap(async (req, res) => {
-    const id = Number(req.params.id);
-    const { rows } = await query('SELECT key FROM escort_photos WHERE escort_id = $1', [id]);
-    await query('DELETE FROM escorts WHERE id = $1', [id]);
-    await Promise.allSettled(
-      rows.flatMap((r) => [deleteObject(`${r.key}.webp`), deleteObject(`${r.key}_sm.webp`)]),
-    );
+    await deleteEscort(Number(req.params.id));
     res.json({ ok: true });
   }),
 );
@@ -354,39 +578,9 @@ app.post(
   requireDb,
   upload.array('photos', 12),
   wrap(async (req, res) => {
-    if (!hasStorage()) {
-      return res.status(503).json({ error: 'Railway Bucket ist nicht verbunden' });
-    }
     const id = Number(req.params.id);
-    const { rows: exists } = await query('SELECT 1 FROM escorts WHERE id = $1', [id]);
-    if (!exists.length) return res.status(404).json({ error: 'Nicht gefunden' });
-    const { rows: maxRows } = await query(
-      'SELECT COALESCE(MAX(position), -1)::int AS m FROM escort_photos WHERE escort_id = $1',
-      [id],
-    );
-    let position = maxRows[0].m + 1;
-
-    for (const file of req.files || []) {
-      if (!/^image\//.test(file.mimetype)) continue;
-      const base = sharp(file.buffer, { failOn: 'none' }).rotate();
-      const large = await base
-        .clone()
-        .resize({ width: 1600, height: 2400, fit: 'inside', withoutEnlargement: true })
-        .webp({ quality: 82 })
-        .toBuffer({ resolveWithObject: true });
-      const small = await base
-        .clone()
-        .resize({ width: 640, height: 960, fit: 'inside', withoutEnlargement: true })
-        .webp({ quality: 78 })
-        .toBuffer();
-      const key = `escorts/${id}/${crypto.randomUUID()}`;
-      await putObject(`${key}.webp`, large.data, 'image/webp');
-      await putObject(`${key}_sm.webp`, small, 'image/webp');
-      await query(
-        'INSERT INTO escort_photos (escort_id, key, width, height, position) VALUES ($1,$2,$3,$4,$5)',
-        [id, key, large.info.width, large.info.height, position++],
-      );
-    }
+    if (!(await getEscortById(id))) throw httpError(404, 'not_found', 'Nicht gefunden');
+    await savePhotos(id, req.files);
     res.json(await getEscortById(id));
   }),
 );
@@ -397,10 +591,7 @@ app.put(
   requireDb,
   wrap(async (req, res) => {
     const id = Number(req.params.id);
-    const ids = Array.isArray(req.body?.ids) ? req.body.ids.map(Number) : [];
-    for (let i = 0; i < ids.length; i++) {
-      await query('UPDATE escort_photos SET position = $1 WHERE id = $2 AND escort_id = $3', [i, ids[i], id]);
-    }
+    await reorderPhotos(id, Array.isArray(req.body?.ids) ? req.body.ids : []);
     res.json(await getEscortById(id));
   }),
 );
@@ -410,16 +601,12 @@ app.delete(
   requireAdmin,
   requireDb,
   wrap(async (req, res) => {
-    const { rows } = await query('DELETE FROM escort_photos WHERE id = $1 RETURNING key, escort_id', [
-      Number(req.params.id),
-    ]);
-    if (!rows[0]) return res.status(404).json({ error: 'Nicht gefunden' });
-    await Promise.allSettled([deleteObject(`${rows[0].key}.webp`), deleteObject(`${rows[0].key}_sm.webp`)]);
-    res.json(await getEscortById(rows[0].escort_id));
+    const escortId = await deletePhoto(Number(req.params.id));
+    res.json(await getEscortById(escortId));
   }),
 );
 
-app.use('/api', (req, res) => res.status(404).json({ error: 'Nicht gefunden' }));
+app.use('/api', (req, res) => res.status(404).json({ error: 'Nicht gefunden', code: 'not_found' }));
 
 // ---------- Frontend ----------
 
@@ -436,9 +623,18 @@ if (fs.existsSync(dist)) {
 }
 
 app.use((err, req, res, next) => {
-  const status = err.status || (err instanceof multer.MulterError ? 400 : 500);
+  let status = err.status || 500;
+  let code = err.code;
+  if (err instanceof multer.MulterError) {
+    status = 400;
+    code = 'upload_invalid';
+  }
   if (status >= 500) console.error(err);
-  res.status(status).json({ error: status >= 500 ? 'Serverfehler' : err.message });
+  const known = Boolean(err.status) || err instanceof multer.MulterError;
+  res.status(status).json({
+    error: status >= 500 ? 'Serverfehler' : err.message,
+    code: known && typeof code === 'string' ? code : 'server_error',
+  });
 });
 
 async function start() {
@@ -459,6 +655,7 @@ async function start() {
   }
   if (!hasStorage()) console.warn('[storage] Railway Bucket nicht konfiguriert – Uploads deaktiviert');
   if (!ADMIN_PASSWORD) console.warn('[admin] ADMIN_PASSWORD fehlt – Admin-Bereich deaktiviert');
+  if (!process.env.SESSION_SECRET) console.warn('[auth] SESSION_SECRET fehlt – abgeleiteter Schlüssel wird verwendet');
   app.listen(PORT, '0.0.0.0', () => console.log(`Mizax läuft auf Port ${PORT}`));
 }
 

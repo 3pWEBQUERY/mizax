@@ -97,3 +97,46 @@ export const SpinnerIcon = (p) => (
     <path d="M12 3a9 9 0 1 0 9 9" />
   </svg>
 );
+export const SunIcon = (p) => (
+  <svg {...base} width={20} height={20} {...p}>
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4" />
+  </svg>
+);
+export const MoonIcon = (p) => (
+  <svg {...base} width={20} height={20} {...p}>
+    <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
+  </svg>
+);
+export const UserIcon = (p) => (
+  <svg {...base} {...p}>
+    <circle cx="12" cy="8.5" r="3.8" />
+    <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
+  </svg>
+);
+export const SparkIcon = (p) => (
+  <svg {...base} {...p}>
+    <path d="M12 3.5l2 5.5 5.5 2-5.5 2-2 5.5-2-5.5-5.5-2 5.5-2z" />
+  </svg>
+);
+export const LockIcon = (p) => (
+  <svg {...base} {...p}>
+    <rect x="5" y="10.5" width="14" height="10" rx="2.5" />
+    <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
+  </svg>
+);
+export const LogoutIcon = (p) => (
+  <svg {...base} width={20} height={20} {...p}>
+    <path d="M14 4.5h3.5a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H14M10 16l-4-4 4-4M6 12h10" />
+  </svg>
+);
+export const EditIcon = (p) => (
+  <svg {...base} width={20} height={20} {...p}>
+    <path d="M4.5 19.5l1-4L16 5a2.1 2.1 0 0 1 3 3L8.5 18.5z" />
+  </svg>
+);
+export const LoginIcon = (p) => (
+  <svg {...base} width={20} height={20} {...p}>
+    <path d="M10 4.5H6.5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H10M14 16l4-4-4-4M18 12H8" />
+  </svg>
+);

@@ -16,10 +16,16 @@ nahtlos in das jeweilige Profil übergehen.
 
 - Altersabfrage (18+) beim ersten Besuch
 - 5-spaltiges Kartengrid (responsive: 4/3/2 Spalten), Stadtfilter, Live-Suche, Spracheingabe
-- Favoriten (lokal im Browser)
-- Profilseite mit Chat-Bubbles, Galerie, Lightbox, Honorar, Kontakt (WhatsApp / SMS / Anruf / E-Mail)
-- Verwaltung unter **`/admin`** (Login per `ADMIN_PASSWORD`): Profile anlegen/bearbeiten/löschen,
-  Fotos hochladen, sortieren, löschen
+- **Konten:** Registrierung (`/register`) mit Wahl zwischen **Mitglied** und **Escort**, Login (`/login`),
+  Sitzung per signiertem HttpOnly-Cookie, Passwörter mit scrypt gehasht
+- Gäste sehen nur die Karten; Beschreibung, Honorar und Kontaktdaten sind Mitgliedern vorbehalten
+- **Escort-Konten** pflegen ihr eigenes Profil unter `/me` (Texte, Honorar, Kontakt, Fotos)
+- Favoriten pro Konto (serverseitig, auf allen Geräten)
+- **Dark/Light Mode** (folgt anfangs der Systemeinstellung, umschaltbar)
+- **7 Sprachen:** Deutsch, Englisch, Französisch, Spanisch, Ungarisch, Polnisch, Rumänisch
+  (`src/locales/*.js`, automatische Erkennung, Auswahl wird im Konto gespeichert)
+- Verwaltung unter **`/admin`** (Login per `ADMIN_PASSWORD`): alle Profile bearbeiten, verifizieren,
+  hervorheben, Fotos verwalten, Liste der registrierten Mitglieder
 - Beim ersten Start werden 15 Demo-Profile angelegt (abschaltbar mit `SEED_DEMO=false`)
 
 ## Umgebungsvariablen
@@ -29,7 +35,7 @@ nahtlos in das jeweilige Profil übergehen.
 | `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` |
 | `BUCKET`, `ACCESS_KEY_ID`, `SECRET_ACCESS_KEY`, `REGION`, `ENDPOINT` | Referenzen auf den Railway Bucket |
 | `ADMIN_PASSWORD` | Passwort für `/admin` |
-| `SESSION_SECRET` | optional, Schlüssel für Admin-Tokens |
+| `SESSION_SECRET` | Schlüssel für Login-Sitzungen und Admin-Tokens (unbedingt setzen) |
 | `SEED_DEMO` | `false` = keine Demo-Profile |
 
 ## Lokal starten

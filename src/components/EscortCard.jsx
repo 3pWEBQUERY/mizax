@@ -1,12 +1,19 @@
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Photo } from './Media.jsx';
 import { HeartIcon, CheckIcon, PinIcon } from './Icons.jsx';
 import { toggleFavorite, useFavorites, prefetchEscort, preloadImage } from '../lib/store.js';
 import { layoutTransition, ease } from '../lib/motion.js';
+import { useT } from '../lib/i18n.jsx';
+import { useAuth } from '../lib/auth.jsx';
+import { useToast } from './Toast.jsx';
 
 export default function EscortCard({ escort, index = 0, instant = false }) {
   const favs = useFavorites();
+  const t = useT();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const toast = useToast();
   const isFav = favs.has(escort.slug);
   const cover = escort.photos[0];
 
@@ -43,8 +50,8 @@ export default function EscortCard({ escort, index = 0, instant = false }) {
 
         <div className="card-badges">
           {escort.verified ? (
-            <span className="badge light">
-              <CheckIcon /> Verifiziert
+            <span className="badge light" title={t('card.verified')}>
+              <CheckIcon /> <span className="badge-text">{t('card.verified')}</span>
             </span>
           ) : (
             <span />
@@ -52,11 +59,16 @@ export default function EscortCard({ escort, index = 0, instant = false }) {
           <button
             type="button"
             className={`fav-btn ${isFav ? 'on' : ''}`}
-            aria-label={isFav ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'}
+            aria-label={isFav ? t('card.removeFav') : t('card.addFav')}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              toggleFavorite(escort.slug);
+              if (!user) {
+                toast(t('fav.guest'));
+                navigate('/login');
+                return;
+              }
+              toggleFavorite(escort.slug).catch(() => {});
             }}
           >
             <motion.span

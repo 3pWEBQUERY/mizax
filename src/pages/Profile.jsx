@@ -4,7 +4,9 @@ import { Link, useParams } from 'react-router-dom';
 import Page from '../components/Page.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
 import { Photo } from '../components/Media.jsx';
-import { CheckIcon, ChatIcon, PhoneIcon, MailIcon, HeartIcon, CloseIcon, ChevronL, ChevronR } from '../components/Icons.jsx';
+import { CheckIcon, ChatIcon, PhoneIcon, MailIcon, HeartIcon, CloseIcon, ChevronL, ChevronR, LockIcon } from '../components/Icons.jsx';
+import { useT } from '../lib/i18n.jsx';
+import { useAuth } from '../lib/auth.jsx';
 import { useEscort, useFavorites, toggleFavorite, preloadImage } from '../lib/store.js';
 import { useDock, useDockState } from '../lib/dock.jsx';
 import { contactLinks } from '../lib/contact.js';
@@ -17,13 +19,17 @@ export default function Profile() {
   const { escort, error } = useEscort(slug);
   const favs = useFavorites();
   const { inputRef } = useDockState();
+  const t = useT();
+  const { user } = useAuth();
   const [active, setActive] = useState(0);
+  const locked = Boolean(escort && !escort.full);
   const [lightbox, setLightbox] = useState(false);
 
   useDock(
     escort
       ? {
           mode: 'message',
+          locked: !user,
           escort: {
             slug: escort.slug,
             name: escort.name,
@@ -51,10 +57,10 @@ export default function Profile() {
       return (
         <Page>
           <div className="bubbles">
-            <Bubble i={0}>Dieses Profil ist leider nicht mehr verfügbar.</Bubble>
+            <Bubble i={0}>{t('profile.notFound')}</Bubble>
             <Rise i={1}>
               <Link to="/" className="white-btn">
-                Zurück zur Übersicht
+                {t('profile.backToList')}
               </Link>
             </Rise>
           </div>
@@ -75,14 +81,14 @@ export default function Profile() {
   const photos = escort.photos;
   const current = photos[active] || photos[0];
   const isFav = favs.has(escort.slug);
-  const links = contactLinks(escort).filter((l) => l.kind !== 'sms');
+  const links = locked ? [] : contactLinks(escort, '', t).filter((l) => l.kind !== 'sms');
   const paragraphs = (escort.bio || '').split(/\n\s*\n/).map((s) => s.trim()).filter(Boolean);
   const facts = [
-    ['Alter', `${escort.age} Jahre`],
-    ['Größe', escort.height ? `${escort.height} cm` : null],
-    ['Herkunft', escort.nationality],
-    ['Stadt', escort.city],
-    ['Sprachen', escort.languages?.join(', ')],
+    [t('profile.age'), t('profile.years', { n: escort.age })],
+    [t('profile.height'), escort.height ? `${escort.height} cm` : null],
+    [t('profile.origin'), escort.nationality],
+    [t('profile.city'), escort.city],
+    [t('profile.languages'), escort.languages?.join(', ')],
   ].filter(([, v]) => v);
   let i = 0;
 
@@ -108,7 +114,7 @@ export default function Profile() {
                 <Photo src={current?.url} lowSrc={current?.thumb} escort={escort} alt={escort.name} big eager />
               </motion.div>
             </AnimatePresence>
-            {current && <button type="button" aria-label="Foto vergrößern" onClick={() => setLightbox(true)} />}
+            {current && <button type="button" aria-label={t('profile.zoom')} onClick={() => setLightbox(true)} />}
           </motion.div>
 
           {photos.length > 1 && (
@@ -119,7 +125,7 @@ export default function Profile() {
                   type="button"
                   className={`thumb ${idx === active ? 'active' : ''}`}
                   onClick={() => setActive(idx)}
-                  aria-label={`Foto ${idx + 1}`}
+                  aria-label={t('profile.photo', { n: idx + 1 })}
                 >
                   <img src={p.thumb} alt="" loading="lazy" />
                 </button>
@@ -133,17 +139,34 @@ export default function Profile() {
             <Rise i={i++} className="profile-sub">
               {escort.verified && (
                 <span className="badge light">
-                  <CheckIcon /> Verifiziert
+                  <CheckIcon /> {t('card.verified')}
                 </span>
               )}
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                 <span className={`dot ${escort.available ? '' : 'off'}`} />
-                {escort.available ? 'Verfügbar' : 'Derzeit nicht verfügbar'}
+                {escort.available ? t('profile.available') : t('profile.unavailable')}
               </span>
             </Rise>
             <Rise i={i++} as="h1" className="profile-title">
               {escort.name}, <span className="age">{escort.age}</span>
             </Rise>
+            {locked && (
+              <Rise i={i++} className="locked">
+                <div className="lock-icon">
+                  <LockIcon />
+                </div>
+                <h3>{t('profile.lockedTitle')}</h3>
+                <p>{t('profile.lockedText')}</p>
+                <div className="actions">
+                  <Link to="/register" className="white-btn">
+                    {t('menu.register')}
+                  </Link>
+                  <Link to="/login" className="ghost-btn">
+                    {t('menu.login')}
+                  </Link>
+                </div>
+              </Rise>
+            )}
             {escort.tagline && (
               <Rise i={i++} className="profile-tagline">
                 {escort.tagline}
@@ -155,7 +178,7 @@ export default function Profile() {
               </Bubble>
             ))}
 
-            {facts.length > 0 && (
+            {!locked && facts.length > 0 && (
               <Bubble i={i++} style={{ width: '100%' }}>
                 <dl className="facts" style={{ margin: 0 }}>
                   {facts.map(([k, v]) => (
@@ -170,7 +193,7 @@ export default function Profile() {
 
             {escort.services?.length > 0 && (
               <Bubble i={i++} style={{ width: '100%' }}>
-                <div className="bubble-label">Ich begleite dich gerne zu</div>
+                <div className="bubble-label">{t('profile.servicesTitle')}</div>
                 <div className="tags">
                   {escort.services.map((s) => (
                     <span className="tag" key={s}>
@@ -183,7 +206,7 @@ export default function Profile() {
 
             {escort.rates?.length > 0 && (
               <Bubble i={i++} style={{ width: '100%' }}>
-                <div className="bubble-label">Honorar</div>
+                <div className="bubble-label">{t('profile.rates')}</div>
                 <div className="rates">
                   {escort.rates.map((r, idx) => (
                     <div className="rate" key={idx}>
@@ -195,6 +218,7 @@ export default function Profile() {
               </Bubble>
             )}
 
+            {!locked && (
             <Rise i={i++} className="actions">
               {links.length ? (
                 links.map((l, idx) => {
@@ -213,20 +237,21 @@ export default function Profile() {
                 })
               ) : (
                 <button type="button" className="white-btn" onClick={() => inputRef.current?.focus()}>
-                  <ChatIcon /> Nachricht schreiben
+                  <ChatIcon /> {t('profile.write')}
                 </button>
               )}
               <button
                 type="button"
                 className="ghost-btn"
-                onClick={() => toggleFavorite(escort.slug)}
+                onClick={() => toggleFavorite(escort.slug).catch(() => {})}
                 aria-pressed={isFav}
                 style={isFav ? { color: '#ff5c8a' } : undefined}
               >
                 <HeartIcon filled={isFav} width={20} height={20} />
-                {isFav ? 'Gemerkt' : 'Merken'}
+                {isFav ? t('profile.saved') : t('profile.save')}
               </button>
             </Rise>
+            )}
           </div>
         </div>
       </div>
@@ -239,6 +264,7 @@ export default function Profile() {
             onIndex={setActive}
             onClose={() => setLightbox(false)}
             name={escort.name}
+            t={t}
           />
         )}
       </AnimatePresence>
@@ -246,7 +272,7 @@ export default function Profile() {
   );
 }
 
-function Lightbox({ photos, index, onIndex, onClose, name }) {
+function Lightbox({ photos, index, onIndex, onClose, name, t }) {
   const go = useCallback(
     (d) => onIndex((index + d + photos.length) % photos.length),
     [index, onIndex, photos.length],
@@ -277,15 +303,15 @@ function Lightbox({ photos, index, onIndex, onClose, name }) {
           <img src={p.url} alt={name} />
         </motion.div>
       </AnimatePresence>
-      <button type="button" className="icon-btn" style={{ position: 'absolute', top: 18, right: 20 }} onClick={onClose} aria-label="Schließen">
+      <button type="button" className="icon-btn" style={{ position: 'absolute', top: 18, right: 20 }} onClick={onClose} aria-label={t('profile.close')}>
         <CloseIcon />
       </button>
       {photos.length > 1 && (
         <>
-          <button type="button" className="icon-btn lightbox-nav" style={{ left: 20 }} onClick={() => go(-1)} aria-label="Vorheriges Foto">
+          <button type="button" className="icon-btn lightbox-nav" style={{ left: 20 }} onClick={() => go(-1)} aria-label={t('profile.prev')}>
             <ChevronL />
           </button>
-          <button type="button" className="icon-btn lightbox-nav" style={{ right: 20 }} onClick={() => go(1)} aria-label="Nächstes Foto">
+          <button type="button" className="icon-btn lightbox-nav" style={{ right: 20 }} onClick={() => go(1)} aria-label={t('profile.next')}>
             <ChevronR />
           </button>
         </>

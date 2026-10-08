@@ -21,11 +21,17 @@ export async function api(path, { method = 'GET', body, admin = false, form } = 
   const headers = {};
   if (admin) headers.Authorization = `Bearer ${getToken()}`;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
-  const res = await fetch(path, {
-    method,
-    headers,
-    body: form || (body !== undefined ? JSON.stringify(body) : undefined),
-  });
+  let res;
+  try {
+    res = await fetch(path, {
+      method,
+      headers,
+      credentials: 'same-origin',
+      body: form || (body !== undefined ? JSON.stringify(body) : undefined),
+    });
+  } catch {
+    throw Object.assign(new Error('network'), { code: 'network' });
+  }
   let data = null;
   try {
     data = await res.json();
@@ -35,6 +41,7 @@ export async function api(path, { method = 'GET', body, admin = false, form } = 
   if (!res.ok) {
     const err = new Error(data?.error || `Fehler ${res.status}`);
     err.status = res.status;
+    err.code = data?.code;
     throw err;
   }
   return data;
