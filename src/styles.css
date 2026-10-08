@@ -884,9 +884,15 @@ img {
 
 @media (max-width: 900px) {
   .profile {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 24px;
   }
+}
+
+/* Grid-Spalten dürfen schmaler werden als ihr Inhalt (z. B. lange Thumbnail-Leiste) */
+.profile > *,
+.profile-body .bubbles > * {
+  min-width: 0;
 }
 
 .profile-hero {
@@ -898,9 +904,14 @@ img {
   .profile-hero {
     position: relative;
     top: 0;
-    max-width: 460px;
     width: 100%;
+    max-width: min(460px, calc(50vh * 0.75));
+    max-width: min(460px, calc(50svh * 0.75));
     margin: 0 auto;
+  }
+  .profile-hero .thumb {
+    width: 56px;
+    border-radius: 12px;
   }
 }
 
@@ -924,6 +935,7 @@ img {
   display: flex;
   gap: 10px;
   margin-top: 12px;
+  max-width: 100%;
   overflow-x: auto;
   padding-bottom: 4px;
   scrollbar-width: none;
@@ -962,6 +974,7 @@ img {
 }
 
 .profile-title {
+  overflow-wrap: anywhere;
   font-size: clamp(40px, 4.4vw, 58px);
   line-height: 1.02;
   letter-spacing: -0.04em;
@@ -1892,6 +1905,8 @@ textarea.input {
 /* gesperrtes Profil für Gäste */
 .locked {
   width: 100%;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   padding: 22px;
   border-radius: 24px;
   background: var(--surface);
