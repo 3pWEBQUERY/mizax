@@ -2,6 +2,7 @@ export default {
   langName: 'Deutsch',
   nav: { discover: 'Entdecken', favorites: 'Favoriten', search: 'Suchen', home: 'Startseite', back: 'Zurück', account: 'Konto', navigation: 'Navigation' },
   menu: {
+    admin: 'Verwaltung', adminBadge: 'Admin',
     login: 'Anmelden', register: 'Registrieren', logout: 'Abmelden', myProfile: 'Mein Profil', favorites: 'Favoriten',
     language: 'Sprache', theme: 'Design', dark: 'Dunkel', light: 'Hell', member: 'Mitglied', escort: 'Escort',
     guest: 'Gast', guestText: 'Melde dich an, um Profile zu sehen und Favoriten zu speichern.',
@@ -69,6 +70,7 @@ export default {
     noBucket: 'Bucket nicht verbunden',
   },
   admin: {
+    noAccess: 'Kein Zugriff – dieser Bereich ist nur für Administratoren.', makeAdmin: 'Zum Admin machen', removeAdmin: 'Admin entfernen', adminUpdated: 'Rechte aktualisiert',
     title: 'Verwaltung.', loginText: 'Melde dich mit dem Admin-Passwort an, um Profile und Mitglieder zu verwalten.',
     password: 'Passwort', login: 'Anmelden', manage: 'Verwaltung', dbOk: 'Postgres verbunden', dbNo: 'Keine Datenbank',
     bucketOk: 'Bucket verbunden', bucketNo: 'Kein Bucket', newProfile: 'Neues Profil', logout: 'Abmelden', loading: 'Lädt…',
@@ -78,6 +80,7 @@ export default {
   },
   notFound: { title: 'Hier ist leider nichts.', text: 'Diese Seite gibt es nicht (mehr).', back: 'Zur Übersicht' },
   errors: {
+    forbidden: 'Keine Berechtigung.', self_admin: 'Du kannst dir die Admin-Rechte nicht selbst entziehen.',
     invalid_credentials: 'E-Mail oder Passwort ist falsch.', email_taken: 'Diese E-Mail-Adresse ist bereits registriert.',
     invalid_email: 'Bitte gib eine gültige E-Mail-Adresse ein.', weak_password: 'Das Passwort muss mindestens 8 Zeichen haben.',
     name_required: 'Bitte gib einen Namen ein.', age_confirm_required: 'Bitte bestätige, dass du mindestens 18 Jahre alt bist.',

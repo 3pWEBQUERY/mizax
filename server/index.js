@@ -19,8 +19,8 @@ import {
   setSession,
   clearSession,
   userOut,
-  sign,
-  verifySigned,
+  requireAdmin,
+  ensureAdmin,
   httpError,
 } from './auth.js';
 
@@ -133,17 +133,6 @@ async function getEscortById(id) {
 
 function requireDb(req, res, next) {
   if (!hasDb()) return next(httpError(503, 'db_unavailable', 'Datenbank nicht verbunden'));
-  next();
-}
-
-// ---------- Admin-Auth (Passwort aus ADMIN_PASSWORD) ----------
-
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
-
-function requireAdmin(req, res, next) {
-  const token = (req.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  const parts = ADMIN_PASSWORD && verifySigned(token);
-  if (!parts || parts[0] !== 'admin') return next(httpError(401, 'unauthorized', 'Nicht autorisiert'));
   next();
 }
 
@@ -502,15 +491,6 @@ app.delete(
 
 // ---------- Admin API ----------
 
-app.post('/api/admin/login', rateLimit(20), (req, res, next) => {
-  if (!ADMIN_PASSWORD) return next(httpError(503, 'admin_disabled', 'ADMIN_PASSWORD fehlt'));
-  const a = crypto.createHash('sha256').update(String(req.body?.password || '')).digest();
-  const b = crypto.createHash('sha256').update(ADMIN_PASSWORD).digest();
-  if (!crypto.timingSafeEqual(a, b)) return next(httpError(401, 'wrong_password', 'Falsches Passwort'));
-  const payload = `admin.${Date.now() + 1000 * 60 * 60 * 24 * 7}`;
-  res.json({ token: `${payload}.${sign(payload)}` });
-});
-
 app.get('/api/admin/status', requireAdmin, (req, res) => {
   res.json({ ok: true, db: hasDb(), storage: hasStorage() });
 });
@@ -530,11 +510,27 @@ app.get(
   requireDb,
   wrap(async (req, res) => {
     const { rows } = await query(
-      `SELECT u.id, u.email, u.name, u.role, u.locale, u.created_at, u.last_login_at, e.slug
+      `SELECT u.id, u.email, u.name, u.role, u.locale, u.is_admin, u.created_at, u.last_login_at, e.slug
        FROM users u LEFT JOIN escorts e ON e.user_id = u.id
-       ORDER BY u.created_at DESC LIMIT 500`,
+       ORDER BY u.is_admin DESC, u.created_at DESC LIMIT 500`,
     );
     res.json(rows);
+  }),
+);
+
+app.put(
+  '/api/admin/users/:id/admin',
+  requireAdmin,
+  requireDb,
+  wrap(async (req, res) => {
+    const id = Number(req.params.id);
+    const isAdmin = Boolean(req.body?.isAdmin);
+    if (id === req.user.id && !isAdmin) {
+      throw httpError(400, 'self_admin', 'Eigene Admin-Rechte können nicht entzogen werden');
+    }
+    const { rowCount } = await query('UPDATE users SET is_admin = $1 WHERE id = $2', [isAdmin, id]);
+    if (!rowCount) throw httpError(404, 'not_found', 'Nicht gefunden');
+    res.json({ ok: true });
   }),
 );
 
@@ -643,6 +639,8 @@ async function start() {
       try {
         await migrate();
         await seedIfEmpty();
+        const adminEmail = await ensureAdmin();
+        if (!adminEmail) console.warn('[admin] ADMIN_EMAIL/ADMIN_PASSWORD fehlen – kein Admin-Konto angelegt');
         break;
       } catch (err) {
         if (attempt >= 10) throw err;
@@ -654,7 +652,6 @@ async function start() {
     console.warn('[db] DATABASE_URL fehlt – API läuft ohne Datenbank');
   }
   if (!hasStorage()) console.warn('[storage] Railway Bucket nicht konfiguriert – Uploads deaktiviert');
-  if (!ADMIN_PASSWORD) console.warn('[admin] ADMIN_PASSWORD fehlt – Admin-Bereich deaktiviert');
   if (!process.env.SESSION_SECRET) console.warn('[auth] SESSION_SECRET fehlt – abgeleiteter Schlüssel wird verwendet');
   app.listen(PORT, '0.0.0.0', () => console.log(`Mizax läuft auf Port ${PORT}`));
 }

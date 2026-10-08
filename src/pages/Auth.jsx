@@ -33,7 +33,7 @@ function useRedirectIfAuthed() {
   const { user, ready } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
-    if (ready && user) navigate(user.role === 'escort' ? '/me' : '/', { replace: true });
+    if (ready && user) navigate(user.isAdmin ? '/admin' : user.role === 'escort' ? '/me' : '/', { replace: true });
   }, [ready, user, navigate]);
 }
 
@@ -57,7 +57,7 @@ export function Login() {
     try {
       const user = await login(email, password);
       toast(t('auth.welcome', { name: user.name }));
-      navigate(location.state?.from || '/', { replace: true });
+      navigate(location.state?.from || (user.isAdmin ? '/admin' : '/'), { replace: true });
     } catch (err) {
       setError(errorText(t, err));
     } finally {

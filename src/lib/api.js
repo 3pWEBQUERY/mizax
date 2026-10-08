@@ -1,25 +1,5 @@
-const TOKEN_KEY = 'mizax.admin';
-
-export function getToken() {
-  try {
-    return localStorage.getItem(TOKEN_KEY) || '';
-  } catch {
-    return '';
-  }
-}
-
-export function setToken(token) {
-  try {
-    if (token) localStorage.setItem(TOKEN_KEY, token);
-    else localStorage.removeItem(TOKEN_KEY);
-  } catch {
-    /* ignore */
-  }
-}
-
-export async function api(path, { method = 'GET', body, admin = false, form } = {}) {
+export async function api(path, { method = 'GET', body, form } = {}) {
   const headers = {};
-  if (admin) headers.Authorization = `Bearer ${getToken()}`;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
   let res;
   try {

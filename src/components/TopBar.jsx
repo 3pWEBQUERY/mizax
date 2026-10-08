@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
-  HomeIcon, BackIcon, SunIcon, MoonIcon, UserIcon, EditIcon, LogoutIcon, LoginIcon, HeartIcon, SearchIcon,
+  HomeIcon, BackIcon, SunIcon, MoonIcon, UserIcon, EditIcon, LogoutIcon, LoginIcon, HeartIcon, SearchIcon, ShieldIcon,
 } from './Icons.jsx';
 import { useDockState } from '../lib/dock.jsx';
 import { useI18n, LOCALES, dictionaries } from '../lib/i18n.jsx';
@@ -167,11 +167,16 @@ export default function TopBar({ onSearch, searchOpen }) {
                         <b>{user.name}</b>
                         <span>{user.email}</span>
                       </div>
-                      <span className={`role-badge ${user.role}`} style={{ marginLeft: 'auto' }}>
-                        {t(`menu.${user.role}`)}
+                      <span className={`role-badge ${user.isAdmin ? 'admin' : user.role}`} style={{ marginLeft: 'auto' }}>
+                        {user.isAdmin ? t('menu.adminBadge') : t(`menu.${user.role}`)}
                       </span>
                     </div>
                     <div className="menu-sep" />
+                    {user.isAdmin && (
+                      <button type="button" className="menu-item" onClick={() => navigate('/admin')}>
+                        <ShieldIcon /> {t('menu.admin')}
+                      </button>
+                    )}
                     {user.role === 'escort' && (
                       <button type="button" className="menu-item" onClick={() => navigate('/me')}>
                         <EditIcon /> {t('menu.myProfile')}
@@ -216,7 +221,7 @@ export default function TopBar({ onSearch, searchOpen }) {
                         setMenu(false);
                         await logout();
                         toast(t('auth.loggedOut'));
-                        if (pathname === '/me' || pathname === '/favorites') navigate('/');
+                        if (['/me', '/favorites', '/admin'].includes(pathname)) navigate('/');
                       }}
                     >
                       <LogoutIcon /> {t('menu.logout')}

@@ -24,8 +24,10 @@ nahtlos in das jeweilige Profil übergehen.
 - **Dark/Light Mode** (folgt anfangs der Systemeinstellung, umschaltbar)
 - **7 Sprachen:** Deutsch, Englisch, Französisch, Spanisch, Ungarisch, Polnisch, Rumänisch
   (`src/locales/*.js`, automatische Erkennung, Auswahl wird im Konto gespeichert)
-- Verwaltung unter **`/admin`** (Login per `ADMIN_PASSWORD`): alle Profile bearbeiten, verifizieren,
-  hervorheben, Fotos verwalten, Liste der registrierten Mitglieder
+- Verwaltung unter **`/admin`** für Konten mit Admin-Rechten (normaler Login über `/login`):
+  alle Profile bearbeiten, verifizieren, hervorheben, Fotos verwalten, Mitglieder ansehen und
+  weitere Konten zu Admins machen. Das erste Admin-Konto wird beim Start aus `ADMIN_EMAIL` und
+  `ADMIN_PASSWORD` angelegt (existiert die E-Mail schon, bekommt dieses Konto Admin-Rechte).
 - Beim ersten Start werden 15 Demo-Profile angelegt (abschaltbar mit `SEED_DEMO=false`)
 
 ## Umgebungsvariablen
@@ -34,7 +36,8 @@ nahtlos in das jeweilige Profil übergehen.
 | --- | --- |
 | `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` |
 | `BUCKET`, `ACCESS_KEY_ID`, `SECRET_ACCESS_KEY`, `REGION`, `ENDPOINT` | Referenzen auf den Railway Bucket |
-| `ADMIN_PASSWORD` | Passwort für `/admin` |
+| `ADMIN_EMAIL` | E-Mail des ersten Admin-Kontos |
+| `ADMIN_PASSWORD` | Passwort, mit dem dieses Konto beim ersten Start angelegt wird |
 | `SESSION_SECRET` | Schlüssel für Login-Sitzungen und Admin-Tokens (unbedingt setzen) |
 | `SEED_DEMO` | `false` = keine Demo-Profile |
 

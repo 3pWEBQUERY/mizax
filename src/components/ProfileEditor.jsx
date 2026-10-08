@@ -42,7 +42,6 @@ function toForm(e, defaults) {
 // Endpunkte für Verwaltung bzw. eigenes Profil
 export const endpoints = {
   admin: {
-    admin: true,
     save: (e) => (e ? { method: 'PUT', path: `/api/admin/escorts/${e.id}` } : { method: 'POST', path: '/api/admin/escorts' }),
     photos: (e) => `/api/admin/escorts/${e.id}/photos`,
     order: (e) => `/api/admin/escorts/${e.id}/photos/order`,
@@ -50,7 +49,6 @@ export const endpoints = {
     remove: (e) => `/api/admin/escorts/${e.id}`,
   },
   self: {
-    admin: false,
     save: () => ({ method: 'PUT', path: '/api/me/profile' }),
     photos: () => '/api/me/profile/photos',
     order: () => '/api/me/profile/photos/order',
@@ -74,7 +72,7 @@ export default function ProfileEditor({ escort, mode = 'admin', storage = true, 
     try {
       const body = { ...form, age: Number(form.age), height: form.height ? Number(form.height) : null };
       const { method, path } = ep.save(escort);
-      const saved = await api(path, { method, admin: ep.admin, body });
+      const saved = await api(path, { method, body });
       toast(t('editor.saved'));
       await onSaved?.(saved);
     } catch (err) {
@@ -87,7 +85,7 @@ export default function ProfileEditor({ escort, mode = 'admin', storage = true, 
   async function remove() {
     if (!escort || !ep.remove || !confirm(t('editor.confirmDelete', { name: escort.name }))) return;
     try {
-      await api(ep.remove(escort), { method: 'DELETE', admin: ep.admin });
+      await api(ep.remove(escort), { method: 'DELETE' });
       toast(t('editor.deleted'));
       await onDeleted?.();
     } catch (err) {
@@ -240,7 +238,7 @@ function Photos({ escort, storage, ep, onChange }) {
     try {
       const form = new FormData();
       imgs.forEach((f) => form.append('photos', f));
-      const saved = await api(ep.photos(escort), { method: 'POST', admin: ep.admin, form });
+      const saved = await api(ep.photos(escort), { method: 'POST', form });
       toast(t('editor.uploaded', { n: imgs.length }));
       await onChange?.(saved);
     } catch (err) {
@@ -256,7 +254,7 @@ function Photos({ escort, storage, ep, onChange }) {
     if (j < 0 || j >= ids.length) return;
     [ids[idx], ids[j]] = [ids[j], ids[idx]];
     try {
-      const saved = await api(ep.order(escort), { method: 'PUT', admin: ep.admin, body: { ids } });
+      const saved = await api(ep.order(escort), { method: 'PUT', body: { ids } });
       await onChange?.(saved);
     } catch (err) {
       toast(errorText(t, err));
@@ -265,7 +263,7 @@ function Photos({ escort, storage, ep, onChange }) {
 
   async function del(id) {
     try {
-      const saved = await api(ep.deletePhoto(id), { method: 'DELETE', admin: ep.admin });
+      const saved = await api(ep.deletePhoto(id), { method: 'DELETE' });
       await onChange?.(saved);
     } catch (err) {
       toast(errorText(t, err));

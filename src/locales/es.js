@@ -2,6 +2,7 @@ export default {
   langName: 'Español',
   nav: { discover: 'Descubrir', favorites: 'Favoritos', search: 'Buscar', home: 'Inicio', back: 'Atrás', account: 'Cuenta', navigation: 'Navegación' },
   menu: {
+    admin: 'Administración', adminBadge: 'Admin',
     login: 'Iniciar sesión', register: 'Registrarse', logout: 'Cerrar sesión', myProfile: 'Mi perfil', favorites: 'Favoritos',
     language: 'Idioma', theme: 'Tema', dark: 'Oscuro', light: 'Claro', member: 'Miembro', escort: 'Escort',
     guest: 'Invitado', guestText: 'Inicia sesión para ver perfiles y guardar favoritos.',
@@ -69,6 +70,7 @@ export default {
     noBucket: 'Bucket no conectado',
   },
   admin: {
+    noAccess: 'Sin acceso: esta área es solo para administradores.', makeAdmin: 'Hacer admin', removeAdmin: 'Quitar admin', adminUpdated: 'Permisos actualizados',
     title: 'Administración.', loginText: 'Inicia sesión con la contraseña de administrador para gestionar perfiles y miembros.',
     password: 'Contraseña', login: 'Iniciar sesión', manage: 'Administración', dbOk: 'Postgres conectado', dbNo: 'Sin base de datos',
     bucketOk: 'Bucket conectado', bucketNo: 'Sin bucket', newProfile: 'Nuevo perfil', logout: 'Cerrar sesión', loading: 'Cargando…',
@@ -78,6 +80,7 @@ export default {
   },
   notFound: { title: 'Aquí no hay nada.', text: 'Esta página no existe (o ya no existe).', back: 'Al resumen' },
   errors: {
+    forbidden: 'Sin permiso.', self_admin: 'No puedes quitarte tus propios permisos de admin.',
     invalid_credentials: 'Correo o contraseña incorrectos.', email_taken: 'Este correo ya está registrado.',
     invalid_email: 'Introduce un correo electrónico válido.', weak_password: 'La contraseña debe tener al menos 8 caracteres.',
     name_required: 'Introduce un nombre.', age_confirm_required: 'Confirma que tienes al menos 18 años.',

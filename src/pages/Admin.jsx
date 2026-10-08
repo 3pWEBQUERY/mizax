@@ -5,8 +5,10 @@ import { Bubble, Rise } from '../components/Bubble.jsx';
 import { Placeholder } from '../components/Media.jsx';
 import { useToast } from '../components/Toast.jsx';
 import ProfileEditor from '../components/ProfileEditor.jsx';
-import { SpinnerIcon, PlusIcon } from '../components/Icons.jsx';
-import { api, getToken, setToken } from '../lib/api.js';
+import { PlusIcon } from '../components/Icons.jsx';
+import { api } from '../lib/api.js';
+import { useAuth } from '../lib/auth.jsx';
+import { Link, Navigate } from 'react-router-dom';
 import { loadEscorts } from '../lib/store.js';
 import { useDock } from '../lib/dock.jsx';
 import { useI18n, errorText } from '../lib/i18n.jsx';
@@ -15,97 +17,41 @@ const fade = { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity
 
 export default function Admin() {
   useDock({ mode: 'hidden' });
-  const [authed, setAuthed] = useState(() => Boolean(getToken()));
+  const { t } = useI18n();
+  const { user, ready } = useAuth();
   const [status, setStatus] = useState(null);
 
   useEffect(() => {
-    if (!authed) return;
-    api('/api/admin/status', { admin: true })
+    if (!user?.isAdmin) return;
+    api('/api/admin/status')
       .then(setStatus)
-      .catch((err) => {
-        if (err.status === 401) {
-          setToken('');
-          setAuthed(false);
-        }
-      });
-  }, [authed]);
+      .catch(() => {});
+  }, [user]);
+
+  if (ready && !user) return <Navigate to="/login" replace state={{ from: '/admin' }} />;
 
   return (
     <Page>
-      <AnimatePresence mode="wait" initial={false}>
-        {authed ? (
-          <motion.div key="panel" {...fade}>
-            <Dashboard
-              status={status}
-              onLogout={() => {
-                setToken('');
-                setAuthed(false);
-              }}
-            />
-          </motion.div>
-        ) : (
-          <motion.div key="login" {...fade}>
-            <AdminLogin onDone={() => setAuthed(true)} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {!ready ? null : user.isAdmin ? (
+        <motion.div {...fade}>
+          <Dashboard status={status} />
+        </motion.div>
+      ) : (
+        <div className="bubbles">
+          <Bubble i={0}>{t('admin.title')}</Bubble>
+          <Bubble i={1}>{t('admin.noAccess')}</Bubble>
+          <Rise i={2}>
+            <Link to="/" className="white-btn">
+              {t('notFound.back')}
+            </Link>
+          </Rise>
+        </div>
+      )}
     </Page>
   );
 }
 
-function AdminLogin({ onDone }) {
-  const { t } = useI18n();
-  const [pw, setPw] = useState('');
-  const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
-
-  async function submit(e) {
-    e.preventDefault();
-    setBusy(true);
-    setError('');
-    try {
-      const { token } = await api('/api/admin/login', { method: 'POST', body: { password: pw } });
-      setToken(token);
-      onDone();
-    } catch (err) {
-      setError(errorText(t, err));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <div className="auth">
-      <div className="bubbles">
-        <Bubble i={0}>{t('admin.title')}</Bubble>
-        <Bubble i={1}>{t('admin.loginText')}</Bubble>
-      </div>
-      <Rise i={2} as="form" className="auth-form" onSubmit={submit}>
-        <input
-          className="auth-input"
-          type="password"
-          placeholder={t('admin.password')}
-          aria-label={t('admin.password')}
-          value={pw}
-          onChange={(e) => setPw(e.target.value)}
-          autoFocus
-        />
-        <button className="white-btn auth-submit" disabled={busy || !pw}>
-          {busy ? <SpinnerIcon /> : t('admin.login')}
-        </button>
-      </Rise>
-      <AnimatePresence>
-        {error && (
-          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} style={{ marginTop: 12 }}>
-            <div className="bubble auth-error">{error}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function Dashboard({ status, onLogout }) {
+function Dashboard({ status }) {
   const { t } = useI18n();
   const [tab, setTab] = useState('profiles');
 
@@ -120,9 +66,6 @@ function Dashboard({ status, onLogout }) {
               <span className="badge">{status.storage ? `● ${t('admin.bucketOk')}` : `○ ${t('admin.bucketNo')}`}</span>
             </>
           )}
-          <button className="badge" onClick={onLogout}>
-            {t('admin.logout')}
-          </button>
         </div>
       </div>
 
@@ -154,7 +97,7 @@ function Profiles({ status }) {
   const [selected, setSelected] = useState(null); // id | 'new' | null
 
   const refresh = useCallback(async () => {
-    const rows = await api('/api/admin/escorts', { admin: true });
+    const rows = await api('/api/admin/escorts');
     setList(rows);
     loadEscorts(true).catch(() => {});
     return rows;
@@ -232,14 +175,31 @@ function Profiles({ status }) {
 
 function Users() {
   const { t, locale } = useI18n();
+  const { user: me } = useAuth();
   const toast = useToast();
   const [users, setUsers] = useState(null);
 
+  const load = useCallback(
+    () =>
+      api('/api/admin/users')
+        .then(setUsers)
+        .catch((e) => toast(errorText(t, e))),
+    [toast, t],
+  );
+
   useEffect(() => {
-    api('/api/admin/users', { admin: true })
-      .then(setUsers)
-      .catch((e) => toast(errorText(t, e)));
-  }, [toast, t]);
+    load();
+  }, [load]);
+
+  async function setAdmin(u, isAdmin) {
+    try {
+      await api(`/api/admin/users/${u.id}/admin`, { method: 'PUT', body: { isAdmin } });
+      toast(t('admin.adminUpdated'));
+      load();
+    } catch (e) {
+      toast(errorText(t, e));
+    }
+  }
 
   const fmt = (d) =>
     d ? new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(d)) : '–';
@@ -260,6 +220,7 @@ function Users() {
                 <th>{t('admin.role')}</th>
                 <th>{t('admin.registered')}</th>
                 <th>{t('admin.lastLogin')}</th>
+                <th />
               </tr>
             </thead>
             <tbody>
@@ -269,6 +230,11 @@ function Users() {
                   <td className="muted">{u.email}</td>
                   <td>
                     <span className={`role-badge ${u.role}`}>{t(`menu.${u.role}`)}</span>
+                    {u.is_admin && (
+                      <span className="role-badge admin" style={{ marginLeft: 6 }}>
+                        {t('menu.adminBadge')}
+                      </span>
+                    )}
                     {u.slug && (
                       <a href={`/escort/${u.slug}`} target="_blank" rel="noreferrer" style={{ marginLeft: 8, fontSize: 13, textDecoration: 'underline' }}>
                         {t('me.view')}
@@ -277,6 +243,13 @@ function Users() {
                   </td>
                   <td className="muted">{fmt(u.created_at)}</td>
                   <td className="muted">{fmt(u.last_login_at)}</td>
+                  <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                    {u.id !== me?.id && (
+                      <button type="button" className="toggle" onClick={() => setAdmin(u, !u.is_admin)}>
+                        {u.is_admin ? t('admin.removeAdmin') : t('admin.makeAdmin')}
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

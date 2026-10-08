@@ -71,6 +71,7 @@ export async function migrate() {
       last_login_at TIMESTAMPTZ
     );
     CREATE UNIQUE INDEX IF NOT EXISTS users_email_idx ON users (lower(email));
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT false;
 
     ALTER TABLE escorts ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE;
     CREATE UNIQUE INDEX IF NOT EXISTS escorts_user_idx ON escorts (user_id) WHERE user_id IS NOT NULL;

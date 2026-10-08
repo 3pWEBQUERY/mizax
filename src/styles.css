@@ -2039,3 +2039,8 @@ textarea.input {
     top: 60px;
   }
 }
+
+.role-badge.admin {
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+}

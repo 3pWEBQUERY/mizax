@@ -2,6 +2,7 @@ export default {
   langName: 'Magyar',
   nav: { discover: 'Felfedezés', favorites: 'Kedvencek', search: 'Keresés', home: 'Kezdőlap', back: 'Vissza', account: 'Fiók', navigation: 'Navigáció' },
   menu: {
+    admin: 'Adminisztráció', adminBadge: 'Admin',
     login: 'Bejelentkezés', register: 'Regisztráció', logout: 'Kijelentkezés', myProfile: 'Saját profil', favorites: 'Kedvencek',
     language: 'Nyelv', theme: 'Megjelenés', dark: 'Sötét', light: 'Világos', member: 'Tag', escort: 'Escort',
     guest: 'Vendég', guestText: 'Jelentkezz be a profilok megtekintéséhez és a kedvencek mentéséhez.',
@@ -69,6 +70,7 @@ export default {
     noBucket: 'A bucket nincs csatlakoztatva',
   },
   admin: {
+    noAccess: 'Nincs hozzáférés – ez a terület csak adminisztrátoroknak szól.', makeAdmin: 'Adminná tétel', removeAdmin: 'Admin jog elvétele', adminUpdated: 'Jogosultságok frissítve',
     title: 'Adminisztráció.', loginText: 'Jelentkezz be az admin jelszóval a profilok és tagok kezeléséhez.',
     password: 'Jelszó', login: 'Bejelentkezés', manage: 'Adminisztráció', dbOk: 'Postgres csatlakoztatva', dbNo: 'Nincs adatbázis',
     bucketOk: 'Bucket csatlakoztatva', bucketNo: 'Nincs bucket', newProfile: 'Új profil', logout: 'Kijelentkezés', loading: 'Betöltés…',
@@ -78,6 +80,7 @@ export default {
   },
   notFound: { title: 'Itt nincs semmi.', text: 'Ez az oldal nem létezik (már).', back: 'Az áttekintéshez' },
   errors: {
+    forbidden: 'Nincs jogosultságod.', self_admin: 'A saját admin jogodat nem veheted el.',
     invalid_credentials: 'Hibás e-mail-cím vagy jelszó.', email_taken: 'Ez az e-mail-cím már regisztrálva van.',
     invalid_email: 'Adj meg egy érvényes e-mail-címet.', weak_password: 'A jelszónak legalább 8 karakterből kell állnia.',
     name_required: 'Adj meg egy nevet.', age_confirm_required: 'Erősítsd meg, hogy elmúltál 18 éves.',

@@ -2,6 +2,7 @@ export default {
   langName: 'Română',
   nav: { discover: 'Descoperă', favorites: 'Favorite', search: 'Caută', home: 'Acasă', back: 'Înapoi', account: 'Cont', navigation: 'Navigare' },
   menu: {
+    admin: 'Administrare', adminBadge: 'Admin',
     login: 'Autentificare', register: 'Înregistrare', logout: 'Deconectare', myProfile: 'Profilul meu', favorites: 'Favorite',
     language: 'Limbă', theme: 'Temă', dark: 'Întunecat', light: 'Luminos', member: 'Membru', escort: 'Escort',
     guest: 'Vizitator', guestText: 'Autentifică-te pentru a vedea profilurile și a salva favorite.',
@@ -69,6 +70,7 @@ export default {
     noBucket: 'Bucket neconectat',
   },
   admin: {
+    noAccess: 'Acces interzis – această zonă este doar pentru administratori.', makeAdmin: 'Fă admin', removeAdmin: 'Elimină admin', adminUpdated: 'Drepturi actualizate',
     title: 'Administrare.', loginText: 'Autentifică-te cu parola de administrator pentru a gestiona profiluri și membri.',
     password: 'Parolă', login: 'Autentificare', manage: 'Administrare', dbOk: 'Postgres conectat', dbNo: 'Fără bază de date',
     bucketOk: 'Bucket conectat', bucketNo: 'Fără bucket', newProfile: 'Profil nou', logout: 'Deconectare', loading: 'Se încarcă…',
@@ -78,6 +80,7 @@ export default {
   },
   notFound: { title: 'Nu e nimic aici.', text: 'Această pagină nu (mai) există.', back: 'La prezentare' },
   errors: {
+    forbidden: 'Nu ai permisiunea.', self_admin: 'Nu îți poți elimina propriile drepturi de admin.',
     invalid_credentials: 'E-mail sau parolă incorectă.', email_taken: 'Această adresă de e-mail este deja înregistrată.',
     invalid_email: 'Introdu o adresă de e-mail validă.', weak_password: 'Parola trebuie să aibă cel puțin 8 caractere.',
     name_required: 'Introdu un nume.', age_confirm_required: 'Confirmă că ai cel puțin 18 ani.',

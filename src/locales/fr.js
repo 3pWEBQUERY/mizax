@@ -2,6 +2,7 @@ export default {
   langName: 'Français',
   nav: { discover: 'Découvrir', favorites: 'Favoris', search: 'Rechercher', home: 'Accueil', back: 'Retour', account: 'Compte', navigation: 'Navigation' },
   menu: {
+    admin: 'Administration', adminBadge: 'Admin',
     login: 'Se connecter', register: 'S’inscrire', logout: 'Se déconnecter', myProfile: 'Mon profil', favorites: 'Favoris',
     language: 'Langue', theme: 'Thème', dark: 'Sombre', light: 'Clair', member: 'Membre', escort: 'Escort',
     guest: 'Invité', guestText: 'Connectez-vous pour voir les profils et enregistrer des favoris.',
@@ -69,6 +70,7 @@ export default {
     noBucket: 'Bucket non connecté',
   },
   admin: {
+    noAccess: 'Accès refusé – cet espace est réservé aux administrateurs.', makeAdmin: 'Nommer admin', removeAdmin: 'Retirer admin', adminUpdated: 'Droits mis à jour',
     title: 'Administration.', loginText: 'Connectez-vous avec le mot de passe admin pour gérer les profils et les membres.',
     password: 'Mot de passe', login: 'Se connecter', manage: 'Administration', dbOk: 'Postgres connecté', dbNo: 'Pas de base de données',
     bucketOk: 'Bucket connecté', bucketNo: 'Pas de bucket', newProfile: 'Nouveau profil', logout: 'Se déconnecter', loading: 'Chargement…',
@@ -78,6 +80,7 @@ export default {
   },
   notFound: { title: 'Il n’y a rien ici.', text: 'Cette page n’existe pas (ou plus).', back: 'Vers l’aperçu' },
   errors: {
+    forbidden: 'Vous n’avez pas l’autorisation.', self_admin: 'Vous ne pouvez pas retirer vos propres droits d’admin.',
     invalid_credentials: 'E-mail ou mot de passe incorrect.', email_taken: 'Cette adresse e-mail est déjà enregistrée.',
     invalid_email: 'Veuillez saisir une adresse e-mail valide.', weak_password: 'Le mot de passe doit comporter au moins 8 caractères.',
     name_required: 'Veuillez saisir un nom.', age_confirm_required: 'Veuillez confirmer que vous avez au moins 18 ans.',

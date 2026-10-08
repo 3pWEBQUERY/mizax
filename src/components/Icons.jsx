@@ -146,3 +146,9 @@ export const SearchIcon = (p) => (
     <path d="M20 20l-4.2-4.2" />
   </svg>
 );
+export const ShieldIcon = (p) => (
+  <svg {...base} width={20} height={20} {...p}>
+    <path d="M12 3.5l7 2.8v5.2c0 4.3-2.9 7.8-7 9-4.1-1.2-7-4.7-7-9V6.3z" />
+    <path d="M9 12l2.2 2.2L15.5 10" />
+  </svg>
+);

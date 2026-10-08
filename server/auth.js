@@ -72,7 +72,7 @@ export function clearSession(res) {
 }
 
 export function userOut(u) {
-  return u && { id: u.id, email: u.email, name: u.name, role: u.role, locale: u.locale };
+  return u && { id: u.id, email: u.email, name: u.name, role: u.role, locale: u.locale, isAdmin: Boolean(u.is_admin) };
 }
 
 // Hängt den angemeldeten Benutzer (falls vorhanden) an req.user
@@ -82,7 +82,7 @@ export async function attachUser(req, res, next) {
   const parts = token && verifySigned(token);
   if (parts && parts[0] === 'u' && hasDb()) {
     try {
-      const { rows } = await query('SELECT id, email, name, role, locale FROM users WHERE id = $1', [
+      const { rows } = await query('SELECT id, email, name, role, locale, is_admin FROM users WHERE id = $1', [
         Number(parts[1]),
       ]);
       req.user = rows[0] || null;
@@ -96,6 +96,32 @@ export async function attachUser(req, res, next) {
 export function requireUser(req, res, next) {
   if (!req.user) return next(httpError(401, 'login_required', 'Bitte melde dich an'));
   next();
+}
+
+export function requireAdmin(req, res, next) {
+  if (!req.user) return next(httpError(401, 'login_required', 'Bitte melde dich an'));
+  if (!req.user.is_admin) return next(httpError(403, 'forbidden', 'Keine Berechtigung'));
+  next();
+}
+
+// Legt beim Start das Admin-Konto aus ADMIN_EMAIL/ADMIN_PASSWORD an (falls noch nicht vorhanden)
+// bzw. gibt einem bestehenden Konto mit dieser E-Mail Admin-Rechte. Das Passwort wird nur beim
+// Anlegen gesetzt, damit eine spätere Änderung nicht überschrieben wird.
+export async function ensureAdmin() {
+  const email = String(process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+  const password = process.env.ADMIN_PASSWORD || '';
+  if (!email || !password) return null;
+  const { rows } = await query('SELECT id FROM users WHERE lower(email) = $1', [email]);
+  if (rows[0]) {
+    await query('UPDATE users SET is_admin = true WHERE id = $1', [rows[0].id]);
+    return email;
+  }
+  await query(
+    `INSERT INTO users (email, password_hash, name, role, is_admin) VALUES ($1, $2, 'Admin', 'member', true)`,
+    [email, await hashPassword(password)],
+  );
+  console.log(`[admin] Admin-Konto ${email} angelegt`);
+  return email;
 }
 
 export function requireEscort(req, res, next) {
@@ -149,7 +175,7 @@ export async function register(body) {
   try {
     const { rows } = await query(
       `INSERT INTO users (email, password_hash, name, role, locale, last_login_at)
-       VALUES ($1,$2,$3,$4,$5, now()) RETURNING id, email, name, role, locale`,
+       VALUES ($1,$2,$3,$4,$5, now()) RETURNING id, email, name, role, locale, is_admin`,
       [email, hash, name, role, locale],
     );
     return rows[0];

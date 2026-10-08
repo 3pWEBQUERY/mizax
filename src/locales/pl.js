@@ -2,6 +2,7 @@ export default {
   langName: 'Polski',
   nav: { discover: 'Odkrywaj', favorites: 'Ulubione', search: 'Szukaj', home: 'Strona główna', back: 'Wstecz', account: 'Konto', navigation: 'Nawigacja' },
   menu: {
+    admin: 'Administracja', adminBadge: 'Admin',
     login: 'Zaloguj się', register: 'Zarejestruj się', logout: 'Wyloguj się', myProfile: 'Mój profil', favorites: 'Ulubione',
     language: 'Język', theme: 'Motyw', dark: 'Ciemny', light: 'Jasny', member: 'Członek', escort: 'Escort',
     guest: 'Gość', guestText: 'Zaloguj się, aby oglądać profile i zapisywać ulubione.',
@@ -69,6 +70,7 @@ export default {
     noBucket: 'Bucket niepołączony',
   },
   admin: {
+    noAccess: 'Brak dostępu – ta sekcja jest tylko dla administratorów.', makeAdmin: 'Nadaj admina', removeAdmin: 'Odbierz admina', adminUpdated: 'Uprawnienia zaktualizowane',
     title: 'Administracja.', loginText: 'Zaloguj się hasłem administratora, aby zarządzać profilami i członkami.',
     password: 'Hasło', login: 'Zaloguj się', manage: 'Administracja', dbOk: 'Postgres połączony', dbNo: 'Brak bazy danych',
     bucketOk: 'Bucket połączony', bucketNo: 'Brak bucketu', newProfile: 'Nowy profil', logout: 'Wyloguj się', loading: 'Ładowanie…',
@@ -78,6 +80,7 @@ export default {
   },
   notFound: { title: 'Nic tu nie ma.', text: 'Ta strona nie istnieje (już).', back: 'Do przeglądu' },
   errors: {
+    forbidden: 'Brak uprawnień.', self_admin: 'Nie możesz odebrać sobie uprawnień administratora.',
     invalid_credentials: 'Nieprawidłowy e-mail lub hasło.', email_taken: 'Ten adres e-mail jest już zarejestrowany.',
     invalid_email: 'Podaj prawidłowy adres e-mail.', weak_password: 'Hasło musi mieć co najmniej 8 znaków.',
     name_required: 'Podaj nazwę.', age_confirm_required: 'Potwierdź, że masz co najmniej 18 lat.',

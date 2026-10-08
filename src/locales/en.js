@@ -2,6 +2,7 @@ export default {
   langName: 'English',
   nav: { discover: 'Discover', favorites: 'Favorites', search: 'Search', home: 'Home', back: 'Back', account: 'Account', navigation: 'Navigation' },
   menu: {
+    admin: 'Administration', adminBadge: 'Admin',
     login: 'Log in', register: 'Sign up', logout: 'Log out', myProfile: 'My profile', favorites: 'Favorites',
     language: 'Language', theme: 'Theme', dark: 'Dark', light: 'Light', member: 'Member', escort: 'Escort',
     guest: 'Guest', guestText: 'Log in to view profiles and save favorites.',
@@ -69,6 +70,7 @@ export default {
     noBucket: 'Bucket not connected',
   },
   admin: {
+    noAccess: 'No access – this area is for administrators only.', makeAdmin: 'Make admin', removeAdmin: 'Remove admin', adminUpdated: 'Permissions updated',
     title: 'Administration.', loginText: 'Log in with the admin password to manage profiles and members.',
     password: 'Password', login: 'Log in', manage: 'Administration', dbOk: 'Postgres connected', dbNo: 'No database',
     bucketOk: 'Bucket connected', bucketNo: 'No bucket', newProfile: 'New profile', logout: 'Log out', loading: 'Loading…',
@@ -78,6 +80,7 @@ export default {
   },
   notFound: { title: 'Nothing here.', text: 'This page doesn’t exist (anymore).', back: 'To overview' },
   errors: {
+    forbidden: 'No permission.', self_admin: 'You can’t remove your own admin rights.',
     invalid_credentials: 'Email or password is incorrect.', email_taken: 'This email address is already registered.',
     invalid_email: 'Please enter a valid email address.', weak_password: 'The password must have at least 8 characters.',
     name_required: 'Please enter a name.', age_confirm_required: 'Please confirm that you are at least 18 years old.',
