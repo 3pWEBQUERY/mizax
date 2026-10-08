@@ -58,7 +58,8 @@ export async function migrate() {
     );
 
     CREATE INDEX IF NOT EXISTS escort_photos_escort_idx ON escort_photos (escort_id, position);
-    CREATE INDEX IF NOT EXISTS escorts_list_idx ON escorts (published, featured DESC, sort, created_at DESC);
+    DROP INDEX IF EXISTS escorts_list_idx;
+    CREATE INDEX IF NOT EXISTS escorts_newest_idx ON escorts (published, created_at DESC, id DESC);
 
     CREATE TABLE IF NOT EXISTS users (
       id            SERIAL PRIMARY KEY,

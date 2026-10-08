@@ -57,6 +57,7 @@ export default {
     onlyEscorts: 'Nur Escort-Konten können ein eigenes Profil anlegen.',
   },
   editor: {
+    photoCount: '{n} / {max}', uploading: 'Lädt hoch… {done}/{total}',
     name: 'Name', age: 'Alter (mind. 18)', city: 'Stadt', origin: 'Herkunft', height: 'Größe (cm)', accent: 'Akzentfarbe',
     tagline: 'Kurzbeschreibung', bio: 'Über mich (Absätze mit Leerzeile trennen – jeder Absatz wird eine Bubble)',
     languages: 'Sprachen (kommagetrennt)', services: 'Leistungen (kommagetrennt)', whatsapp: 'WhatsApp-Nummer', phone: 'Telefon',
@@ -80,6 +81,7 @@ export default {
   },
   notFound: { title: 'Hier ist leider nichts.', text: 'Diese Seite gibt es nicht (mehr).', back: 'Zur Übersicht' },
   errors: {
+    too_many_photos: 'Maximal 20 Fotos pro Profil.',
     forbidden: 'Keine Berechtigung.', self_admin: 'Du kannst dir die Admin-Rechte nicht selbst entziehen.',
     invalid_credentials: 'E-Mail oder Passwort ist falsch.', email_taken: 'Diese E-Mail-Adresse ist bereits registriert.',
     invalid_email: 'Bitte gib eine gültige E-Mail-Adresse ein.', weak_password: 'Das Passwort muss mindestens 8 Zeichen haben.',
@@ -89,7 +91,7 @@ export default {
     wrong_password: 'Falsches Passwort.', not_found: 'Nicht gefunden.', rate_limited: 'Zu viele Versuche – bitte warte kurz.',
     storage_unavailable: 'Der Medienspeicher ist nicht verbunden.', db_unavailable: 'Die Datenbank ist nicht verbunden.',
     admin_disabled: 'Der Admin-Bereich ist nicht eingerichtet.', profile_missing: 'Bitte speichere zuerst dein Profil.',
-    upload_invalid: 'Upload fehlgeschlagen (max. 12 Bilder, je 20 MB).', server_error: 'Serverfehler – bitte später erneut versuchen.',
+    upload_invalid: 'Upload fehlgeschlagen (max. 20 Bilder, je 20 MB).', server_error: 'Serverfehler – bitte später erneut versuchen.',
     network: 'Keine Verbindung zum Server.',
   },
 };

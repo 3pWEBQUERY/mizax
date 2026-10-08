@@ -57,6 +57,11 @@ export const endpoints = {
   },
 };
 
+// Maximal 20 Fotos pro Profil; hochgeladen wird in kleinen Paketen, damit auch viele große
+// Handyfotos zuverlässig ankommen.
+export const MAX_PHOTOS = 20;
+const BATCH = 4;
+
 export default function ProfileEditor({ escort, mode = 'admin', storage = true, defaults, onSaved, onDeleted }) {
   const t = useT();
   const toast = useToast();
@@ -99,12 +104,7 @@ export default function ProfileEditor({ escort, mode = 'admin', storage = true, 
   const toggles = [
     ['published', t('editor.published')],
     ['available', t('editor.available')],
-    ...(mode === 'admin'
-      ? [
-          ['verified', t('editor.verified')],
-          ['featured', t('editor.featured')],
-        ]
-      : []),
+    ...(mode === 'admin' ? [['verified', t('editor.verified')]] : []),
   ];
 
   return (
@@ -149,11 +149,6 @@ export default function ProfileEditor({ escort, mode = 'admin', storage = true, 
         <Field label={t('editor.email')}>
           <input className="input" type="email" value={form.email} onChange={set('email')} />
         </Field>
-        {mode === 'admin' && (
-          <Field label={t('editor.sort')}>
-            <input className="input" type="number" value={form.sort} onChange={set('sort')} />
-          </Field>
-        )}
       </div>
 
       <div className="section-title">{t('editor.status')}</div>
@@ -189,7 +184,14 @@ export default function ProfileEditor({ escort, mode = 'admin', storage = true, 
         {t('editor.addRow')}
       </button>
 
-      <div className="section-title">{t('editor.photos')}</div>
+      <div className="section-title">
+        {t('editor.photos')}
+        {escort && (
+          <span style={{ color: 'var(--muted)', fontWeight: 500, marginLeft: 8 }}>
+            {t('editor.photoCount', { n: escort.photos.length, max: MAX_PHOTOS })}
+          </span>
+        )}
+      </div>
       {escort ? (
         <Photos escort={escort} storage={storage} ep={ep} onChange={onSaved} />
       ) : (
@@ -228,23 +230,36 @@ function Photos({ escort, storage, ep, onChange }) {
   const t = useT();
   const toast = useToast();
   const inputRef = useRef(null);
-  const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState(null); // { done, total } während des Uploads
   const [over, setOver] = useState(false);
+  const busy = Boolean(progress);
+  const free = MAX_PHOTOS - escort.photos.length;
 
   async function upload(files) {
-    const imgs = [...files].filter((f) => f.type.startsWith('image/'));
+    let imgs = [...files].filter((f) => f.type.startsWith('image/'));
     if (!imgs.length) return;
-    setBusy(true);
+    if (imgs.length > free) {
+      toast(t('errors.too_many_photos'));
+      imgs = imgs.slice(0, Math.max(free, 0));
+      if (!imgs.length) return;
+    }
+    let done = 0;
+    setProgress({ done, total: imgs.length });
     try {
-      const form = new FormData();
-      imgs.forEach((f) => form.append('photos', f));
-      const saved = await api(ep.photos(escort), { method: 'POST', form });
+      let saved = null;
+      for (let i = 0; i < imgs.length; i += BATCH) {
+        const form = new FormData();
+        imgs.slice(i, i + BATCH).forEach((f) => form.append('photos', f));
+        saved = await api(ep.photos(escort), { method: 'POST', form });
+        done = Math.min(i + BATCH, imgs.length);
+        setProgress({ done, total: imgs.length });
+        await onChange?.(saved);
+      }
       toast(t('editor.uploaded', { n: imgs.length }));
-      await onChange?.(saved);
     } catch (err) {
       toast(errorText(t, err));
     } finally {
-      setBusy(false);
+      setProgress(null);
     }
   }
 
@@ -293,24 +308,35 @@ function Photos({ escort, storage, ep, onChange }) {
           </div>
         </motion.div>
       ))}
-      <button
-        type="button"
-        className={`dropzone ${over ? 'over' : ''}`}
-        disabled={busy || !storage}
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setOver(true);
-        }}
-        onDragLeave={() => setOver(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setOver(false);
-          upload(e.dataTransfer.files);
-        }}
-      >
-        {busy ? <SpinnerIcon /> : storage ? t('editor.drop') : t('editor.noBucket')}
-      </button>
+      {free > 0 && (
+        <button
+          type="button"
+          className={`dropzone ${over ? 'over' : ''}`}
+          disabled={busy || !storage}
+          onClick={() => inputRef.current?.click()}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setOver(true);
+          }}
+          onDragLeave={() => setOver(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setOver(false);
+            upload(e.dataTransfer.files);
+          }}
+        >
+          {busy ? (
+            <span style={{ display: 'grid', placeItems: 'center', gap: 8 }}>
+              <SpinnerIcon />
+              {t('editor.uploading', { done: progress.done, total: progress.total })}
+            </span>
+          ) : storage ? (
+            t('editor.drop')
+          ) : (
+            t('editor.noBucket')
+          )}
+        </button>
+      )}
       <input
         ref={inputRef}
         type="file"

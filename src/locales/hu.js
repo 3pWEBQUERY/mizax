@@ -57,6 +57,7 @@ export default {
     onlyEscorts: 'Saját profilt csak escort-fiókok hozhatnak létre.',
   },
   editor: {
+    photoCount: '{n} / {max}', uploading: 'Feltöltés… {done}/{total}',
     name: 'Név', age: 'Életkor (min. 18)', city: 'Város', origin: 'Származás', height: 'Magasság (cm)', accent: 'Kiemelő szín',
     tagline: 'Rövid leírás', bio: 'Rólam (a bekezdéseket üres sorral válaszd el – mindegyikből buborék lesz)',
     languages: 'Nyelvek (vesszővel elválasztva)', services: 'Szolgáltatások (vesszővel elválasztva)', whatsapp: 'WhatsApp-szám', phone: 'Telefon',
@@ -80,6 +81,7 @@ export default {
   },
   notFound: { title: 'Itt nincs semmi.', text: 'Ez az oldal nem létezik (már).', back: 'Az áttekintéshez' },
   errors: {
+    too_many_photos: 'Profilonként legfeljebb 20 fotó.',
     forbidden: 'Nincs jogosultságod.', self_admin: 'A saját admin jogodat nem veheted el.',
     invalid_credentials: 'Hibás e-mail-cím vagy jelszó.', email_taken: 'Ez az e-mail-cím már regisztrálva van.',
     invalid_email: 'Adj meg egy érvényes e-mail-címet.', weak_password: 'A jelszónak legalább 8 karakterből kell állnia.',
@@ -89,7 +91,7 @@ export default {
     wrong_password: 'Hibás jelszó.', not_found: 'Nem található.', rate_limited: 'Túl sok próbálkozás – várj egy kicsit.',
     storage_unavailable: 'A médiatár nincs csatlakoztatva.', db_unavailable: 'Az adatbázis nincs csatlakoztatva.',
     admin_disabled: 'Az admin felület nincs beállítva.', profile_missing: 'Előbb mentsd el a profilodat.',
-    upload_invalid: 'A feltöltés sikertelen (max. 12 kép, egyenként 20 MB).', server_error: 'Szerverhiba – próbáld újra később.',
+    upload_invalid: 'A feltöltés sikertelen (max. 20 kép, egyenként 20 MB).', server_error: 'Szerverhiba – próbáld újra később.',
     network: 'Nincs kapcsolat a szerverrel.',
   },
 };

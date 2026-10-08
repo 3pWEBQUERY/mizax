@@ -5,6 +5,7 @@ import sharp from 'sharp';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import fs from 'node:fs';
+import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { query, migrate, hasDb } from './db.js';
 import { hasStorage, putObject, getObject, deleteObject } from './storage.js';
@@ -34,10 +35,21 @@ app.set('trust proxy', true);
 app.use(compression());
 app.use(express.json({ limit: '1mb' }));
 
+const MAX_PHOTOS = 20;
+
+// Uploads landen zuerst als temporäre Dateien auf der Platte (nicht im RAM) und werden
+// nach der Antwort wieder gelöscht.
 const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 20 * 1024 * 1024, files: 12 },
+  dest: path.join(os.tmpdir(), 'mizax-uploads'),
+  limits: { fileSize: 20 * 1024 * 1024, files: MAX_PHOTOS },
 });
+
+function uploadPhotos(req, res, next) {
+  res.on('close', () => {
+    for (const f of req.files || []) fs.promises.unlink(f.path).catch(() => {});
+  });
+  upload.array('photos', MAX_PHOTOS)(req, res, next);
+}
 
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
@@ -118,7 +130,7 @@ async function loadPhotos(ids) {
 async function listEscorts({ includeUnpublished = false } = {}) {
   const { rows } = await query(
     `SELECT * FROM escorts ${includeUnpublished ? '' : 'WHERE published = true'}
-     ORDER BY featured DESC, sort ASC, created_at DESC`,
+     ORDER BY created_at DESC, id DESC`,
   );
   const photos = await loadPhotos(rows.map((r) => r.id));
   return rows.map((r) => escortOut(r, photos.get(r.id) || []));
@@ -222,13 +234,17 @@ async function updateEscort(id, data, fields) {
 async function savePhotos(escortId, files = []) {
   if (!hasStorage()) throw httpError(503, 'storage_unavailable', 'Bucket nicht verbunden');
   const { rows: maxRows } = await query(
-    'SELECT COALESCE(MAX(position), -1)::int AS m FROM escort_photos WHERE escort_id = $1',
+    'SELECT COALESCE(MAX(position), -1)::int AS m, count(*)::int AS n FROM escort_photos WHERE escort_id = $1',
     [escortId],
   );
+  const images = files.filter((f) => /^image\//.test(f.mimetype));
+  if (maxRows[0].n + images.length > MAX_PHOTOS) {
+    throw httpError(400, 'too_many_photos', `Maximal ${MAX_PHOTOS} Fotos pro Profil`);
+  }
   let position = maxRows[0].m + 1;
   for (const file of files) {
     if (!/^image\//.test(file.mimetype)) continue;
-    const base = sharp(file.buffer, { failOn: 'none' }).rotate();
+    const base = sharp(file.path, { failOn: 'none' }).rotate();
     const large = await base
       .clone()
       .resize({ width: 1600, height: 2400, fit: 'inside', withoutEnlargement: true })
@@ -461,7 +477,7 @@ app.put(
 app.post(
   '/api/me/profile/photos',
   requireEscort,
-  upload.array('photos', 12),
+  uploadPhotos,
   wrap(async (req, res) => {
     const id = await requireOwnEscort(req);
     await savePhotos(id, req.files);
@@ -572,7 +588,7 @@ app.post(
   '/api/admin/escorts/:id/photos',
   requireAdmin,
   requireDb,
-  upload.array('photos', 12),
+  uploadPhotos,
   wrap(async (req, res) => {
     const id = Number(req.params.id);
     if (!(await getEscortById(id))) throw httpError(404, 'not_found', 'Nicht gefunden');

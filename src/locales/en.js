@@ -57,6 +57,7 @@ export default {
     onlyEscorts: 'Only escort accounts can create their own profile.',
   },
   editor: {
+    photoCount: '{n} / {max}', uploading: 'Uploading… {done}/{total}',
     name: 'Name', age: 'Age (min. 18)', city: 'City', origin: 'Origin', height: 'Height (cm)', accent: 'Accent colour',
     tagline: 'Short description', bio: 'About me (separate paragraphs with a blank line – each becomes a bubble)',
     languages: 'Languages (comma-separated)', services: 'Services (comma-separated)', whatsapp: 'WhatsApp number', phone: 'Phone',
@@ -80,6 +81,7 @@ export default {
   },
   notFound: { title: 'Nothing here.', text: 'This page doesn’t exist (anymore).', back: 'To overview' },
   errors: {
+    too_many_photos: 'Maximum 20 photos per profile.',
     forbidden: 'No permission.', self_admin: 'You can’t remove your own admin rights.',
     invalid_credentials: 'Email or password is incorrect.', email_taken: 'This email address is already registered.',
     invalid_email: 'Please enter a valid email address.', weak_password: 'The password must have at least 8 characters.',
@@ -89,7 +91,7 @@ export default {
     wrong_password: 'Wrong password.', not_found: 'Not found.', rate_limited: 'Too many attempts – please wait a moment.',
     storage_unavailable: 'Media storage is not connected.', db_unavailable: 'The database is not connected.',
     admin_disabled: 'The admin area is not set up.', profile_missing: 'Please save your profile first.',
-    upload_invalid: 'Upload failed (max. 12 images, 20 MB each).', server_error: 'Server error – please try again later.',
+    upload_invalid: 'Upload failed (max. 20 images, 20 MB each).', server_error: 'Server error – please try again later.',
     network: 'No connection to the server.',
   },
 };

@@ -57,6 +57,7 @@ export default {
     onlyEscorts: 'Doar conturile de escort își pot crea un profil propriu.',
   },
   editor: {
+    photoCount: '{n} / {max}', uploading: 'Se încarcă… {done}/{total}',
     name: 'Nume', age: 'Vârstă (min. 18)', city: 'Oraș', origin: 'Origine', height: 'Înălțime (cm)', accent: 'Culoare de accent',
     tagline: 'Descriere scurtă', bio: 'Despre mine (separă paragrafele cu un rând gol – fiecare devine o bulă)',
     languages: 'Limbi (separate prin virgulă)', services: 'Servicii (separate prin virgulă)', whatsapp: 'Număr WhatsApp', phone: 'Telefon',
@@ -80,6 +81,7 @@ export default {
   },
   notFound: { title: 'Nu e nimic aici.', text: 'Această pagină nu (mai) există.', back: 'La prezentare' },
   errors: {
+    too_many_photos: 'Maximum 20 de fotografii per profil.',
     forbidden: 'Nu ai permisiunea.', self_admin: 'Nu îți poți elimina propriile drepturi de admin.',
     invalid_credentials: 'E-mail sau parolă incorectă.', email_taken: 'Această adresă de e-mail este deja înregistrată.',
     invalid_email: 'Introdu o adresă de e-mail validă.', weak_password: 'Parola trebuie să aibă cel puțin 8 caractere.',
@@ -89,7 +91,7 @@ export default {
     wrong_password: 'Parolă greșită.', not_found: 'Negăsit.', rate_limited: 'Prea multe încercări – așteaptă puțin.',
     storage_unavailable: 'Stocarea media nu este conectată.', db_unavailable: 'Baza de date nu este conectată.',
     admin_disabled: 'Zona de administrare nu este configurată.', profile_missing: 'Salvează mai întâi profilul.',
-    upload_invalid: 'Încărcare eșuată (max. 12 imagini, câte 20 MB).', server_error: 'Eroare de server – încearcă mai târziu.',
+    upload_invalid: 'Încărcare eșuată (max. 20 imagini, câte 20 MB).', server_error: 'Eroare de server – încearcă mai târziu.',
     network: 'Nu există conexiune cu serverul.',
   },
 };

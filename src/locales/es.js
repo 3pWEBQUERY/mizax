@@ -57,6 +57,7 @@ export default {
     onlyEscorts: 'Solo las cuentas de escort pueden crear un perfil propio.',
   },
   editor: {
+    photoCount: '{n} / {max}', uploading: 'Subiendo… {done}/{total}',
     name: 'Nombre', age: 'Edad (mín. 18)', city: 'Ciudad', origin: 'Origen', height: 'Altura (cm)', accent: 'Color de acento',
     tagline: 'Descripción breve', bio: 'Sobre mí (separa los párrafos con una línea en blanco: cada uno será una burbuja)',
     languages: 'Idiomas (separados por comas)', services: 'Servicios (separados por comas)', whatsapp: 'Número de WhatsApp', phone: 'Teléfono',
@@ -80,6 +81,7 @@ export default {
   },
   notFound: { title: 'Aquí no hay nada.', text: 'Esta página no existe (o ya no existe).', back: 'Al resumen' },
   errors: {
+    too_many_photos: 'Máximo 20 fotos por perfil.',
     forbidden: 'Sin permiso.', self_admin: 'No puedes quitarte tus propios permisos de admin.',
     invalid_credentials: 'Correo o contraseña incorrectos.', email_taken: 'Este correo ya está registrado.',
     invalid_email: 'Introduce un correo electrónico válido.', weak_password: 'La contraseña debe tener al menos 8 caracteres.',
@@ -89,7 +91,7 @@ export default {
     wrong_password: 'Contraseña incorrecta.', not_found: 'No encontrado.', rate_limited: 'Demasiados intentos: espera un momento.',
     storage_unavailable: 'El almacenamiento de medios no está conectado.', db_unavailable: 'La base de datos no está conectada.',
     admin_disabled: 'El área de administración no está configurada.', profile_missing: 'Guarda primero tu perfil.',
-    upload_invalid: 'Error al subir (máx. 12 imágenes de 20 MB).', server_error: 'Error del servidor: inténtalo más tarde.',
+    upload_invalid: 'Error al subir (máx. 20 imágenes de 20 MB).', server_error: 'Error del servidor: inténtalo más tarde.',
     network: 'Sin conexión con el servidor.',
   },
 };
