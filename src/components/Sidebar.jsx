@@ -6,7 +6,7 @@ import BarChart from './BarChart.jsx';
 import { useToast } from './Toast.jsx';
 import { useOwnEscort } from './Feed.jsx';
 import {
-  InboxIcon, ChartIcon, FeedIcon, GearIcon, HeartIcon, EditIcon, ChevronR, CloseIcon, ImageIcon, SpinnerIcon, LoginIcon, UserIcon,
+  InboxIcon, ChartIcon, FeedIcon, GearIcon, HeartIcon, EditIcon, ChevronR, CloseIcon, ImageIcon, SpinnerIcon,
 } from './Icons.jsx';
 import { ConversationRow } from '../pages/Messages.jsx';
 import { Delta } from '../pages/Stats.jsx';
@@ -49,11 +49,6 @@ function Card({ i, icon: Icon, title, badge, to, toLabel, children, className = 
     <motion.section className={`side-card ${className}`} variants={cardVariants} custom={i} initial="hidden" animate="show" exit="exit">
       {title && (
         <header className="side-card-head">
-          {Icon && (
-            <span className="side-card-icon">
-              <Icon width={17} height={17} />
-            </span>
-          )}
           <h3>{title}</h3>
           {badge > 0 && <span className="count-badge">{badge}</span>}
           {to && (
@@ -86,8 +81,9 @@ function StatsCard({ i, stats }) {
     return (
       <Card i={i} icon={ChartIcon} title={t('stats.title')}>
         <p className="side-text">{t('stats.noProfile')}</p>
-        <Link to="/me" className="side-btn">
+        <Link to="/me" className="small-btn side-small">
           {t('menu.myProfile')}
+          <ChevronR width={14} height={14} />
         </Link>
       </Card>
     );
@@ -156,8 +152,9 @@ function QuickPost({ onPosted }) {
     return (
       <>
         <p className="side-text">{t('feed.needProfile')}</p>
-        <Link to="/me" className="side-btn">
+        <Link to="/me" className="small-btn side-small">
           {t('menu.myProfile')}
+          <ChevronR width={14} height={14} />
         </Link>
       </>
     );
@@ -322,13 +319,12 @@ export default function Sidebar() {
                     <h3>{t('sidebar.guestTitle')}</h3>
                     <p className="side-text">{t('sidebar.guestText')}</p>
                     <div className="side-actions">
-                      <Link to="/register" className="side-btn primary">
-                        <UserIcon width={16} height={16} />
+                      <Link to="/register" className="status-pill">
                         {t('menu.register')}
                       </Link>
-                      <Link to="/login" className="side-btn">
-                        <LoginIcon width={16} height={16} />
+                      <Link to="/login" className="small-btn">
                         {t('menu.login')}
+                        <ChevronR width={14} height={14} />
                       </Link>
                     </div>
                   </Card>
@@ -354,9 +350,6 @@ export default function Sidebar() {
                     ) : (
                       <div className="skeleton" style={{ height: 96, borderRadius: 16 }} />
                     )}
-                    <Link to="/messages" className="side-btn">
-                      {t('sidebar.allMessages')}
-                    </Link>
                   </Card>
 
                   <StatsCard i={i++} stats={data?.stats} />
@@ -373,11 +366,6 @@ export default function Sidebar() {
                       </div>
                     ) : (
                       data && !escort && <p className="side-text">{t('feed.empty')}</p>
-                    )}
-                    {!escort && (
-                      <Link to="/feed" className="side-btn">
-                        {t('sidebar.openFeed')}
-                      </Link>
                     )}
                   </Card>
 
