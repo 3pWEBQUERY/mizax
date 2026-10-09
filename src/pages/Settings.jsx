@@ -6,7 +6,7 @@ import Avatar from '../components/Avatar.jsx';
 import { useToast } from '../components/Toast.jsx';
 import { useOwnEscort } from '../components/Feed.jsx';
 import {
-  BackIcon, CloseIcon, ChevronR, UserIcon, MailIcon, KeyIcon, InboxIcon, ChartIcon, FeedIcon, GlobeIcon, PaletteIcon,
+  BackIcon, ChevronR, UserIcon, MailIcon, KeyIcon, InboxIcon, ChartIcon, FeedIcon, GlobeIcon, PaletteIcon,
   EyeIcon, ShieldIcon, DocIcon, LogoutIcon, TrashIcon, CheckIcon, MoonIcon, SunIcon, HeartIcon, SpinnerIcon,
 } from '../components/Icons.jsx';
 import { api } from '../lib/api.js';
@@ -15,10 +15,8 @@ import { useDock } from '../lib/dock.jsx';
 import { useI18n, LOCALES, dictionaries, errorText } from '../lib/i18n.jsx';
 import { useTheme } from '../lib/theme.jsx';
 import { useUnread } from '../lib/inbox.js';
-import { flag } from '../lib/catalog.js';
 
 const SECTIONS = ['account', 'password', 'language', 'theme', 'privacy', 'delete'];
-const LANG_FLAGS = { de: 'DE', en: 'GB', fr: 'FR', es: 'ES', hu: 'HU', pl: 'PL', ro: 'RO' };
 
 const slide = {
   enter: (dir) => ({ opacity: 0, x: dir * 40, filter: 'blur(4px)' }),
@@ -35,9 +33,9 @@ function Group({ title, children }) {
   );
 }
 
-function Row({ icon: Icon, label, value, onClick, danger, chevron = true, checked, badge }) {
+function Row({ icon: Icon, label, value, onClick, danger, chevron = true, checked, badge, code }) {
   return (
-    <button type="button" className={`settings-row ${danger ? 'danger' : ''}`} onClick={onClick}>
+    <button type="button" className={`settings-row ${danger ? 'danger' : ''} ${Icon ? '' : 'no-icon'}`} onClick={onClick}>
       {Icon && (
         <span className="settings-icon">
           <Icon width={19} height={19} />
@@ -46,6 +44,7 @@ function Row({ icon: Icon, label, value, onClick, danger, chevron = true, checke
       <span className="settings-label">{label}</span>
       {badge > 0 && <span className="count-badge">{badge}</span>}
       {value && <span className="settings-value">{value}</span>}
+      {code && <span className="settings-code">{code}</span>}
       {checked !== undefined ? (
         <span className={`settings-check ${checked ? 'on' : ''}`}>{checked && <CheckIcon width={14} height={14} />}</span>
       ) : (
@@ -184,13 +183,7 @@ function LanguageSection() {
   return (
     <Group>
       {LOCALES.map((l) => (
-        <Row
-          key={l}
-          icon={() => <span className="settings-flag">{flag(LANG_FLAGS[l])}</span>}
-          label={dictionaries[l].langName}
-          checked={locale === l}
-          onClick={() => setLocale(l)}
-        />
+        <Row key={l} label={dictionaries[l].langName} code={l.toUpperCase()} checked={locale === l} onClick={() => setLocale(l)} />
       ))}
     </Group>
   );
@@ -338,58 +331,57 @@ export default function Settings() {
 
   return (
     <Page className="settings-page">
-      <motion.div
-        className="settings-sheet"
-        initial={{ opacity: 0, y: 24, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 30 }}
-      >
-        <div className="settings-top">
-          <AnimatePresence mode="wait" initial={false}>
-            {section ? (
-              <motion.button
-                key="back"
-                type="button"
-                className="sheet-btn"
-                aria-label={t('nav.back')}
-                onClick={back}
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.7 }}
-              >
-                <BackIcon width={18} height={18} />
-              </motion.button>
-            ) : (
-              <motion.span key="title" className="settings-top-title" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                {t('settings.title')}
-              </motion.span>
-            )}
-          </AnimatePresence>
-          {section && <span className="settings-section-title">{titles[section]}</span>}
-          <button type="button" className="sheet-btn" aria-label={t('profile.close')} onClick={() => navigate('/')}>
-            <CloseIcon width={18} height={18} />
-          </button>
-        </div>
-
-        <AnimatePresence mode="popLayout" initial={false} custom={section ? 1 : -1}>
-          <motion.div
+      <div className="settings-top">
+        <AnimatePresence initial={false}>
+          {section && (
+            <motion.button
+              key="back"
+              type="button"
+              className="icon-btn"
+              aria-label={t('nav.back')}
+              onClick={back}
+              initial={{ opacity: 0, width: 0, marginRight: -12 }}
+              animate={{ opacity: 1, width: 40, marginRight: 0 }}
+              exit={{ opacity: 0, width: 0, marginRight: -12 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <BackIcon width={20} height={20} />
+            </motion.button>
+          )}
+        </AnimatePresence>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.h1
             key={section || 'main'}
-            className="settings-body"
-            custom={section ? 1 : -1}
-            variants={slide}
-            initial="enter"
-            animate="center"
-            exit="exit"
+            className="me-title"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.22 }}
           >
-            {section ? (
-              sections[section]
-            ) : (
-              <>
+            {section ? titles[section] : t('settings.title')}
+          </motion.h1>
+        </AnimatePresence>
+      </div>
+
+      <AnimatePresence mode="popLayout" initial={false} custom={section ? 1 : -1}>
+        <motion.div
+          key={section || 'main'}
+          className="settings-body"
+          custom={section ? 1 : -1}
+          variants={slide}
+          initial="enter"
+          animate="center"
+          exit="exit"
+        >
+          {section ? (
+            sections[section]
+          ) : (
+            <>
                 <div className="settings-profile">
-                  <Avatar name={user.name} thumb={own?.photos?.[0]?.thumb} size={76} />
-                  <div>
+                  <Avatar name={user.name} thumb={own?.photos?.[0]?.thumb} size={48} />
+                  <div className="who">
                     <b>{user.name}</b>
-                    <span>{user.email}</span>
+                    <span className="mail">{user.email}</span>
                   </div>
                   <span className={`role-badge ${user.isAdmin ? 'admin' : user.role}`}>
                     {user.isAdmin ? t('menu.adminBadge') : t(`menu.${user.role}`)}
@@ -450,9 +442,8 @@ export default function Settings() {
                 )}
               </>
             )}
-          </motion.div>
-        </AnimatePresence>
-      </motion.div>
+        </motion.div>
+      </AnimatePresence>
     </Page>
   );
 }

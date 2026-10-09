@@ -311,7 +311,7 @@ export default function Sidebar() {
                 <span>
                   {user ? t('sidebar.hello', { name: user.name.split(' ')[0] }) : t('sidebar.welcome')}
                 </span>
-                <button type="button" className="sheet-btn" onClick={close} aria-label={t('profile.close')}>
+                <button type="button" className="icon-btn sm" onClick={close} aria-label={t('profile.close')}>
                   <CloseIcon width={16} height={16} />
                 </button>
               </motion.div>
@@ -319,7 +319,6 @@ export default function Sidebar() {
               {ready && !user && (
                 <>
                   <Card i={i++} className="side-welcome">
-                    <div className="side-welcome-art" aria-hidden="true" />
                     <h3>{t('sidebar.guestTitle')}</h3>
                     <p className="side-text">{t('sidebar.guestText')}</p>
                     <div className="side-actions">
