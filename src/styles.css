@@ -5390,3 +5390,14 @@ a.status-pill:hover {
   border: 1px solid var(--border-strong);
   color: var(--text-2);
 }
+
+/* ---------- Startseite wie die übrigen Seiten ---------- */
+
+.home-page .chips {
+  justify-content: flex-start;
+  margin-bottom: 18px;
+}
+
+.home-page .radius-chips {
+  margin-top: -6px;
+}

@@ -12,7 +12,7 @@ export default {
     text: 'Ta strona zawiera treści przeznaczone wyłącznie dla dorosłych. Potwierdź, że masz co najmniej 18 lat.',
     confirm: 'Mam 18 lat lub więcej', leave: 'Opuść stronę', aria: 'Weryfikacja wieku',
   },
-  home: { all: 'Wszystkie', empty: 'Nie znaleziono profili.', loadError: 'Nie udało się wczytać profili.' },
+  home: { count: 'Profile w całej Szwajcarii: {n}', countOne: 'Profile w całej Szwajcarii: 1', matches: 'Wyniki: {n}', matchesOne: 'Wyniki: 1', all: 'Wszystkie', empty: 'Nie znaleziono profili.', loadError: 'Nie udało się wczytać profili.' },
   card: { verified: 'Zweryfikowana', addFav: 'Dodaj do ulubionych', removeFav: 'Usuń z ulubionych' },
   dock: {
     searchPlaceholder: 'Szukaj po imieniu, miejscowości lub kantonie', searchIn: 'Szukaj w: {city}', messageTo: 'Wiadomość do: {name}',

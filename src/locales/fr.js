@@ -12,7 +12,7 @@ export default {
     text: 'Ce site contient des contenus réservés aux adultes. Veuillez confirmer que vous avez au moins 18 ans.',
     confirm: 'J’ai 18 ans ou plus', leave: 'Quitter', aria: 'Vérification de l’âge',
   },
-  home: { all: 'Tous', empty: 'Aucun profil trouvé.', loadError: 'Impossible de charger les profils.' },
+  home: { count: '{n} profils dans toute la Suisse', countOne: '1 profil dans toute la Suisse', matches: '{n} résultats', matchesOne: '1 résultat', all: 'Tous', empty: 'Aucun profil trouvé.', loadError: 'Impossible de charger les profils.' },
   card: { verified: 'Vérifié', addFav: 'Ajouter aux favoris', removeFav: 'Retirer des favoris' },
   dock: {
     searchPlaceholder: 'Rechercher par nom, localité ou canton', searchIn: 'Rechercher à {city}', messageTo: 'Message à {name}',

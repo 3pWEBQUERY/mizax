@@ -3,7 +3,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Page from '../components/Page.jsx';
 import EscortCard, { GridSkeleton } from '../components/EscortCard.jsx';
 import Picker from '../components/fields/Picker.jsx';
-import { PinIcon, ChevronDown, SpinnerIcon } from '../components/Icons.jsx';
+import { PinIcon, ChevronDown, SpinnerIcon, SearchIcon } from '../components/Icons.jsx';
+import PageHead from '../components/PageHead.jsx';
 import { useToast } from '../components/Toast.jsx';
 import { useEscorts } from '../lib/store.js';
 import { useDock, useDockState } from '../lib/dock.jsx';
@@ -196,8 +197,17 @@ export default function Home() {
     [escorts, query, canton, geo, radius],
   );
 
+  const filteredView = Boolean(query.trim() || canton || geo);
+  const n = filtered.length;
+  const sub = !escorts
+    ? null
+    : filteredView
+      ? t(n === 1 ? 'home.matchesOne' : 'home.matches', { n })
+      : t(n === 1 ? 'home.countOne' : 'home.count', { n });
+
   return (
-    <Page>
+    <Page className="home-page">
+      <PageHead wide title={t('nav.discover')} text={sub} />
       {escorts && <CantonChips escorts={escorts} />}
 
       {error && !escorts ? (
@@ -207,8 +217,13 @@ export default function Home() {
       ) : filtered.length ? (
         <EscortGrid list={filtered} instant={instant} />
       ) : (
-        <motion.div className="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          {t('home.empty')}
+        <motion.div className="panel conv-panel" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <div className="conv-empty">
+            <span className="settings-icon">
+              <SearchIcon width={22} height={22} />
+            </span>
+            <b>{t('home.empty')}</b>
+          </div>
         </motion.div>
       )}
 

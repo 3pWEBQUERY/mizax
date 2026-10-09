@@ -12,7 +12,7 @@ export default {
     text: 'Ez az oldal kizárólag felnőtteknek szóló tartalmat tartalmaz. Kérjük, erősítsd meg, hogy elmúltál 18 éves.',
     confirm: 'Elmúltam 18 éves', leave: 'Kilépés', aria: 'Életkor megerősítése',
   },
-  home: { all: 'Mind', empty: 'Nincs találat.', loadError: 'A profilokat nem sikerült betölteni.' },
+  home: { count: '{n} profil Svájc-szerte', countOne: '1 profil Svájc-szerte', matches: '{n} találat', matchesOne: '1 találat', all: 'Mind', empty: 'Nincs találat.', loadError: 'A profilokat nem sikerült betölteni.' },
   card: { verified: 'Ellenőrzött', addFav: 'Hozzáadás a kedvencekhez', removeFav: 'Eltávolítás a kedvencekből' },
   dock: {
     searchPlaceholder: 'Keresés név, település vagy kanton szerint', searchIn: 'Keresés itt: {city}', messageTo: 'Üzenet neki: {name}',

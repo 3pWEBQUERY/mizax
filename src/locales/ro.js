@@ -12,7 +12,7 @@ export default {
     text: 'Acest site conține materiale destinate exclusiv adulților. Te rugăm să confirmi că ai cel puțin 18 ani.',
     confirm: 'Am 18 ani sau mai mult', leave: 'Părăsește', aria: 'Verificarea vârstei',
   },
-  home: { all: 'Toate', empty: 'Nu s-au găsit profiluri.', loadError: 'Profilurile nu au putut fi încărcate.' },
+  home: { count: '{n} profiluri în toată Elveția', countOne: '1 profil în toată Elveția', matches: '{n} rezultate', matchesOne: '1 rezultat', all: 'Toate', empty: 'Nu s-au găsit profiluri.', loadError: 'Profilurile nu au putut fi încărcate.' },
   card: { verified: 'Verificată', addFav: 'Adaugă la favorite', removeFav: 'Elimină din favorite' },
   dock: {
     searchPlaceholder: 'Caută după nume, localitate sau canton', searchIn: 'Caută în {city}', messageTo: 'Mesaj pentru {name}',

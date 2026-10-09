@@ -12,7 +12,7 @@ export default {
     text: 'Este sitio contiene contenido solo para adultos. Confirma que tienes al menos 18 años.',
     confirm: 'Tengo 18 años o más', leave: 'Salir', aria: 'Verificación de edad',
   },
-  home: { all: 'Todas', empty: 'No se encontraron perfiles.', loadError: 'No se pudieron cargar los perfiles.' },
+  home: { count: '{n} perfiles en toda Suiza', countOne: '1 perfil en toda Suiza', matches: '{n} resultados', matchesOne: '1 resultado', all: 'Todas', empty: 'No se encontraron perfiles.', loadError: 'No se pudieron cargar los perfiles.' },
   card: { verified: 'Verificada', addFav: 'Añadir a favoritos', removeFav: 'Quitar de favoritos' },
   dock: {
     searchPlaceholder: 'Buscar por nombre, localidad o cantón', searchIn: 'Buscar en {city}', messageTo: 'Mensaje para {name}',

@@ -12,7 +12,7 @@ export default {
     text: 'This site contains content intended for adults only. Please confirm that you are at least 18 years old.',
     confirm: 'I am 18 or older', leave: 'Leave', aria: 'Age verification',
   },
-  home: { all: 'All', empty: 'No profiles found.', loadError: 'Profiles could not be loaded.' },
+  home: { count: '{n} profiles across Switzerland', countOne: '1 profile across Switzerland', matches: '{n} results', matchesOne: '1 result', all: 'All', empty: 'No profiles found.', loadError: 'Profiles could not be loaded.' },
   card: { verified: 'Verified', addFav: 'Add to favorites', removeFav: 'Remove from favorites' },
   dock: {
     searchPlaceholder: 'Search by name, place or canton', searchIn: 'Search in {city}', messageTo: 'Message {name}',
