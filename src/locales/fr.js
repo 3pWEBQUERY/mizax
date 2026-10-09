@@ -61,6 +61,7 @@ export default {
     onlyEscorts: 'Seuls les comptes escort peuvent créer leur propre profil.',
   },
   editor: {
+    sectionBasics: 'Informations de base', sectionContact: 'Contact',
     place: 'Localité (NPA ou nom)', placePlaceholder: 'p. ex. 1201 ou Genève', useLocation: 'Utiliser ma position', placeHint: 'Choisissez une localité dans la liste. Votre profil n’affiche que la localité, jamais votre position exacte.',
     chooseNationality: 'Choisir la nationalité', search: 'Rechercher…', noResults: 'Aucun résultat', addLanguage: 'Ajouter une langue', removeLanguage: 'Retirer la langue', noLanguages: 'Aucune langue sélectionnée', chooseServices: 'Choisir les prestations', noServices: 'Aucune prestation sélectionnée', selected: '{n} sélectionnée(s)', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Téléversement… {done}/{total}',

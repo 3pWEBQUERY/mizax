@@ -61,6 +61,7 @@ export default {
     onlyEscorts: 'Tylko konta escort mogą tworzyć własny profil.',
   },
   editor: {
+    sectionBasics: 'Podstawowe dane', sectionContact: 'Kontakt',
     place: 'Miejscowość (kod lub nazwa)', placePlaceholder: 'np. 8001 lub Zurych', useLocation: 'Użyj obecnej lokalizacji', placeHint: 'Wybierz miejscowość z listy. Profil pokazuje tylko miejscowość, nigdy dokładną lokalizację.',
     chooseNationality: 'Wybierz narodowość', search: 'Szukaj…', noResults: 'Brak wyników', addLanguage: 'Dodaj język', removeLanguage: 'Usuń język', noLanguages: 'Nie wybrano jeszcze języków', chooseServices: 'Wybierz usługi', noServices: 'Nie wybrano jeszcze usług', selected: 'Wybrano: {n}', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Przesyłanie… {done}/{total}',

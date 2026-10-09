@@ -61,6 +61,7 @@ export default {
     onlyEscorts: 'Doar conturile de escort își pot crea un profil propriu.',
   },
   editor: {
+    sectionBasics: 'Date de bază', sectionContact: 'Contact',
     place: 'Localitate (cod poștal sau nume)', placePlaceholder: 'ex. 8001 sau Zürich', useLocation: 'Folosește locația actuală', placeHint: 'Alege o localitate din listă. Profilul arată doar localitatea, niciodată locația exactă.',
     chooseNationality: 'Alege naționalitatea', search: 'Caută…', noResults: 'Niciun rezultat', addLanguage: 'Adaugă o limbă', removeLanguage: 'Elimină limba', noLanguages: 'Nicio limbă selectată', chooseServices: 'Alege serviciile', noServices: 'Niciun serviciu selectat', selected: '{n} selectate', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Se încarcă… {done}/{total}',

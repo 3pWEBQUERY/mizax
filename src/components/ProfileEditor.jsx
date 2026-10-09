@@ -144,100 +144,113 @@ export default function ProfileEditor({
   ];
 
   return (
-    <form onSubmit={save}>
-      <div className="form">
-        <Field label={t('editor.name')}>
-          <input className="input" value={form.name} onChange={set('name')} maxLength={60} required />
-        </Field>
-        <Field label={t('editor.age')}>
-          <input className="input" type="number" min={18} max={99} value={form.age} onChange={set('age')} required />
-        </Field>
-        <Field label={t('editor.place')} full>
-          <PlaceField
-            city={form.city}
-            zip={form.zip}
-            canton={form.canton}
-            onChange={(p) => setForm((f) => ({ ...f, ...p }))}
-          />
-        </Field>
-        <Field label={t('editor.origin')}>
-          <NationalityField value={form.nationality} onChange={setValue('nationality')} />
-        </Field>
-        <Field label={t('editor.height')}>
-          <input className="input" type="number" value={form.height} onChange={set('height')} />
-        </Field>
-        <Field label={t('editor.accent')}>
-          <input className="input" type="color" value={form.accent} onChange={set('accent')} style={{ height: 46, padding: 6 }} />
-        </Field>
-        <Field label={t('editor.tagline')} full>
-          <input className="input" value={form.tagline} onChange={set('tagline')} maxLength={200} />
-        </Field>
-        <Field label={t('editor.bio')} full>
-          <textarea className="input" value={form.bio} onChange={set('bio')} maxLength={5000} />
-        </Field>
-        <Field label={t('editor.languages')} full>
-          <LanguagesField value={form.languages} onChange={setValue('languages')} />
-        </Field>
-        <Field label={t('editor.services')} full>
-          <ServicesField value={form.services} onOpen={openServices} />
-        </Field>
-        <Field label={t('editor.whatsapp')}>
-          <PhoneField id="pf-whatsapp" whatsapp value={form.whatsapp} onChange={setValue('whatsapp')} />
-        </Field>
-        <Field label={t('editor.phone')}>
-          <PhoneField id="pf-phone" value={form.phone} onChange={setValue('phone')} />
-        </Field>
-        <Field label={t('editor.email')}>
-          <input className="input" type="email" value={form.email} onChange={set('email')} />
-        </Field>
-      </div>
-
-      <div className="section-title">{t('editor.status')}</div>
-      <div className="toggles">
-        {toggles.map(([k, label]) => (
-          <button type="button" key={k} className={`toggle ${form[k] ? 'on' : ''}`} onClick={flip(k)} aria-pressed={form[k]}>
-            {label}
-          </button>
-        ))}
-      </div>
-
-      <div className="section-title">{t('editor.rates')}</div>
-      {form.rates.map((r, idx) => (
-        <div className="rate-row" key={idx}>
-          <input className="input" placeholder={t('editor.rateLabel')} value={r.label} onChange={(e) => setRate(idx, 'label', e.target.value)} />
-          <input className="input" placeholder={t('editor.ratePrice')} value={r.price} onChange={(e) => setRate(idx, 'price', e.target.value)} />
-          <button
-            type="button"
-            className="mini-btn danger"
-            style={{ width: 40, height: 46, borderRadius: 14 }}
-            onClick={() => setForm((f) => ({ ...f, rates: f.rates.filter((_, i) => i !== idx) }))}
-            aria-label={t('editor.removeRow')}
-          >
-            <TrashIcon />
-          </button>
+    <form onSubmit={save} className="editor">
+      <Section title={t('editor.sectionBasics')}>
+        <div className="form">
+          <Field label={t('editor.name')}>
+            <input className="input" value={form.name} onChange={set('name')} maxLength={60} required />
+          </Field>
+          <Field label={t('editor.age')}>
+            <input className="input" type="number" min={18} max={99} value={form.age} onChange={set('age')} required />
+          </Field>
+          <Field label={t('editor.place')} full>
+            <PlaceField
+              city={form.city}
+              zip={form.zip}
+              canton={form.canton}
+              onChange={(p) => setForm((f) => ({ ...f, ...p }))}
+            />
+          </Field>
+          <Field label={t('editor.origin')}>
+            <NationalityField value={form.nationality} onChange={setValue('nationality')} />
+          </Field>
+          <Field label={t('editor.height')}>
+            <input className="input" type="number" value={form.height} onChange={set('height')} />
+          </Field>
+          <Field label={t('editor.accent')}>
+            <label className="input color-field">
+              <input type="color" value={form.accent} onChange={set('accent')} />
+              <span>{form.accent.toUpperCase()}</span>
+            </label>
+          </Field>
         </div>
-      ))}
-      <button
-        type="button"
-        className="toggle"
-        onClick={() => setForm((f) => ({ ...f, rates: [...f.rates, { label: '', price: '' }] }))}
-      >
-        {t('editor.addRow')}
-      </button>
+      </Section>
 
-      <div className="section-title">
-        {t('editor.photos')}
-        {escort && (
-          <span style={{ color: 'var(--muted)', fontWeight: 500, marginLeft: 8 }}>
-            {t('editor.photoCount', { n: escort.photos.length, max: MAX_PHOTOS })}
-          </span>
+      <Section title={t('settings.about')}>
+        <div className="form">
+          <Field label={t('editor.tagline')} full>
+            <input className="input" value={form.tagline} onChange={set('tagline')} maxLength={200} />
+          </Field>
+          <Field label={t('editor.bio')} full>
+            <textarea className="input" value={form.bio} onChange={set('bio')} maxLength={5000} />
+          </Field>
+          <Field label={t('editor.languages')} full>
+            <LanguagesField value={form.languages} onChange={setValue('languages')} />
+          </Field>
+          <Field label={t('editor.services')} full>
+            <ServicesField value={form.services} onOpen={openServices} />
+          </Field>
+        </div>
+      </Section>
+
+      <Section title={t('editor.sectionContact')}>
+        <div className="form">
+          <Field label={t('editor.whatsapp')}>
+            <PhoneField id="pf-whatsapp" whatsapp value={form.whatsapp} onChange={setValue('whatsapp')} />
+          </Field>
+          <Field label={t('editor.phone')}>
+            <PhoneField id="pf-phone" value={form.phone} onChange={setValue('phone')} />
+          </Field>
+          <Field label={t('editor.email')}>
+            <input className="input" type="email" value={form.email} onChange={set('email')} />
+          </Field>
+        </div>
+      </Section>
+
+      <Section title={t('editor.status')}>
+        <div className="toggles">
+          {toggles.map(([k, label]) => (
+            <button type="button" key={k} className={`toggle ${form[k] ? 'on' : ''}`} onClick={flip(k)} aria-pressed={form[k]}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </Section>
+
+      <Section title={t('editor.rates')}>
+        {form.rates.map((r, idx) => (
+          <div className="rate-row" key={idx}>
+            <input className="input" placeholder={t('editor.rateLabel')} value={r.label} onChange={(e) => setRate(idx, 'label', e.target.value)} />
+            <input className="input" placeholder={t('editor.ratePrice')} value={r.price} onChange={(e) => setRate(idx, 'price', e.target.value)} />
+            <button
+              type="button"
+              className="rate-remove"
+              onClick={() => setForm((f) => ({ ...f, rates: f.rates.filter((_, i) => i !== idx) }))}
+              aria-label={t('editor.removeRow')}
+            >
+              <TrashIcon />
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          className="toggle"
+          onClick={() => setForm((f) => ({ ...f, rates: [...f.rates, { label: '', price: '' }] }))}
+        >
+          {t('editor.addRow')}
+        </button>
+      </Section>
+
+      <Section
+        title={t('editor.photos')}
+        aside={escort ? t('editor.photoCount', { n: escort.photos.length, max: MAX_PHOTOS }) : null}
+      >
+        {escort ? (
+          <Photos escort={escort} storage={storage} ep={ep} onChange={onSaved} />
+        ) : (
+          <div className="field-empty">{t('editor.saveFirst')}</div>
         )}
-      </div>
-      {escort ? (
-        <Photos escort={escort} storage={storage} ep={ep} onChange={onSaved} />
-      ) : (
-        <div style={{ color: 'var(--muted)' }}>{t('editor.saveFirst')}</div>
-      )}
+      </Section>
 
       <div className="form-actions">
         {escort && ep.remove && (
@@ -256,6 +269,18 @@ export default function ProfileEditor({
       </div>
       <ServicesPage open={servicesOpen} value={form.services} onSave={saveServices} onBack={closeServices} />
     </form>
+  );
+}
+
+function Section({ title, aside, children }) {
+  return (
+    <section className="editor-section">
+      <div className="panel-title">
+        <h2>{title}</h2>
+        {aside && <span>{aside}</span>}
+      </div>
+      {children}
+    </section>
   );
 }
 

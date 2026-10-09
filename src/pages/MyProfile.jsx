@@ -77,7 +77,7 @@ export default function MyProfile() {
         )}
       </div>
       {escort !== undefined && user && (
-        <Rise i={3} className="panel" style={{ maxWidth: 760, margin: '0 auto', padding: 20 }}>
+        <Rise i={3} className="me-editor">
           <ProfileEditor
             key={escort?.id || 'new'}
             mode="self"

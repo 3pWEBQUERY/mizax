@@ -61,6 +61,7 @@ export default {
     onlyEscorts: 'Only escort accounts can create their own profile.',
   },
   editor: {
+    sectionBasics: 'Basics', sectionContact: 'Contact',
     place: 'Place (postcode or name)', placePlaceholder: 'e.g. 8001 or Zurich', useLocation: 'Use current location', placeHint: 'Please choose a place from the list. Your profile only shows the town, never your exact location.',
     chooseNationality: 'Choose nationality', search: 'Search…', noResults: 'No results', addLanguage: 'Add language', removeLanguage: 'Remove language', noLanguages: 'No languages selected yet', chooseServices: 'Choose services', noServices: 'No services selected yet', selected: '{n} selected', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Uploading… {done}/{total}',

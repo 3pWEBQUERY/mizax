@@ -61,6 +61,7 @@ export default {
     onlyEscorts: 'Saját profilt csak escort-fiókok hozhatnak létre.',
   },
   editor: {
+    sectionBasics: 'Alapadatok', sectionContact: 'Kapcsolat',
     place: 'Település (irányítószám vagy név)', placePlaceholder: 'pl. 8001 vagy Zürich', useLocation: 'Jelenlegi helyzet használata', placeHint: 'Válassz települést a listából. A profilodon csak a település látszik, a pontos helyed soha.',
     chooseNationality: 'Állampolgárság kiválasztása', search: 'Keresés…', noResults: 'Nincs találat', addLanguage: 'Nyelv hozzáadása', removeLanguage: 'Nyelv eltávolítása', noLanguages: 'Még nincs kiválasztott nyelv', chooseServices: 'Szolgáltatások kiválasztása', noServices: 'Még nincs kiválasztott szolgáltatás', selected: '{n} kiválasztva', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Feltöltés… {done}/{total}',

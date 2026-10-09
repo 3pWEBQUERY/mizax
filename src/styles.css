@@ -1289,7 +1289,7 @@ textarea.input {
 
 .rate-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 40px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 46px;
   gap: 8px;
   margin-bottom: 8px;
 }
@@ -5118,4 +5118,128 @@ a.status-pill:hover {
 .conv-empty b {
   font-size: 16px;
   font-weight: 500;
+}
+
+/* ---------- Mein Profil: Editor in Abschnitten wie die übrigen Karten ---------- */
+
+.me-editor {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.editor-section {
+  padding: 18px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.editor-section .rate-row + .toggle,
+.editor-section .rate-row:last-of-type {
+  margin-bottom: 10px;
+}
+
+/* in der Verwaltung liegt der Editor bereits in einem Panel */
+.panel .editor-section {
+  padding: 4px 0 14px;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.panel .editor-section + .editor-section {
+  border-top: 1px solid var(--border-strong);
+  padding-top: 18px;
+}
+
+.editor .form-actions {
+  margin-top: 4px;
+}
+
+.color-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 14px 0 8px;
+  cursor: pointer;
+  font-size: 14.5px;
+  color: var(--text-2);
+}
+
+.color-field input[type='color'] {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.color-field input[type='color']::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-field input[type='color']::-webkit-color-swatch {
+  border: 0;
+  border-radius: 50%;
+}
+
+.color-field input[type='color']::-moz-color-swatch {
+  border: 0;
+  border-radius: 50%;
+}
+
+.rate-remove {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--tint);
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+  transition: color 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.rate-remove:hover {
+  color: var(--danger);
+  background: var(--tint-2);
+}
+
+/* Status-Anzeige neutral, nur der Punkt zeigt online/offline */
+.status-pill.on {
+  color: var(--text-2);
+  border-color: var(--border-strong);
+  background: var(--surface);
+}
+
+/* Leistungen: Titel wie die übrigen Seiten */
+.svc-inner .settings-top {
+  margin-bottom: 6px;
+}
+
+.svc-intro {
+  margin: 0 0 24px;
+}
+
+.svc-group-title {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-2);
 }

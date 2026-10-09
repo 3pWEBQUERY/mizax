@@ -61,6 +61,7 @@ export default {
     onlyEscorts: 'Nur Escort-Konten können ein eigenes Profil anlegen.',
   },
   editor: {
+    sectionBasics: 'Grunddaten', sectionContact: 'Kontakt',
     place: 'Ort (PLZ oder Name)', placePlaceholder: 'z. B. 8001 oder Zürich', useLocation: 'Aktuellen Standort verwenden', placeHint: 'Bitte einen Ort aus der Liste wählen. Auf dem Profil erscheint nur der Ort, nie dein genauer Standort.',
     chooseNationality: 'Nationalität wählen', search: 'Suchen…', noResults: 'Keine Treffer', addLanguage: 'Sprache hinzufügen', removeLanguage: 'Sprache entfernen', noLanguages: 'Noch keine Sprachen ausgewählt', chooseServices: 'Leistungen auswählen', noServices: 'Noch keine Leistungen ausgewählt', selected: '{n} ausgewählt', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Lädt hoch… {done}/{total}',

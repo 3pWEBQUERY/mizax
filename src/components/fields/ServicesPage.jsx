@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Bubble } from '../Bubble.jsx';
 import { BackIcon, ChevronR, SpinnerIcon } from '../Icons.jsx';
 import { SERVICE_GROUPS, serviceLabel } from '../../lib/catalog.js';
 import { useT } from '../../lib/i18n.jsx';
@@ -91,19 +90,17 @@ export default function ServicesPage({ open, value, onSave, onBack }) {
           aria-label={t('services.title')}
         >
           <div className="svc-inner">
-            <motion.button
-              type="button"
-              className="ghost-btn svc-back"
-              onClick={onBack}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0, transition: { delay: 0.05, duration: 0.4, ease } }}
+            <motion.div
+              className="settings-top"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0, transition: { delay: 0.05, duration: 0.4, ease } }}
             >
-              <BackIcon width={18} height={18} /> {t('services.back')}
-            </motion.button>
-            <div className="bubbles" style={{ margin: '0 0 26px', maxWidth: 560 }}>
-              <Bubble i={0}>{t('services.title')}</Bubble>
-              <Bubble i={1}>{t('services.text')}</Bubble>
-            </div>
+              <button type="button" className="icon-btn" onClick={onBack} aria-label={t('services.back')}>
+                <BackIcon width={20} height={20} />
+              </button>
+              <h1 className="me-title">{t('services.title').replace(/\.$/, '')}</h1>
+            </motion.div>
+            <p className="me-intro svc-intro">{t('services.text')}</p>
 
             {SERVICE_GROUPS.map((g, gi) => (
               <motion.section
@@ -113,7 +110,7 @@ export default function ServicesPage({ open, value, onSave, onBack }) {
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 transition={{ duration: 0.55, ease, delay: 0.15 + gi * 0.06 }}
               >
-                <h3>{t(`services.groups.${g.key}`)}</h3>
+                <h2 className="svc-group-title">{t(`services.groups.${g.key}`)}</h2>
                 <div className="svc-chips">
                   {g.items.map((k) => {
                     const on = draft.has(k);
