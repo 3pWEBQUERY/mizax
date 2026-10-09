@@ -75,6 +75,12 @@ export async function migrate() {
     ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT false;
     ALTER TABLE users ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMPTZ;
 
+    -- Kleine Schlüssel/Wert-Ablage für App-Zustand (z. B. zuletzt angewandte ADMIN_EMAIL)
+    CREATE TABLE IF NOT EXISTS app_meta (
+      key   TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
+
     ALTER TABLE escorts ADD COLUMN IF NOT EXISTS zip TEXT NOT NULL DEFAULT '';
     ALTER TABLE escorts ADD COLUMN IF NOT EXISTS canton TEXT NOT NULL DEFAULT '';
     ALTER TABLE escorts ADD COLUMN IF NOT EXISTS lat DOUBLE PRECISION;

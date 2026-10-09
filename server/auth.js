@@ -128,6 +128,9 @@ export function requireAdmin(req, res, next) {
 // Legt beim Start das Admin-Konto aus ADMIN_EMAIL/ADMIN_PASSWORD an (falls noch nicht vorhanden)
 // bzw. gibt einem bestehenden Konto mit dieser E-Mail Admin-Rechte. Das Passwort wird nur beim
 // Anlegen gesetzt, damit eine spätere Änderung nicht überschrieben wird.
+// Wechselt ADMIN_EMAIL, verliert das bisherige Konto seine Admin-Rechte. Beim ersten Lauf ohne
+// gespeicherte Adresse werden alle übrigen Admins zurückgestuft; danach bleiben in der
+// Verwaltung vergebene Admin-Rechte über Neustarts hinweg erhalten.
 export async function ensureAdmin() {
   const email = String(process.env.ADMIN_EMAIL || '')
     .trim()
@@ -137,13 +140,27 @@ export async function ensureAdmin() {
   const { rows } = await query('SELECT id FROM users WHERE lower(email) = $1', [email]);
   if (rows[0]) {
     await query('UPDATE users SET is_admin = true WHERE id = $1', [rows[0].id]);
-    return email;
+  } else {
+    await query(
+      `INSERT INTO users (email, password_hash, name, role, is_admin) VALUES ($1, $2, 'Admin', 'member', true)`,
+      [email, await hashPassword(password)],
+    );
+    console.log(`[admin] Admin-Konto ${email} angelegt`);
   }
-  await query(
-    `INSERT INTO users (email, password_hash, name, role, is_admin) VALUES ($1, $2, 'Admin', 'member', true)`,
-    [email, await hashPassword(password)],
-  );
-  console.log(`[admin] Admin-Konto ${email} angelegt`);
+
+  const { rows: meta } = await query(`SELECT value FROM app_meta WHERE key = 'admin_email'`);
+  const previous = meta[0]?.value;
+  if (previous !== email) {
+    const { rowCount } = previous
+      ? await query('UPDATE users SET is_admin = false WHERE is_admin AND lower(email) = $1', [previous])
+      : await query('UPDATE users SET is_admin = false WHERE is_admin AND lower(email) <> $1', [email]);
+    if (rowCount) console.log(`[admin] Admin-Rechte von ${rowCount} bisherigem Konto entzogen`);
+    await query(
+      `INSERT INTO app_meta (key, value) VALUES ('admin_email', $1)
+       ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`,
+      [email],
+    );
+  }
   return email;
 }
 
