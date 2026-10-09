@@ -91,6 +91,8 @@ export default {
     lockedTitle: 'Das vollständige Profil ist nur für Mitglieder sichtbar.',
     lockedText: 'Registriere dich kostenlos, um Beschreibung, Honorar und Kontaktdaten zu sehen.',
     zoom: 'Foto vergrößern',
+    tabProfile: 'Profil',
+    tabs: 'Profilbereiche',
     photo: 'Foto {n}',
     close: 'Schließen',
     prev: 'Vorheriges Foto',

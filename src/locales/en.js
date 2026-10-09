@@ -91,6 +91,8 @@ export default {
     lockedTitle: 'The full profile is visible to members only.',
     lockedText: 'Sign up for free to see the description, rates and contact details.',
     zoom: 'Enlarge photo',
+    tabProfile: 'Profile',
+    tabs: 'Profile sections',
     photo: 'Photo {n}',
     close: 'Close',
     prev: 'Previous photo',

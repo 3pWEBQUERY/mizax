@@ -6,9 +6,7 @@ export function Placeholder({ escort, big = false }) {
     <div
       className={`placeholder ${big ? 'placeholder-big' : ''}`}
       style={{
-        background: `radial-gradient(120% 80% at 25% 10%, ${accent}cc 0%, transparent 60%),
-          radial-gradient(90% 70% at 90% 100%, ${accent}66 0%, transparent 70%),
-          linear-gradient(165deg, #2a3260 0%, #151a33 100%)`,
+        background: `radial-gradient(120% 85% at 30% 0%, ${accent}38 0%, transparent 70%), var(--tint-2)`,
       }}
     >
       <span className="placeholder-letter">{escort?.name?.[0] || '?'}</span>

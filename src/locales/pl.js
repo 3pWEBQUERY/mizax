@@ -91,6 +91,8 @@ export default {
     lockedTitle: 'Pełny profil jest widoczny tylko dla członków.',
     lockedText: 'Zarejestruj się za darmo, aby zobaczyć opis, cennik i dane kontaktowe.',
     zoom: 'Powiększ zdjęcie',
+    tabProfile: 'Profil',
+    tabs: 'Sekcje profilu',
     photo: 'Zdjęcie {n}',
     close: 'Zamknij',
     prev: 'Poprzednie zdjęcie',

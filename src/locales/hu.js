@@ -91,6 +91,8 @@ export default {
     lockedTitle: 'A teljes profil csak tagok számára látható.',
     lockedText: 'Regisztrálj ingyen, hogy lásd a leírást, a díjakat és az elérhetőségeket.',
     zoom: 'Fotó nagyítása',
+    tabProfile: 'Profil',
+    tabs: 'Profil részei',
     photo: '{n}. fotó',
     close: 'Bezárás',
     prev: 'Előző fotó',

@@ -39,13 +39,12 @@ export default function EscortCard({ escort, index = 0, instant = false }) {
         <motion.div
           layoutId={`media-${escort.slug}`}
           className="card-media"
-          style={{ borderRadius: 22 }}
+          style={{ borderRadius: 16 }}
           transition={layoutTransition}
         >
           <div className="card-zoom">
             <Photo src={cover?.thumb} escort={escort} alt={escort.name} />
           </div>
-          <div className="card-shade" />
         </motion.div>
 
         <div className="card-badges">
@@ -85,11 +84,12 @@ export default function EscortCard({ escort, index = 0, instant = false }) {
 
         <div className="card-info">
           <div className="card-name">
-            {escort.name} <span className="age">{escort.age}</span>
+            <span className="name">{escort.name}</span>
+            <span className="age">{escort.age}</span>
           </div>
           <div className="card-city">
             <span className={`dot ${escort.available ? '' : 'off'}`} />
-            {escort.city || <PinIcon />}
+            {escort.city ? <span className="city">{escort.city}</span> : <PinIcon />}
             {escort.canton && <span className="card-canton">{escort.canton}</span>}
             {escort.distance != null && (
               <span className="card-distance">
@@ -107,7 +107,13 @@ export function GridSkeleton({ count = 10 }) {
   return (
     <div className="grid">
       {Array.from({ length: count }, (_, i) => (
-        <div key={i} className="skeleton" />
+        <div key={i} className="card card-skel" aria-hidden="true">
+          <div className="skeleton" style={{ borderRadius: 16 }} />
+          <div className="card-info">
+            <span className="skeleton-line" style={{ width: '55%' }} />
+            <span className="skeleton-line" style={{ width: '40%' }} />
+          </div>
+        </div>
       ))}
     </div>
   );

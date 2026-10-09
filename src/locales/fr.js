@@ -91,6 +91,8 @@ export default {
     lockedTitle: 'Le profil complet est réservé aux membres.',
     lockedText: 'Inscrivez-vous gratuitement pour voir la description, les tarifs et les coordonnées.',
     zoom: 'Agrandir la photo',
+    tabProfile: 'Profil',
+    tabs: 'Sections du profil',
     photo: 'Photo {n}',
     close: 'Fermer',
     prev: 'Photo précédente',

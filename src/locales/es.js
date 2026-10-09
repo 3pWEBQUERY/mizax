@@ -91,6 +91,8 @@ export default {
     lockedTitle: 'El perfil completo solo es visible para miembros.',
     lockedText: 'Regístrate gratis para ver la descripción, las tarifas y los datos de contacto.',
     zoom: 'Ampliar foto',
+    tabProfile: 'Perfil',
+    tabs: 'Secciones del perfil',
     photo: 'Foto {n}',
     close: 'Cerrar',
     prev: 'Foto anterior',

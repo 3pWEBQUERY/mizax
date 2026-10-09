@@ -91,6 +91,8 @@ export default {
     lockedTitle: 'Profilul complet este vizibil doar pentru membri.',
     lockedText: 'Înregistrează-te gratuit pentru a vedea descrierea, tarifele și datele de contact.',
     zoom: 'Mărește fotografia',
+    tabProfile: 'Profil',
+    tabs: 'Secțiunile profilului',
     photo: 'Fotografia {n}',
     close: 'Închide',
     prev: 'Fotografia anterioară',

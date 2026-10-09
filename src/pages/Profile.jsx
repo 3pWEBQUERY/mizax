@@ -1,19 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import Page from '../components/Page.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
 import { Photo } from '../components/Media.jsx';
-import {
-  CheckIcon,
-  ChatIcon,
-  PhoneIcon,
-  MailIcon,
-  HeartIcon,
-  LockIcon,
-  WhatsAppIcon,
-  FeedIcon,
-} from '../components/Icons.jsx';
+import { CheckIcon, ChatIcon, PhoneIcon, MailIcon, HeartIcon, LockIcon, WhatsAppIcon } from '../components/Icons.jsx';
 import Lightbox from '../components/Lightbox.jsx';
 import { Composer, PostList, usePosts } from '../components/feed/index.js';
 import { api } from '../lib/api.js';
@@ -27,6 +18,7 @@ import { contactLinks } from '../lib/contact.js';
 import { layoutTransition } from '../lib/motion.js';
 
 const kindIcon = { whatsapp: WhatsAppIcon, call: PhoneIcon, mail: MailIcon, sms: ChatIcon };
+const spring = { type: 'spring', stiffness: 420, damping: 34 };
 
 export default function Profile() {
   const { slug } = useParams();
@@ -39,6 +31,11 @@ export default function Profile() {
   const locked = Boolean(escort && !escort.full);
   const [lightbox, setLightbox] = useState(false);
   const own = Boolean(user && escort?.userId === user.id);
+  const [params, setParams] = useSearchParams();
+  const tab = params.get('tab') === 'posts' ? 'posts' : 'profile';
+  const [switched, setSwitched] = useState(false);
+  useEffect(() => setSwitched(false), [slug]);
+  const feed = usePosts(escort && !locked && user ? `/api/escorts/${encodeURIComponent(escort.slug)}/posts` : null);
 
   // Aufruf für die Statistik zählen (einmal pro Seitenaufruf, eigenes Profil zählt serverseitig nicht)
   useEffect(() => {
@@ -126,7 +123,26 @@ export default function Profile() {
         .join('\n'),
     ],
   ].filter(([, v]) => v);
+  // Neuigkeiten-Tab nur zeigen, wenn es Beiträge gibt (bzw. für das eigene Profil zum Posten)
+  const showTabs = Boolean(
+    !locked && user && (own || feed.posts?.length > 0 || (feed.posts === null && tab === 'posts')),
+  );
+  const activeTab = showTabs ? tab : 'profile';
+  const selectTab = (next) => {
+    setSwitched(true);
+    setParams(
+      (p) => {
+        const q = new URLSearchParams(p);
+        if (next === 'posts') q.set('tab', 'posts');
+        else q.delete('tab');
+        return q;
+      },
+      { replace: true },
+    );
+  };
+  const postCount = feed.posts?.length ? `${feed.posts.length}${feed.done ? '' : '+'}` : null;
   let i = 0;
+  let j = 0;
 
   return (
     <Page>
@@ -250,59 +266,100 @@ export default function Profile() {
               </Rise>
             )}
 
-            {paragraphs.length > 0 && (
-              <Rise i={i++} className="profile-card">
-                <h2 className="profile-card-title">{t('settings.about')}</h2>
-                {paragraphs.map((p, idx) => (
-                  <p key={idx} className="profile-text">
-                    {p}
-                  </p>
+            {showTabs && (
+              <Rise i={i++} className="range-switch profile-tabs" role="tablist" aria-label={t('profile.tabs')}>
+                {[
+                  ['profile', t('profile.tabProfile')],
+                  ['posts', t('feed.profileTitle'), postCount],
+                ].map(([key, label, count]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    role="tab"
+                    id={`tab-${key}`}
+                    aria-selected={activeTab === key}
+                    aria-controls="profile-panel"
+                    className={activeTab === key ? 'active' : ''}
+                    onClick={() => selectTab(key)}
+                  >
+                    {activeTab === key && (
+                      <motion.span layoutId="profile-tab" className="chip-bg" transition={spring} />
+                    )}
+                    <span>{label}</span>
+                    {count && <span className="tab-count">{count}</span>}
+                  </button>
                 ))}
               </Rise>
             )}
 
-            {!locked && facts.length > 0 && (
-              <Rise i={i++} className="profile-card">
-                <h2 className="profile-card-title">{t('profile.details')}</h2>
-                <dl className="facts" style={{ margin: 0 }}>
-                  {facts.map(([k, v]) => (
-                    <div className="fact" key={k}>
-                      <dt>{k}</dt>
-                      <dd>{v}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </Rise>
-            )}
+            <div
+              key={activeTab}
+              className="profile-panel"
+              id="profile-panel"
+              role={showTabs ? 'tabpanel' : undefined}
+              aria-labelledby={showTabs ? `tab-${activeTab}` : undefined}
+            >
+              {activeTab === 'posts' ? (
+                <Rise i={switched ? 0 : i++} className="profile-posts">
+                  {own && <Composer onPosted={feed.prepend} />}
+                  <PostList feed={feed} empty={t('feed.emptyOwn', { name: escort.name })} />
+                </Rise>
+              ) : (
+                <>
+                  {paragraphs.length > 0 && (
+                    <Rise i={switched ? j++ : i++} className="profile-card">
+                      <h2 className="profile-card-title">{t('settings.about')}</h2>
+                      {paragraphs.map((p, idx) => (
+                        <p key={idx} className="profile-text">
+                          {p}
+                        </p>
+                      ))}
+                    </Rise>
+                  )}
 
-            {escort.services?.length > 0 && (
-              <Rise i={i++} className="profile-card">
-                <h2 className="profile-card-title">{t('editor.services')}</h2>
-                <div className="tags">
-                  {escort.services.map((s) => (
-                    <span className="tag" key={s}>
-                      {serviceLabel(t, s)}
-                    </span>
-                  ))}
-                </div>
-              </Rise>
-            )}
+                  {!locked && facts.length > 0 && (
+                    <Rise i={switched ? j++ : i++} className="profile-card">
+                      <h2 className="profile-card-title">{t('profile.details')}</h2>
+                      <dl className="facts" style={{ margin: 0 }}>
+                        {facts.map(([k, v]) => (
+                          <div className="fact" key={k}>
+                            <dt>{k}</dt>
+                            <dd>{v}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </Rise>
+                  )}
 
-            {escort.rates?.length > 0 && (
-              <Rise i={i++} className="profile-card">
-                <h2 className="profile-card-title">{t('profile.rates')}</h2>
-                <div className="rates">
-                  {escort.rates.map((r, idx) => (
-                    <div className="rate" key={idx}>
-                      <span>{r.label}</span>
-                      <b>{r.price}</b>
-                    </div>
-                  ))}
-                </div>
-              </Rise>
-            )}
+                  {escort.services?.length > 0 && (
+                    <Rise i={switched ? j++ : i++} className="profile-card">
+                      <h2 className="profile-card-title">{t('editor.services')}</h2>
+                      <div className="tags">
+                        {escort.services.map((s) => (
+                          <span className="tag" key={s}>
+                            {serviceLabel(t, s)}
+                          </span>
+                        ))}
+                      </div>
+                    </Rise>
+                  )}
 
-            {!locked && user && <ProfilePosts slug={escort.slug} own={own} name={escort.name} i={i++} />}
+                  {escort.rates?.length > 0 && (
+                    <Rise i={switched ? j++ : i++} className="profile-card">
+                      <h2 className="profile-card-title">{t('profile.rates')}</h2>
+                      <div className="rates">
+                        {escort.rates.map((r, idx) => (
+                          <div className="rate" key={idx}>
+                            <span>{r.label}</span>
+                            <b>{r.price}</b>
+                          </div>
+                        ))}
+                      </div>
+                    </Rise>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -320,21 +377,5 @@ export default function Profile() {
         )}
       </AnimatePresence>
     </Page>
-  );
-}
-
-function ProfilePosts({ slug, own, name, i }) {
-  const { t } = useI18n();
-  const feed = usePosts(`/api/escorts/${encodeURIComponent(slug)}/posts`);
-  if (!own && feed.posts && !feed.posts.length) return null;
-  return (
-    <Rise i={i} className="profile-posts">
-      <div className="section-title">
-        <FeedIcon width={18} height={18} />
-        {t('feed.profileTitle')}
-      </div>
-      {own && <Composer onPosted={feed.prepend} />}
-      <PostList feed={feed} empty={t('feed.emptyOwn', { name })} />
-    </Rise>
   );
 }

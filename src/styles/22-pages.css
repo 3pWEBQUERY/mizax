@@ -315,10 +315,6 @@
   font-size: 15px;
 }
 
-.profile-posts .section-title {
-  margin-left: 0;
-}
-
 .profile-body .actions .save-btn {
   width: 44px;
   padding: 0;
@@ -365,4 +361,35 @@
 
 .side-small {
   align-self: flex-start;
+}
+
+/* Profil: Tabs (Profil / Neuigkeiten) */
+.profile-tabs {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.profile-tabs button {
+  height: 34px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+.profile-tabs .tab-count {
+  margin-left: 6px;
+  font-size: 12px;
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+.profile-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.profile-panel .profile-posts {
+  margin-top: 0;
 }
