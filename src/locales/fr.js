@@ -148,6 +148,7 @@ export default {
     deleteConfirm: 'Oui, je veux supprimer définitivement mon compte.', deleted: 'Votre compte a été supprimé.',
   },
   sidebar: {
+    noViews: 'Aucune vue au cours des 14 derniers jours.', noVisits: 'Aucune visite au cours des 14 derniers jours.',
     label: 'Panneau latéral', hello: 'Bonjour, {name}', welcome: 'Bienvenue', views14: 'Vues du profil · 14 jours', visits14: 'Visites du profil · 14 jours',
     guestTitle: 'Découvrez Mizax.', guestText: 'Avec un compte gratuit, vous voyez les profils complets, vous écrivez directement aux escorts et vous suivez leurs actualités.',
     feedGuest: 'Les escorts partagent ici leurs nouvelles et leurs disponibilités – connectez-vous pour les voir.',

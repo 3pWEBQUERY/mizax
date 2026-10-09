@@ -105,7 +105,14 @@ function StatsCard({ i, stats }) {
               <Delta now={main} prev={prev} />
             </span>
           </div>
-          <BarChart data={stats.series} label={escort ? t('stats.viewsUnit') : t('stats.visitsUnit')} height={64} compact />
+          {stats.series.some((d) => d.value > 0) ? (
+            <BarChart data={stats.series} label={escort ? t('stats.viewsUnit') : t('stats.visitsUnit')} height={64} compact />
+          ) : (
+            <div className="side-empty-chart">
+              <ChartIcon width={18} height={18} />
+              {escort ? t('sidebar.noViews') : t('sidebar.noVisits')}
+            </div>
+          )}
           <div className="mini-stats">
             {escort ? (
               <>

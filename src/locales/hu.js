@@ -148,6 +148,7 @@ export default {
     deleteConfirm: 'Igen, véglegesen törölni szeretném a fiókomat.', deleted: 'A fiókodat töröltük.',
   },
   sidebar: {
+    noViews: 'Az elmúlt 14 napban még nem volt megtekintés.', noVisits: 'Az elmúlt 14 napban még nem volt látogatás.',
     label: 'Oldalsáv', hello: 'Szia, {name}', welcome: 'Üdv', views14: 'Profilmegtekintések · 14 nap', visits14: 'Profillátogatások · 14 nap',
     guestTitle: 'Fedezd fel a Mizaxot.', guestText: 'Ingyenes fiókkal láthatod a teljes profilokat, közvetlenül írhatsz az escortoknak, és követheted a híreiket.',
     feedGuest: 'Itt osztják meg az escortok a híreiket és szabad időpontjaikat – jelentkezz be, hogy lásd őket.',

@@ -148,6 +148,7 @@ export default {
     deleteConfirm: 'Da, vreau să îmi șterg definitiv contul.', deleted: 'Contul tău a fost șters.',
   },
   sidebar: {
+    noViews: 'Încă nu există vizualizări în ultimele 14 zile.', noVisits: 'Încă nu există vizite în ultimele 14 zile.',
     label: 'Bară laterală', hello: 'Bună, {name}', welcome: 'Bine ai venit', views14: 'Vizualizări profil · 14 zile', visits14: 'Vizite la profil · 14 zile',
     guestTitle: 'Descoperă Mizax.', guestText: 'Cu un cont gratuit vezi profilurile complete, le scrii direct escortelor și le urmărești noutățile.',
     feedGuest: 'Escortele împărtășesc aici noutăți și intervale libere – autentifică-te pentru a le vedea.',

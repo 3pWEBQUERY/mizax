@@ -148,6 +148,7 @@ export default {
     deleteConfirm: 'Yes, I want to permanently delete my account.', deleted: 'Your account has been deleted.',
   },
   sidebar: {
+    noViews: 'No profile views in the last 14 days yet.', noVisits: 'No visits in the last 14 days yet.',
     label: 'Sidebar', hello: 'Hi, {name}', welcome: 'Welcome', views14: 'Profile views · 14 days', visits14: 'Profile visits · 14 days',
     guestTitle: 'Discover Mizax.', guestText: 'With a free account, you can see full profiles, write to escorts directly and follow their news.',
     feedGuest: 'Escorts share news and open slots here – log in to see them.',

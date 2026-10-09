@@ -148,6 +148,7 @@ export default {
     deleteConfirm: 'Ja, ich möchte mein Konto endgültig löschen.', deleted: 'Dein Konto wurde gelöscht.',
   },
   sidebar: {
+    noViews: 'Noch keine Aufrufe in den letzten 14 Tagen.', noVisits: 'Noch keine Besuche in den letzten 14 Tagen.',
     label: 'Seitenleiste', hello: 'Hallo, {name}', welcome: 'Willkommen', views14: 'Profilaufrufe · 14 Tage', visits14: 'Profilbesuche · 14 Tage',
     guestTitle: 'Entdecke Mizax.', guestText: 'Mit einem kostenlosen Konto siehst du vollständige Profile, schreibst Escorts direkt an und folgst ihren Neuigkeiten.',
     feedGuest: 'Escorts teilen hier Neuigkeiten und freie Termine – melde dich an, um sie zu sehen.',
