@@ -2881,3 +2881,161 @@ textarea.input {
     padding: 20px 18px;
   }
 }
+
+/* ---------- Mein Profil: kompakter Kopfbereich ---------- */
+
+.me-head {
+  max-width: 760px;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px 20px;
+  flex-wrap: wrap;
+}
+
+.me-head-text {
+  min-width: 0;
+  flex: 1 1 320px;
+}
+
+.me-title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.me-intro {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--muted);
+  max-width: 460px;
+}
+
+.me-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px 0 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.status-pill.on {
+  color: var(--ok);
+  border-color: color-mix(in srgb, var(--ok) 35%, transparent);
+  background: color-mix(in srgb, var(--ok) 10%, transparent);
+}
+
+.small-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 34px;
+  padding: 0 12px 0 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+  transition: transform 0.25s var(--ease), opacity 0.25s var(--ease);
+}
+
+.small-btn:hover {
+  opacity: 0.9;
+}
+
+.small-btn:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 720px) {
+  .me-title {
+    font-size: 26px;
+  }
+  .me-head {
+    align-items: flex-start;
+  }
+}
+
+/* ---------- Dropdowns überall im Glas-Stil (Desktop & Mobil) ---------- */
+
+.menu,
+.picker {
+  isolation: isolate;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-tint);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    inset 0 -1px 0 var(--glass-lo),
+    var(--glass-shadow);
+}
+
+.menu::after,
+.picker::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(90% 40% at 30% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 60%);
+  mix-blend-mode: soft-light;
+}
+
+.menu .menu-sep {
+  background: var(--glass-border);
+  opacity: 0.6;
+}
+
+.menu .lang-opt,
+.menu .theme-switch,
+.picker .picker-search {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.menu .menu-item:hover,
+.menu .lang-opt:hover,
+.picker .picker-item.active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.picker .picker-search {
+  border-color: var(--glass-border);
+}
+
+:root[data-theme='light'] .menu,
+:root[data-theme='light'] .picker {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(18px) saturate(170%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+}
+
+:root[data-theme='light'] .menu .lang-opt,
+:root[data-theme='light'] .menu .theme-switch,
+:root[data-theme='light'] .picker .picker-search {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+:root[data-theme='light'] .menu .menu-item:hover,
+:root[data-theme='light'] .picker .picker-item.active {
+  background: rgba(255, 255, 255, 0.6);
+}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Page from '../components/Page.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
+import { ChevronR } from '../components/Icons.jsx';
 import ProfileEditor from '../components/ProfileEditor.jsx';
 import { useDock } from '../lib/dock.jsx';
 import { useAuth } from '../lib/auth.jsx';
@@ -51,21 +52,28 @@ export default function MyProfile() {
 
   return (
     <Page>
-      <div className="bubbles" style={{ maxWidth: 760 }}>
-        <Bubble i={0}>{t('me.title')}</Bubble>
-        <Bubble i={1}>{t('me.intro')}</Bubble>
+      <div className="me-head">
+        <div className="me-head-text">
+          <Rise i={0} as="h1" className="me-title">
+            {t('me.title')}
+          </Rise>
+          <Rise i={1} as="p" className="me-intro">
+            {t('me.intro')}
+          </Rise>
+        </div>
         {escort && (
-          <Bubble i={2}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <Rise i={2} className="me-status">
+            <span className={`status-pill ${escort.published ? 'on' : 'off'}`}>
               <span className={`dot ${escort.published ? '' : 'off'}`} />
               {escort.published ? t('me.published') : t('me.draft')}
-              {escort.published && (
-                <Link to={`/escort/${escort.slug}`} style={{ fontWeight: 600, textDecoration: 'underline' }}>
-                  {t('me.view')}
-                </Link>
-              )}
             </span>
-          </Bubble>
+            {escort.published && (
+              <Link to={`/escort/${escort.slug}`} className="small-btn">
+                {t('me.view')}
+                <ChevronR width={14} height={14} />
+              </Link>
+            )}
+          </Rise>
         )}
       </div>
       {escort !== undefined && user && (
