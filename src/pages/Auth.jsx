@@ -2,7 +2,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Page from '../components/Page.jsx';
-import { Bubble, Rise } from '../components/Bubble.jsx';
+import { Rise } from '../components/Bubble.jsx';
+import PageHead from '../components/PageHead.jsx';
 import { useToast } from '../components/Toast.jsx';
 import { UserIcon, SparkIcon, SpinnerIcon, CheckIcon } from '../components/Icons.jsx';
 import { useDock } from '../lib/dock.jsx';
@@ -20,11 +21,21 @@ function ErrorBubble({ error }) {
   return (
     <AnimatePresence>
       {error && (
-        <motion.div key={error} {...swap}>
-          <div className="bubble auth-error">{error}</div>
+        <motion.div key={error} className="auth-error" role="alert" {...swap}>
+          {error}
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+function AuthField({ label, hint, children }) {
+  return (
+    <label className="field settings-field">
+      <span className="field-label">{label}</span>
+      {children}
+      {hint && <span className="field-hint">{hint}</span>}
+    </label>
   );
 }
 
@@ -68,39 +79,34 @@ export function Login() {
   return (
     <Page>
       <div className="auth">
-        <div className="bubbles">
-          <Bubble i={0}>{t('auth.loginTitle')}</Bubble>
-          <Bubble i={1}>{t('auth.loginText')}</Bubble>
-        </div>
-        <Rise i={2} as="form" className="auth-form" onSubmit={submit}>
-          <input
-            className="auth-input"
-            type="email"
-            autoComplete="email"
-            placeholder={t('auth.email')}
-            aria-label={t('auth.email')}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoFocus
-          />
-          <input
-            className="auth-input"
-            type="password"
-            autoComplete="current-password"
-            placeholder={t('auth.password')}
-            aria-label={t('auth.password')}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+        <PageHead title={t('auth.loginTitle').replace(/\.$/, '')} text={t('auth.loginText')} />
+        <Rise i={2} as="form" className="auth-form auth-card" onSubmit={submit}>
+          <AuthField label={t('auth.email')}>
+            <input
+              className="input"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoFocus
+            />
+          </AuthField>
+          <AuthField label={t('auth.password')}>
+            <input
+              className="input"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </AuthField>
+          <ErrorBubble error={error} />
           <button className="white-btn auth-submit" disabled={busy}>
             {busy ? <SpinnerIcon /> : t('auth.submitLogin')}
           </button>
         </Rise>
-        <div style={{ marginTop: 12 }}>
-          <ErrorBubble error={error} />
-        </div>
         <Rise i={3} className="auth-switch">
           {t('auth.noAccount')}
           <Link to="/register" state={location.state}>
@@ -168,13 +174,17 @@ export function Register() {
   return (
     <Page>
       <div className="auth">
-        <div className="bubbles">
-          <Bubble i={0}>{t('auth.registerTitle')}</Bubble>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div key={role ? 'details' : 'role'} {...swap}>
-              <div className="bubble">{role ? t('auth.detailsText') : t('auth.registerText')}</div>
-            </motion.div>
-          </AnimatePresence>
+        <div className="me-head">
+          <div className="me-head-text">
+            <Rise i={0} as="h1" className="me-title">
+              {t('auth.registerTitle').replace(/\.$/, '')}
+            </Rise>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.p key={role ? 'details' : 'role'} className="me-intro" {...swap}>
+                {role ? t('auth.detailsText') : t('auth.registerText')}
+              </motion.p>
+            </AnimatePresence>
+          </div>
         </div>
 
         <AnimatePresence mode="wait" initial={false}>
@@ -200,46 +210,30 @@ export function Register() {
               ))}
             </motion.div>
           ) : (
-            <motion.form key="details" className="auth-form" onSubmit={submit} {...swap}>
+            <motion.form key="details" className="auth-form auth-card" onSubmit={submit} {...swap}>
               <div className="role-chosen">
                 <span>{t('auth.as', { role: t(`menu.${role}`) })}</span>
                 <button type="button" onClick={() => setRole(null)}>
                   {t('auth.change')}
                 </button>
               </div>
-              <input
-                className="auth-input"
-                autoComplete="nickname"
-                placeholder={t('auth.name')}
-                aria-label={t('auth.name')}
-                value={form.name}
-                onChange={set('name')}
-                maxLength={60}
-                required
-                autoFocus
-              />
-              <input
-                className="auth-input"
-                type="email"
-                autoComplete="email"
-                placeholder={t('auth.email')}
-                aria-label={t('auth.email')}
-                value={form.email}
-                onChange={set('email')}
-                required
-              />
-              <input
-                className="auth-input"
-                type="password"
-                autoComplete="new-password"
-                placeholder={t('auth.password')}
-                aria-label={t('auth.password')}
-                value={form.password}
-                onChange={set('password')}
-                minLength={8}
-                required
-              />
-              <div className="auth-hint">{t('auth.passwordHint')}</div>
+              <AuthField label={t('auth.name')}>
+                <input className="input" autoComplete="nickname" value={form.name} onChange={set('name')} maxLength={60} required autoFocus />
+              </AuthField>
+              <AuthField label={t('auth.email')}>
+                <input className="input" type="email" autoComplete="email" value={form.email} onChange={set('email')} required />
+              </AuthField>
+              <AuthField label={t('auth.password')} hint={t('auth.passwordHint')}>
+                <input
+                  className="input"
+                  type="password"
+                  autoComplete="new-password"
+                  value={form.password}
+                  onChange={set('password')}
+                  minLength={8}
+                  required
+                />
+              </AuthField>
               <label className="check">
                 <input type="checkbox" checked={form.adult} onChange={set('adult')} required />
                 <span className="check-box">{form.adult && <CheckIcon />}</span>
@@ -252,10 +246,10 @@ export function Register() {
                   <AcceptTerms t={t} />
                 </span>
               </label>
+              <ErrorBubble error={error} />
               <button className="white-btn auth-submit" disabled={busy}>
                 {busy ? <SpinnerIcon /> : t('auth.submitRegister')}
               </button>
-              <ErrorBubble error={error} />
             </motion.form>
           )}
         </AnimatePresence>
