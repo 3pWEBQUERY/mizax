@@ -5109,3 +5109,13 @@ a.status-pill:hover {
 .status-pill .count-badge {
   margin-left: -6px;
 }
+
+.fav-empty-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.conv-empty b {
+  font-size: 16px;
+  font-weight: 500;
+}

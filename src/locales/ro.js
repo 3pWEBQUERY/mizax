@@ -37,6 +37,7 @@ export default {
     defaultMessage: 'Bună {name}, ți-am văzut profilul pe Mizax.', mailSubject: 'Cerere prin Mizax',
   },
   fav: {
+    emptyTitle: 'Încă nu ai favorite.', guestTitle: 'Favoritele tale într-un singur loc.',
     title: 'Favoritele tale.', empty: 'Încă nu ai salvat favorite. Atinge inima de pe un card pentru a salva profilul aici.',
     count: 'Profiluri salvate: {n}', discover: 'Descoperă profiluri', noMatch: 'Niciun rezultat pentru căutarea ta.',
     guest: 'Autentifică-te pentru a salva favorite – vor fi disponibile pe toate dispozitivele tale.',

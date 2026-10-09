@@ -4,6 +4,7 @@ import Page from '../components/Page.jsx';
 import PageHead from '../components/PageHead.jsx';
 import { GridSkeleton } from '../components/EscortCard.jsx';
 import { HeartIcon, ChevronR } from '../components/Icons.jsx';
+import { Rise } from '../components/Bubble.jsx';
 import { useEscorts, useFavorites } from '../lib/store.js';
 import { useDock, useDockState } from '../lib/dock.jsx';
 import { useT } from '../lib/i18n.jsx';
@@ -29,38 +30,55 @@ export default function Favorites() {
   if (ready && !user) {
     return (
       <Page>
-        <Head title={title} text={t('fav.guest')}>
-          <Link to="/register" className="status-pill">
-            {t('menu.register')}
-          </Link>
-          <Link to="/login" className="small-btn">
-            {t('menu.login')}
-            <ChevronR width={14} height={14} />
-          </Link>
-        </Head>
+        <PageHead title={title} />
+        <Rise i={2} className="panel conv-panel">
+          <div className="conv-empty">
+            <span className="settings-icon">
+              <HeartIcon width={22} height={22} />
+            </span>
+            <b>{t('fav.guestTitle')}</b>
+            <p>{t('fav.guest')}</p>
+            <div className="fav-empty-actions">
+              <Link to="/register" className="status-pill">
+                {t('menu.register')}
+              </Link>
+              <Link to="/login" className="small-btn">
+                {t('menu.login')}
+                <ChevronR width={14} height={14} />
+              </Link>
+            </div>
+          </div>
+        </Rise>
       </Page>
     );
   }
 
   const empty = escorts && mine.length === 0;
 
+  if (empty) {
+    return (
+      <Page>
+        <PageHead title={title} />
+        <Rise i={2} className="panel conv-panel">
+          <div className="conv-empty">
+            <span className="settings-icon">
+              <HeartIcon width={22} height={22} />
+            </span>
+            <b>{t('fav.emptyTitle')}</b>
+            <p>{t('fav.empty')}</p>
+            <Link to="/" className="small-btn">
+              {t('fav.discover')}
+              <ChevronR width={14} height={14} />
+            </Link>
+          </div>
+        </Rise>
+      </Page>
+    );
+  }
+
   return (
     <Page>
-      <Head title={title} text={empty ? t('fav.empty') : escorts ? t('fav.count', { n: mine.length }) : null}>
-        {empty ? (
-          <Link to="/" className="small-btn">
-            {t('fav.discover')}
-            <ChevronR width={14} height={14} />
-          </Link>
-        ) : (
-          escorts && (
-            <span className="status-pill fav-pill">
-              <HeartIcon filled width={14} height={14} />
-              {mine.length}
-            </span>
-          )
-        )}
-      </Head>
+      <Head title={title} text={escorts ? t('fav.count', { n: mine.length }) : null} />
       {!escorts ? <GridSkeleton count={5} /> : list.length ? <EscortGrid list={list} instant /> : null}
       {escorts && mine.length > 0 && !list.length && <div className="empty">{t('fav.noMatch')}</div>}
     </Page>

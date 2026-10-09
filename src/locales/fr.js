@@ -37,6 +37,7 @@ export default {
     defaultMessage: 'Bonjour {name}, j’ai vu ton profil sur Mizax.', mailSubject: 'Demande via Mizax',
   },
   fav: {
+    emptyTitle: 'Pas encore de favoris.', guestTitle: 'Vos favoris au même endroit.',
     title: 'Vos favoris.', empty: 'Vous n’avez encore aucun favori. Touchez le cœur d’une carte pour ajouter un profil ici.',
     count: 'Profils enregistrés : {n}', discover: 'Découvrir les profils', noMatch: 'Aucun résultat pour votre recherche.',
     guest: 'Connectez-vous pour enregistrer des favoris – ils seront disponibles sur tous vos appareils.',

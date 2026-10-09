@@ -37,6 +37,7 @@ export default {
     defaultMessage: 'Hola {name}, he visto tu perfil en Mizax.', mailSubject: 'Consulta a través de Mizax',
   },
   fav: {
+    emptyTitle: 'Aún no tienes favoritos.', guestTitle: 'Tus favoritos en un solo lugar.',
     title: 'Tus favoritos.', empty: 'Aún no has guardado favoritos. Toca el corazón de una tarjeta para guardar un perfil aquí.',
     count: 'Perfiles guardados: {n}', discover: 'Descubrir perfiles', noMatch: 'No hay resultados para tu búsqueda.',
     guest: 'Inicia sesión para guardar favoritos: estarán disponibles en todos tus dispositivos.',

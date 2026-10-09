@@ -37,6 +37,7 @@ export default {
     defaultMessage: 'Cześć {name}, widziałem Twój profil na Mizax.', mailSubject: 'Zapytanie przez Mizax',
   },
   fav: {
+    emptyTitle: 'Nie masz jeszcze ulubionych.', guestTitle: 'Twoje ulubione w jednym miejscu.',
     title: 'Twoje ulubione.', empty: 'Nie masz jeszcze ulubionych. Stuknij serce na karcie, aby zapisać tu profil.',
     count: 'Zapisane profile: {n}', discover: 'Odkrywaj profile', noMatch: 'Brak wyników wyszukiwania.',
     guest: 'Zaloguj się, aby zapisywać ulubione – będą dostępne na wszystkich Twoich urządzeniach.',

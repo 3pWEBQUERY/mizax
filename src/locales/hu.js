@@ -37,6 +37,7 @@ export default {
     defaultMessage: 'Szia {name}, láttam a profilodat a Mizaxon.', mailSubject: 'Megkeresés a Mizaxon keresztül',
   },
   fav: {
+    emptyTitle: 'Még nincsenek kedvenceid.', guestTitle: 'A kedvenceid egy helyen.',
     title: 'Kedvenceid.', empty: 'Még nincs kedvenced. Koppints egy kártya szívére, hogy ide mentsd a profilt.',
     count: 'Mentett profilok: {n}', discover: 'Profilok felfedezése', noMatch: 'Nincs találat a keresésre.',
     guest: 'Jelentkezz be a kedvencek mentéséhez – így minden eszközödön elérhetők lesznek.',
