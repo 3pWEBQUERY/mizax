@@ -15,7 +15,14 @@ const norm = (s) =>
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 
-export const places = raw.map(([zip, name, canton, lat, lng]) => ({ zip, name, canton, lat, lng, key: norm(name) }));
+export const places = raw.map(([zip, name, canton, lat, lng]) => ({
+  zip,
+  name,
+  canton,
+  lat,
+  lng,
+  key: norm(name),
+}));
 
 const out = (p) => p && { zip: p.zip, name: p.name, canton: p.canton, lat: p.lat, lng: p.lng };
 
@@ -23,7 +30,10 @@ export function searchPlaces(q, limit = 12) {
   const query = norm(q);
   if (!query) return [];
   if (/^\d+$/.test(query)) {
-    return places.filter((p) => p.zip.startsWith(query)).slice(0, limit).map(out);
+    return places
+      .filter((p) => p.zip.startsWith(query))
+      .slice(0, limit)
+      .map(out);
   }
   // pro Ort/Kanton nur einen Eintrag (kleinste PLZ), Treffer am Wortanfang zuerst
   const best = new Map();

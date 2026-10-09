@@ -50,7 +50,12 @@ export default function LanguagesField({ value, onChange }) {
                 </button>
               ))}
             </div>
-            <button type="button" className="lang-remove" onClick={() => toggle(e.code)} aria-label={t('editor.removeLanguage')}>
+            <button
+              type="button"
+              className="lang-remove"
+              onClick={() => toggle(e.code)}
+              aria-label={t('editor.removeLanguage')}
+            >
               <CloseIcon width={16} height={16} />
             </button>
           </motion.div>

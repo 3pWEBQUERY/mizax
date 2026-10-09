@@ -3,10 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { CloseIcon, ChevronL, ChevronR } from './Icons.jsx';
 
 export default function Lightbox({ photos, index, onIndex, onClose, name, t }) {
-  const go = useCallback(
-    (d) => onIndex((index + d + photos.length) % photos.length),
-    [index, onIndex, photos.length],
-  );
+  const go = useCallback((d) => onIndex((index + d + photos.length) % photos.length), [index, onIndex, photos.length]);
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Escape') onClose();
@@ -33,15 +30,33 @@ export default function Lightbox({ photos, index, onIndex, onClose, name, t }) {
           <img src={p.url} alt={name} />
         </motion.div>
       </AnimatePresence>
-      <button type="button" className="icon-btn" style={{ position: 'absolute', top: 18, right: 20 }} onClick={onClose} aria-label={t('profile.close')}>
+      <button
+        type="button"
+        className="icon-btn"
+        style={{ position: 'absolute', top: 18, right: 20 }}
+        onClick={onClose}
+        aria-label={t('profile.close')}
+      >
         <CloseIcon />
       </button>
       {photos.length > 1 && (
         <>
-          <button type="button" className="icon-btn lightbox-nav" style={{ left: 20 }} onClick={() => go(-1)} aria-label={t('profile.prev')}>
+          <button
+            type="button"
+            className="icon-btn lightbox-nav"
+            style={{ left: 20 }}
+            onClick={() => go(-1)}
+            aria-label={t('profile.prev')}
+          >
             <ChevronL />
           </button>
-          <button type="button" className="icon-btn lightbox-nav" style={{ right: 20 }} onClick={() => go(1)} aria-label={t('profile.next')}>
+          <button
+            type="button"
+            className="icon-btn lightbox-nav"
+            style={{ right: 20 }}
+            onClick={() => go(1)}
+            aria-label={t('profile.next')}
+          >
             <ChevronR />
           </button>
         </>

@@ -1,12 +1,18 @@
 export function digits(s = '') {
-  return String(s).replace(/[^\d+]/g, '').replace(/^\+/, '');
+  return String(s)
+    .replace(/[^\d+]/g, '')
+    .replace(/^\+/, '');
 }
 
 export function contactLinks(escort, text, t) {
   const msg = text || t('profile.defaultMessage', { name: escort.name });
   const links = [];
   if (escort.whatsapp) {
-    links.push({ kind: 'whatsapp', label: t('profile.whatsapp'), href: `https://wa.me/${digits(escort.whatsapp)}?text=${encodeURIComponent(msg)}` });
+    links.push({
+      kind: 'whatsapp',
+      label: t('profile.whatsapp'),
+      href: `https://wa.me/${digits(escort.whatsapp)}?text=${encodeURIComponent(msg)}`,
+    });
   }
   if (escort.phone) {
     const tel = escort.phone.replace(/\s/g, '');

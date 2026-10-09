@@ -3,8 +3,14 @@ import { findPlace } from './places.js';
 
 // Demo-Profile lagen früher in deutschen Städten; die Seite ist jetzt auf die Schweiz ausgerichtet
 const DEMO_CITY_TO_CH = {
-  Berlin: 'Zürich', München: 'Genève', Hamburg: 'Basel', Frankfurt: 'Bern',
-  Köln: 'Lausanne', Düsseldorf: 'Luzern', Stuttgart: 'Lugano', Leipzig: 'St. Gallen',
+  Berlin: 'Zürich',
+  München: 'Genève',
+  Hamburg: 'Basel',
+  Frankfurt: 'Bern',
+  Köln: 'Lausanne',
+  Düsseldorf: 'Luzern',
+  Stuttgart: 'Lugano',
+  Leipzig: 'St. Gallen',
 };
 
 const demo = [
@@ -33,18 +39,50 @@ const services = [
 
 // Altdaten (Freitext aus früheren Versionen) auf Codes umstellen
 const LEGACY_NATIONALITY = {
-  Italienisch: 'IT', Deutsch: 'DE', Spanisch: 'ES', Russisch: 'RU', Französisch: 'FR', Österreichisch: 'AT',
-  Brasilianisch: 'BR', Britisch: 'GB', Schwedisch: 'SE', Griechisch: 'GR', Niederländisch: 'NL',
-  Schweizerisch: 'CH', Polnisch: 'PL', Ungarisch: 'HU', Rumänisch: 'RO', Tschechisch: 'CZ', Ukrainisch: 'UA',
+  Italienisch: 'IT',
+  Deutsch: 'DE',
+  Spanisch: 'ES',
+  Russisch: 'RU',
+  Französisch: 'FR',
+  Österreichisch: 'AT',
+  Brasilianisch: 'BR',
+  Britisch: 'GB',
+  Schwedisch: 'SE',
+  Griechisch: 'GR',
+  Niederländisch: 'NL',
+  Schweizerisch: 'CH',
+  Polnisch: 'PL',
+  Ungarisch: 'HU',
+  Rumänisch: 'RO',
+  Tschechisch: 'CZ',
+  Ukrainisch: 'UA',
 };
 const LEGACY_LANGUAGE = {
-  Deutsch: 'de', Englisch: 'en', Französisch: 'fr', Spanisch: 'es', Italienisch: 'it', Russisch: 'ru',
-  Portugiesisch: 'pt', Polnisch: 'pl', Ungarisch: 'hu', Rumänisch: 'ro', Niederländisch: 'nl', Schwedisch: 'sv',
-  Griechisch: 'el', Tschechisch: 'cs', Ukrainisch: 'uk', Türkisch: 'tr',
+  Deutsch: 'de',
+  Englisch: 'en',
+  Französisch: 'fr',
+  Spanisch: 'es',
+  Italienisch: 'it',
+  Russisch: 'ru',
+  Portugiesisch: 'pt',
+  Polnisch: 'pl',
+  Ungarisch: 'hu',
+  Rumänisch: 'ro',
+  Niederländisch: 'nl',
+  Schwedisch: 'sv',
+  Griechisch: 'el',
+  Tschechisch: 'cs',
+  Ukrainisch: 'uk',
+  Türkisch: 'tr',
 };
 const LEGACY_SERVICE = {
-  'Dinner Date': 'dinner_date', 'Begleitung zu Events': 'events', 'Business-Events': 'events',
-  'Theater & Oper': 'events', Reisebegleitung: 'travel', Overnight: 'overnight', Wochenende: 'weekend',
+  'Dinner Date': 'dinner_date',
+  'Begleitung zu Events': 'events',
+  'Business-Events': 'events',
+  'Theater & Oper': 'events',
+  Reisebegleitung: 'travel',
+  Overnight: 'overnight',
+  Wochenende: 'weekend',
 };
 
 export async function normalizeLegacy() {
@@ -70,7 +108,9 @@ export async function normalizeLegacy() {
     const nationality = LEGACY_NATIONALITY[r.nationality] || r.nationality;
     const languages = [
       ...new Set(
-        r.languages.map((l) => (/^[a-z]{2,3}:[a-z]+$/.test(l) ? l : LEGACY_LANGUAGE[l] ? `${LEGACY_LANGUAGE[l]}:fluent` : l)),
+        r.languages.map((l) =>
+          /^[a-z]{2,3}:[a-z]+$/.test(l) ? l : LEGACY_LANGUAGE[l] ? `${LEGACY_LANGUAGE[l]}:fluent` : l,
+        ),
       ),
     ];
     const services = [...new Set(r.services.map((x) => LEGACY_SERVICE[x] || x))];

@@ -29,7 +29,10 @@ export default function PhoneField({ value, onChange, whatsapp = false, id }) {
         placeholder={t('editor.phonePlaceholder')}
         value={local}
         onChange={(e) => {
-          const digits = e.target.value.replace(/[^\d ]/g, '').replace(/^0+/, '').replace(/\s{2,}/g, ' ');
+          const digits = e.target.value
+            .replace(/[^\d ]/g, '')
+            .replace(/^0+/, '')
+            .replace(/\s{2,}/g, ' ');
           onChange(digits.trim() ? `${PREFIX} ${digits.trimStart()}` : '');
         }}
       />

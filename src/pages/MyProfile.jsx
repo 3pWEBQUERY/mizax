@@ -9,6 +9,7 @@ import { useAuth } from '../lib/auth.jsx';
 import { useT } from '../lib/i18n.jsx';
 import { api } from '../lib/api.js';
 import { loadEscorts } from '../lib/store.js';
+import { setOwnEscort } from '../lib/ownEscort.js';
 
 export default function MyProfile() {
   useDock({ mode: 'hidden' });
@@ -26,7 +27,12 @@ export default function MyProfile() {
 
   useEffect(() => {
     if (!user || user.role !== 'escort') return;
-    api('/api/me/profile').then(setEscort).catch(() => setEscort(null));
+    api('/api/me/profile')
+      .then((e) => {
+        setEscort(e);
+        setOwnEscort(user.id, e);
+      })
+      .catch(() => setEscort(null));
     api('/api/health')
       .then((h) => setStorage(h.storage))
       .catch(() => {});
@@ -89,6 +95,7 @@ export default function MyProfile() {
             onCloseServices={closeServices}
             onSaved={(e) => {
               setEscort(e);
+              setOwnEscort(user.id, e);
               loadEscorts(true).catch(() => {});
             }}
           />

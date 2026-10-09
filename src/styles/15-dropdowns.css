@@ -1,0 +1,102 @@
+/* ---------- Dropdowns überall im Glas-Stil (Desktop & Mobil) ---------- */
+
+.menu,
+.picker {
+  isolation: isolate;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-tint);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    inset 0 -1px 0 var(--glass-lo),
+    var(--glass-shadow);
+}
+
+.menu::after,
+.picker::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(90% 40% at 30% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 60%);
+  mix-blend-mode: soft-light;
+}
+
+.menu .menu-sep {
+  background: var(--glass-border);
+  opacity: 0.6;
+}
+
+.menu .lang-opt,
+.menu .theme-switch,
+.picker .picker-search {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.menu .menu-item:hover,
+.menu .lang-opt:hover,
+.picker .picker-item.active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.picker .picker-search {
+  border-color: var(--glass-border);
+}
+
+:root[data-theme='light'] .menu,
+:root[data-theme='light'] .picker {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(18px) saturate(170%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+}
+
+:root[data-theme='light'] .menu .lang-opt,
+:root[data-theme='light'] .menu .theme-switch,
+:root[data-theme='light'] .picker .picker-search {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+:root[data-theme='light'] .menu .menu-item:hover,
+:root[data-theme='light'] .picker .picker-item.active {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* Favoriten: Kopfbereich über die volle Breite des Grids */
+.page-head-wide {
+  max-width: none;
+  margin-bottom: 22px;
+}
+
+a.status-pill:hover {
+  color: var(--text);
+}
+
+/* Profil: Aktions-Buttons kompakter */
+.profile-body .actions {
+  gap: 8px;
+  margin: 2px 0 4px;
+}
+
+.profile-body .actions .white-btn,
+.profile-body .actions .ghost-btn {
+  height: 44px;
+  padding: 0 16px;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.profile-body .actions svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 720px) {
+  .profile-body .actions .white-btn,
+  .profile-body .actions .ghost-btn {
+    height: 40px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+}

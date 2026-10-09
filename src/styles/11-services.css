@@ -1,0 +1,126 @@
+/* ---------- Leistungs-Seite ---------- */
+
+.svc-page {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background:
+    radial-gradient(1200px 800px at 18% 8%, var(--glow-1), transparent 60%),
+    radial-gradient(900px 700px at 85% 90%, var(--glow-2), transparent 60%),
+    radial-gradient(1400px 900px at 50% 50%, var(--bg-1), var(--bg-3) 85%);
+}
+
+.svc-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 88px 24px 150px;
+}
+
+.svc-group {
+  margin-bottom: 26px;
+}
+
+.svc-group h3 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+
+.svc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.svc-chip {
+  font-size: 15px;
+  padding: 11px 18px;
+}
+
+.svc-bar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  translate: -50% 0;
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 999px;
+  background: var(--menu-bg);
+  border: 1px solid var(--border-strong);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  box-shadow: 0 24px 60px -20px var(--shadow);
+  z-index: 2;
+}
+
+.svc-bar .white-btn,
+.svc-bar .ghost-btn {
+  height: 46px;
+  font-size: 15px;
+}
+
+.svc-bar .white-btn {
+  min-width: 150px;
+  justify-content: center;
+}
+
+@media (max-width: 720px) {
+  .svc-inner {
+    padding: 74px 14px 130px;
+    padding-top: calc(20px + env(safe-area-inset-top));
+    padding-bottom: calc(200px + env(safe-area-inset-bottom));
+  }
+  .lang-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: 'name remove' 'level level';
+    gap: 8px;
+    padding: 10px;
+  }
+  .lang-name {
+    grid-area: name;
+    min-width: 0;
+    padding-left: 4px;
+  }
+  .lang-remove {
+    grid-area: remove;
+  }
+  .level-switch {
+    grid-area: level;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-left: 0;
+    border-radius: 14px;
+  }
+  .level-switch button {
+    padding: 8px 4px;
+    font-size: 13px;
+    border-radius: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .level-switch .chip-bg {
+    border-radius: 11px;
+  }
+  .services-field {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+  }
+  .services-open {
+    justify-content: flex-end;
+  }
+}
+
+.white-btn.pressed {
+  box-shadow:
+    0 0 0 3px var(--tint-3),
+    0 10px 30px var(--shadow);
+}

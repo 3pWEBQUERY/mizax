@@ -7,12 +7,22 @@ export async function storeImage(file, prefix) {
   const base = sharp(file.path, { failOn: 'none' }).rotate();
   const large = await base
     .clone()
-    .resize({ width: 1600, height: 2400, fit: 'inside', withoutEnlargement: true })
+    .resize({
+      width: 1600,
+      height: 2400,
+      fit: 'inside',
+      withoutEnlargement: true,
+    })
     .webp({ quality: 82 })
     .toBuffer({ resolveWithObject: true });
   const small = await base
     .clone()
-    .resize({ width: 640, height: 960, fit: 'inside', withoutEnlargement: true })
+    .resize({
+      width: 640,
+      height: 960,
+      fit: 'inside',
+      withoutEnlargement: true,
+    })
     .webp({ quality: 78 })
     .toBuffer();
   const key = `${prefix}/${crypto.randomUUID()}`;

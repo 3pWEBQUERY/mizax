@@ -24,7 +24,11 @@ export function timeAgo(date, locale, style = 'long') {
 export function shortDate(date, locale) {
   const d = new Date(date);
   const sameYear = d.getFullYear() === new Date().getFullYear();
-  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', year: sameYear ? undefined : 'numeric' }).format(d);
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: sameYear ? undefined : 'numeric',
+  }).format(d);
 }
 
 export function clockTime(date, locale) {

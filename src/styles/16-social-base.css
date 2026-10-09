@@ -1,0 +1,129 @@
+/* =====================================================================
+   Seitenleiste, Nachrichten, Feed, Statistik, Einstellungen
+   ===================================================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Profilbild klein ---------- */
+
+.person {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--accent-2), var(--accent));
+  color: #fff;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.person img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.person.muted {
+  background: var(--tint-2);
+  color: var(--muted);
+}
+
+.count-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.menu-item .count-badge {
+  margin-left: auto;
+}
+
+.avatar {
+  position: relative;
+}
+
+.avatar-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #ff5c8a;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px var(--bg-2);
+}
+
+/* ---------- Umschalter links (Seitenleiste) ---------- */
+
+.icon-btn.side-toggle {
+  position: relative;
+}
+
+.icon-btn.side-toggle.active,
+.topbar .icon-btn.side-toggle.active {
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+  border-color: transparent;
+}
+
+.icon-btn .search-dot {
+  top: 7px;
+  right: 7px;
+}
+
+.app .pages {
+  transition: left 0.55s var(--ease);
+}
+
+.app.sidebar-on .pages {
+  left: calc(var(--sidebar-w) + 20px);
+}
+
+.app .clock {
+  transition: opacity 0.4s var(--ease);
+}
+
+.app.sidebar-on .clock {
+  opacity: 0;
+}
+
+@media (max-width: 1551px) {
+  .app.sidebar-on .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1291px) {
+  .app.sidebar-on .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .app.sidebar-on .profile {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+}

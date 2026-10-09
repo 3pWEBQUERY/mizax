@@ -1,0 +1,355 @@
+/* ---------- Chat-Bubbles ---------- */
+
+.bubbles {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  max-width: 500px;
+  margin: 0 auto 34px;
+  position: relative;
+}
+
+.bubble {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 15px 18px;
+  font-size: 17px;
+  line-height: 1.33;
+  font-weight: 450;
+  color: var(--text);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  max-width: 100%;
+  white-space: pre-line;
+}
+
+.white-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 58px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+  font-size: 17px;
+  font-weight: 500;
+  box-shadow: 0 10px 30px var(--shadow);
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow 0.3s var(--ease);
+}
+
+.white-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 38px var(--shadow);
+}
+
+.white-btn:active {
+  transform: scale(0.97);
+}
+
+.ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 58px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 500;
+  transition:
+    background 0.3s var(--ease),
+    transform 0.3s var(--ease);
+}
+
+.ghost-btn:hover {
+  background: var(--surface-hover);
+}
+
+/* ---------- Filter-Chips ---------- */
+
+.chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 auto 26px;
+}
+
+.chip {
+  position: relative;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition:
+    color 0.3s var(--ease),
+    background 0.3s var(--ease);
+}
+
+.chip:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.chip.active {
+  color: var(--cta-fg);
+}
+
+.chip .chip-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--cta-bg);
+}
+
+.chip span {
+  position: relative;
+}
+
+.chip small {
+  opacity: 0.5;
+  margin-left: 6px;
+  font-size: 13px;
+}
+
+/* ---------- 5er Grid ---------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 1180px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 920px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+.card {
+  position: relative;
+  display: block;
+  border-radius: var(--radius);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.card-media {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  box-shadow: 0 18px 40px -18px var(--shadow);
+  transform: translateZ(0);
+}
+
+.card-media img,
+.media-fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-zoom {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.9s var(--ease);
+}
+
+.card:hover .card-zoom,
+.card:focus-visible .card-zoom {
+  transform: scale(1.05);
+}
+
+.card:focus-visible .card-media {
+  box-shadow: 0 0 0 2px var(--text);
+}
+
+.card-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 13, 28, 0) 45%, rgba(10, 13, 28, 0.88) 100%);
+  pointer-events: none;
+}
+
+.card-info {
+  color: #fff;
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 13px;
+  pointer-events: none;
+}
+
+.card-name {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-name .age {
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.card-city {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.18);
+  flex: none;
+}
+
+.dot.off {
+  background: var(--faint);
+  box-shadow: none;
+}
+
+.card-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(10, 13, 28, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+}
+
+.card .dot.off {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.badge.light {
+  background: rgba(255, 255, 255, 0.92);
+  color: #1a1d2b;
+}
+
+.fav-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(10, 13, 28, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  pointer-events: auto;
+  transition:
+    transform 0.3s var(--ease),
+    background 0.3s var(--ease);
+  margin-left: auto;
+}
+
+.fav-btn:hover {
+  background: rgba(10, 13, 28, 0.75);
+}
+
+.fav-btn:active {
+  transform: scale(0.85);
+}
+
+.fav-btn.on {
+  color: #ff5c8a;
+}
+
+/* Platzhalter ohne Foto */
+.placeholder {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.placeholder-letter {
+  font-size: clamp(64px, 9vw, 120px);
+  font-weight: 300;
+  letter-spacing: -0.06em;
+  color: rgba(255, 255, 255, 0.88);
+  mix-blend-mode: overlay;
+  transform: translateY(-8%);
+}
+
+.placeholder-big .placeholder-letter {
+  font-size: clamp(120px, 18vw, 260px);
+}
+
+/* Skeleton */
+.skeleton {
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius);
+  background: linear-gradient(100deg, var(--tint) 30%, var(--tint-2) 50%, var(--tint) 70%);
+  background-size: 300% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 60px 0;
+  font-size: 17px;
+}

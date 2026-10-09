@@ -1,0 +1,140 @@
+/* ---------- Dock (unten) ---------- */
+
+.dock-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  padding: 50px 16px calc(28px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, var(--dock-fade-0) 0%, var(--dock-fade-1) 55%, var(--dock-fade-2) 100%);
+  pointer-events: none;
+}
+
+.dock {
+  pointer-events: auto;
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.dock-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 56px;
+  padding: 0 10px 0 18px;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  box-shadow: 0 20px 50px -20px var(--shadow);
+  transition: border-color 0.3s var(--ease);
+}
+
+.dock-bar:focus-within {
+  border-color: var(--border-strong);
+}
+
+.dock-input-wrap {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.dock-input {
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: 0;
+  outline: none;
+  font-size: 17px;
+  color: var(--text);
+  caret-color: var(--text);
+}
+
+.dock-placeholder {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  translate: 0 -50%;
+  font-size: 17px;
+  color: var(--muted);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.dock-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--text-2);
+  transition:
+    background 0.25s var(--ease),
+    color 0.25s var(--ease);
+  flex: none;
+}
+
+.dock-btn:hover {
+  background: var(--tint-2);
+  color: var(--text);
+}
+
+.dock-btn.on {
+  color: var(--text);
+  background: var(--tint-2);
+}
+
+.dock-btn.send {
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+}
+
+.dock-btn.listening {
+  color: #fff;
+  background: #e5484d;
+}
+
+.dock-note {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 12px;
+  font-weight: 500;
+}
+
+.dock-pop {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 12px);
+  padding: 10px;
+  border-radius: 24px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  box-shadow: 0 20px 60px -20px var(--shadow);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: min(60vh, 440px);
+  overflow-y: auto;
+}
+
+.dock-pop .chip {
+  margin: 0;
+}
+
+.dock-pop-title {
+  width: 100%;
+  font-size: 13px;
+  color: var(--muted);
+  padding: 4px 8px 2px;
+  font-weight: 500;
+}

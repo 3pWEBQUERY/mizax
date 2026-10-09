@@ -52,7 +52,7 @@ export function I18nProvider({ children }) {
     (key, vars) => {
       let s = lookup(dictionaries[locale], key) ?? lookup(de, key) ?? key;
       if (vars && typeof s === 'string') {
-        s = s.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? `{${k}}`));
+        s = s.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? `{${k}}`);
       }
       return s;
     },

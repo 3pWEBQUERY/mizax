@@ -20,7 +20,9 @@ export function ThemeProvider({ children }) {
     const root = document.documentElement;
     root.dataset.theme = theme;
     root.style.colorScheme = theme;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#e8ecf6' : '#1a2140');
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', theme === 'light' ? '#e8ecf6' : '#1a2140');
   }, [theme]);
 
   const setTheme = useCallback((t) => {

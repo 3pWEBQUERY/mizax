@@ -5,6 +5,7 @@ import Page from '../components/Page.jsx';
 import PageHead from '../components/PageHead.jsx';
 import Avatar from '../components/Avatar.jsx';
 import BarChart from '../components/BarChart.jsx';
+import Delta from '../components/Delta.jsx';
 import { Rise } from '../components/Bubble.jsx';
 import { ChevronR, UserIcon, EyeIcon } from '../components/Icons.jsx';
 import { api } from '../lib/api.js';
@@ -15,21 +16,6 @@ import { formatNumber, timeAgo } from '../lib/time.js';
 
 const spring = { type: 'spring', stiffness: 420, damping: 34 };
 const RANGES = [7, 30, 90];
-
-// Veränderung zum vorherigen Zeitraum – mit Vorzeichen und Pfeil, nicht nur über die Farbe
-export function Delta({ now, prev }) {
-  const { t } = useI18n();
-  if (!prev && !now) return null;
-  if (!prev) return <span className="delta up">↑ {t('stats.new')}</span>;
-  const pct = Math.round(((now - prev) / prev) * 100);
-  if (pct === 0) return <span className="delta">± 0 %</span>;
-  return (
-    <span className={`delta ${pct > 0 ? 'up' : 'down'}`}>
-      {pct > 0 ? '↑ +' : '↓ '}
-      {pct} %
-    </span>
-  );
-}
 
 function Tile({ label, value, sub, delta, i }) {
   const { locale } = useI18n();
@@ -52,9 +38,13 @@ function Tile({ label, value, sub, delta, i }) {
 
 function VisitorRow({ v }) {
   const { t, locale } = useI18n();
-  const name =
-    v.kind === 'guest' ? t('stats.guest') : v.kind === 'hidden' ? t('stats.anonymous') : v.name;
-  const kind = { guest: t('stats.kindGuest'), hidden: t('stats.kindHidden'), member: t('menu.member'), escort: t('menu.escort') }[v.kind];
+  const name = v.kind === 'guest' ? t('stats.guest') : v.kind === 'hidden' ? t('stats.anonymous') : v.name;
+  const kind = {
+    guest: t('stats.kindGuest'),
+    hidden: t('stats.kindHidden'),
+    member: t('menu.member'),
+    escort: t('menu.escort'),
+  }[v.kind];
   const to = v.kind === 'escort' ? `/escort/${v.slug}` : v.kind === 'member' ? `/member/${v.memberId}` : null;
   const inner = (
     <>
@@ -108,7 +98,14 @@ export default function Stats() {
   const ranges = (
     <div className="range-switch" role="radiogroup" aria-label={t('stats.range')}>
       {RANGES.map((d) => (
-        <button key={d} type="button" role="radio" aria-checked={days === d} className={days === d ? 'active' : ''} onClick={() => setDays(d)}>
+        <button
+          key={d}
+          type="button"
+          role="radio"
+          aria-checked={days === d}
+          className={days === d ? 'active' : ''}
+          onClick={() => setDays(d)}
+        >
           {days === d && <motion.span layoutId="stats-range" className="chip-bg" transition={spring} />}
           <span>{t('stats.days', { n: d })}</span>
         </button>
@@ -144,10 +141,22 @@ export default function Stats() {
     : escort
       ? [
           { label: t('stats.views'), value: T.views, delta: <Delta now={T.views} prev={T.prevViews} /> },
-          { label: t('stats.visitors'), value: T.visitors, sub: t('stats.split', { m: T.memberVisitors, g: T.guestVisitors }) },
+          {
+            label: t('stats.visitors'),
+            value: T.visitors,
+            sub: t('stats.split', { m: T.memberVisitors, g: T.guestVisitors }),
+          },
           { label: t('stats.today'), value: T.today },
-          { label: t('stats.favorites'), value: T.favorites, sub: T.newFavorites ? t('stats.newInRange', { n: T.newFavorites }) : null },
-          { label: t('stats.messages'), value: T.messages, sub: t(T.conversations === 1 ? 'stats.conversationsOne' : 'stats.conversations', { n: T.conversations }) },
+          {
+            label: t('stats.favorites'),
+            value: T.favorites,
+            sub: T.newFavorites ? t('stats.newInRange', { n: T.newFavorites }) : null,
+          },
+          {
+            label: t('stats.messages'),
+            value: T.messages,
+            sub: t(T.conversations === 1 ? 'stats.conversationsOne' : 'stats.conversations', { n: T.conversations }),
+          },
           { label: t('stats.posts'), value: T.posts },
           { label: t('stats.likes'), value: T.likes },
           { label: t('stats.comments'), value: T.comments },
@@ -181,7 +190,12 @@ export default function Stats() {
             <span>{t('stats.lastDays', { n: days })}</span>
           </div>
           {data ? (
-            <BarChart key={days} data={data.series} label={escort ? t('stats.viewsUnit') : t('stats.visitsUnit')} height={240} />
+            <BarChart
+              key={days}
+              data={data.series}
+              label={escort ? t('stats.viewsUnit') : t('stats.visitsUnit')}
+              height={240}
+            />
           ) : (
             <div className="skeleton" style={{ height: 240, borderRadius: 16 }} />
           )}

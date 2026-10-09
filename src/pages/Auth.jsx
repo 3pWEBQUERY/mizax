@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Page from '../components/Page.jsx';
 import { Rise } from '../components/Bubble.jsx';
@@ -39,18 +39,23 @@ function AuthField({ label, hint, children }) {
   );
 }
 
-// Bereits angemeldete Benutzer direkt weiterleiten
+// Bereits angemeldete Benutzer direkt weiterleiten – aber nicht direkt nach dem eigenen Login,
+// dann bestimmt das Formular das Ziel (z. B. die Seite, von der aus zum Login geleitet wurde).
 function useRedirectIfAuthed() {
   const { user, ready } = useAuth();
   const navigate = useNavigate();
+  const submitted = useRef(false);
   useEffect(() => {
-    if (ready && user) navigate(user.isAdmin ? '/admin' : user.role === 'escort' ? '/me' : '/', { replace: true });
+    if (ready && user && !submitted.current) {
+      navigate(user.isAdmin ? '/admin' : user.role === 'escort' ? '/me' : '/', { replace: true });
+    }
   }, [ready, user, navigate]);
+  return submitted;
 }
 
 export function Login() {
   useDock({ mode: 'hidden' });
-  useRedirectIfAuthed();
+  const submitted = useRedirectIfAuthed();
   const t = useT();
   const toast = useToast();
   const { login } = useAuth();
@@ -66,10 +71,14 @@ export function Login() {
     setBusy(true);
     setError('');
     try {
+      submitted.current = true;
       const user = await login(email, password);
       toast(t('auth.welcome', { name: user.name }));
-      navigate(location.state?.from || (user.isAdmin ? '/admin' : '/'), { replace: true });
+      navigate(location.state?.from || (user.isAdmin ? '/admin' : user.role === 'escort' ? '/me' : '/'), {
+        replace: true,
+      });
     } catch (err) {
+      submitted.current = false;
       setError(errorText(t, err));
     } finally {
       setBusy(false);
@@ -138,7 +147,7 @@ function AcceptTerms({ t }) {
 
 export function Register() {
   useDock({ mode: 'hidden' });
-  useRedirectIfAuthed();
+  const submitted = useRedirectIfAuthed();
   const t = useT();
   const toast = useToast();
   const { register } = useAuth();
@@ -156,10 +165,12 @@ export function Register() {
     setBusy(true);
     setError('');
     try {
+      submitted.current = true;
       const user = await register({ ...form, role });
       toast(t('auth.welcome', { name: user.name }));
       navigate(user.role === 'escort' ? '/me' : location.state?.from || '/', { replace: true });
     } catch (err) {
+      submitted.current = false;
       setError(errorText(t, err));
     } finally {
       setBusy(false);
@@ -218,10 +229,25 @@ export function Register() {
                 </button>
               </div>
               <AuthField label={t('auth.name')}>
-                <input className="input" autoComplete="nickname" value={form.name} onChange={set('name')} maxLength={60} required autoFocus />
+                <input
+                  className="input"
+                  autoComplete="nickname"
+                  value={form.name}
+                  onChange={set('name')}
+                  maxLength={60}
+                  required
+                  autoFocus
+                />
               </AuthField>
               <AuthField label={t('auth.email')}>
-                <input className="input" type="email" autoComplete="email" value={form.email} onChange={set('email')} required />
+                <input
+                  className="input"
+                  type="email"
+                  autoComplete="email"
+                  value={form.email}
+                  onChange={set('email')}
+                  required
+                />
               </AuthField>
               <AuthField label={t('auth.password')} hint={t('auth.passwordHint')}>
                 <input

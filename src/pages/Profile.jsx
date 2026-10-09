@@ -4,9 +4,18 @@ import { Link, useParams } from 'react-router-dom';
 import Page from '../components/Page.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
 import { Photo } from '../components/Media.jsx';
-import { CheckIcon, ChatIcon, PhoneIcon, MailIcon, HeartIcon, LockIcon, WhatsAppIcon, FeedIcon } from '../components/Icons.jsx';
+import {
+  CheckIcon,
+  ChatIcon,
+  PhoneIcon,
+  MailIcon,
+  HeartIcon,
+  LockIcon,
+  WhatsAppIcon,
+  FeedIcon,
+} from '../components/Icons.jsx';
 import Lightbox from '../components/Lightbox.jsx';
-import { Composer, PostList, usePosts } from '../components/Feed.jsx';
+import { Composer, PostList, usePosts } from '../components/feed/index.js';
 import { api } from '../lib/api.js';
 import { useI18n } from '../lib/i18n.jsx';
 import { countryName, flag, languageName, parseLanguage, serviceLabel } from '../lib/catalog.js';
@@ -94,7 +103,10 @@ export default function Profile() {
   const current = photos[active] || photos[0];
   const isFav = favs.has(escort.slug);
   const links = locked ? [] : contactLinks(escort, '', t).filter((l) => l.kind !== 'sms');
-  const paragraphs = (escort.bio || '').split(/\n\s*\n/).map((s) => s.trim()).filter(Boolean);
+  const paragraphs = (escort.bio || '')
+    .split(/\n\s*\n/)
+    .map((s) => s.trim())
+    .filter(Boolean);
   const facts = [
     [t('profile.age'), t('profile.years', { n: escort.age })],
     [t('profile.height'), escort.height ? `${escort.height} cm` : null],
@@ -198,46 +210,45 @@ export default function Profile() {
             )}
 
             {!locked && (
-            <Rise i={i++} className="actions">
-              {!own && (
+              <Rise i={i++} className="actions">
+                {!own && (
+                  <button
+                    type="button"
+                    className={`white-btn ${messageOpen ? 'pressed' : ''}`}
+                    data-message-toggle
+                    aria-expanded={messageOpen}
+                    onClick={() => setMessageOpen(!messageOpen)}
+                  >
+                    <ChatIcon /> {t('profile.write')}
+                  </button>
+                )}
+                {links.map((l) => {
+                  const Icon = kindIcon[l.kind];
+                  return (
+                    <a
+                      key={l.kind}
+                      href={l.href}
+                      className="ghost-btn"
+                      target={l.kind === 'whatsapp' ? '_blank' : undefined}
+                      rel="noreferrer"
+                    >
+                      <Icon /> {l.label}
+                    </a>
+                  );
+                })}
                 <button
                   type="button"
-                  className={`white-btn ${messageOpen ? 'pressed' : ''}`}
-                  data-message-toggle
-                  aria-expanded={messageOpen}
-                  onClick={() => setMessageOpen(!messageOpen)}
+                  className="ghost-btn save-btn"
+                  onClick={() => toggleFavorite(escort.slug).catch(() => {})}
+                  aria-pressed={isFav}
+                  aria-label={isFav ? t('profile.saved') : t('profile.save')}
+                  title={isFav ? t('profile.saved') : t('profile.save')}
+                  style={isFav ? { color: '#ff5c8a' } : undefined}
                 >
-                  <ChatIcon /> {t('profile.write')}
+                  <HeartIcon filled={isFav} width={20} height={20} />
                 </button>
-              )}
-              {links.map((l) => {
-                const Icon = kindIcon[l.kind];
-                return (
-                  <a
-                    key={l.kind}
-                    href={l.href}
-                    className="ghost-btn"
-                    target={l.kind === 'whatsapp' ? '_blank' : undefined}
-                    rel="noreferrer"
-                  >
-                    <Icon /> {l.label}
-                  </a>
-                );
-              })}
-              <button
-                type="button"
-                className="ghost-btn save-btn"
-                onClick={() => toggleFavorite(escort.slug).catch(() => {})}
-                aria-pressed={isFav}
-                aria-label={isFav ? t('profile.saved') : t('profile.save')}
-                title={isFav ? t('profile.saved') : t('profile.save')}
-                style={isFav ? { color: '#ff5c8a' } : undefined}
-              >
-                <HeartIcon filled={isFav} width={20} height={20} />
-              </button>
-            </Rise>
+              </Rise>
             )}
-
 
             {paragraphs.length > 0 && (
               <Rise i={i++} className="profile-card">

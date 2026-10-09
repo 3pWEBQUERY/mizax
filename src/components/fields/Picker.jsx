@@ -25,7 +25,9 @@ export default function Picker({ open, onClose, options, selected, onPick, multi
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    return needle ? options.filter((o) => o.name.toLowerCase().includes(needle) || o.code.toLowerCase() === needle) : options;
+    return needle
+      ? options.filter((o) => o.name.toLowerCase().includes(needle) || o.code.toLowerCase() === needle)
+      : options;
   }, [options, q]);
 
   useEffect(() => {

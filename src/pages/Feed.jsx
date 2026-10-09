@@ -5,7 +5,7 @@ import Page from '../components/Page.jsx';
 import PageHead from '../components/PageHead.jsx';
 import { Rise } from '../components/Bubble.jsx';
 import { ChevronR } from '../components/Icons.jsx';
-import { Composer, PostList, usePosts } from '../components/Feed.jsx';
+import { Composer, PostList, usePosts } from '../components/feed/index.js';
 import { useAuth } from '../lib/auth.jsx';
 import { useDock } from '../lib/dock.jsx';
 import { useI18n } from '../lib/i18n.jsx';
@@ -48,7 +48,12 @@ export default function FeedPage() {
             ['all', t('feed.all')],
             ['favorites', t('feed.favorites')],
           ].map(([key, label]) => (
-            <button key={key} type="button" className={`chip ${scope === key ? 'active' : ''}`} onClick={() => setScope(key)}>
+            <button
+              key={key}
+              type="button"
+              className={`chip ${scope === key ? 'active' : ''}`}
+              onClick={() => setScope(key)}
+            >
               {scope === key && <motion.span layoutId="feed-scope" className="chip-bg" transition={spring} />}
               <span>{label}</span>
             </button>

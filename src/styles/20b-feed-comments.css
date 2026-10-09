@@ -1,0 +1,143 @@
+/* ---------- Feed: Kommentare, Laden, Profil-Neuigkeiten ---------- */
+.comments {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-strong);
+  margin-top: 6px;
+}
+
+.comments-more {
+  align-self: flex-start;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.comments-more:hover {
+  color: var(--text);
+}
+
+.comment {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.comment-main {
+  min-width: 0;
+  max-width: calc(100% - 38px);
+}
+
+.comment-bubble {
+  padding: 8px 12px;
+  border-radius: 18px;
+  background: var(--tint-2);
+}
+
+.comment-bubble b {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.comment-bubble p {
+  margin: 1px 0 0;
+  font-size: 14.5px;
+  line-height: 1.38;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.comment-meta {
+  display: flex;
+  gap: 12px;
+  padding: 3px 12px 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.comment-meta button {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.comment-meta button:hover {
+  color: var(--danger);
+}
+
+.comment-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 42px;
+  padding: 0 4px 0 14px;
+  border-radius: 999px;
+  background: var(--tint);
+  border: 1px solid var(--border);
+}
+
+.comment-form:focus-within {
+  border-color: var(--border-strong);
+  background: var(--tint-2);
+}
+
+.comment-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: none;
+  outline: none;
+  font-size: 14.5px;
+}
+
+.comment-input::placeholder {
+  color: var(--muted);
+}
+
+.comment-send {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+  transition: opacity 0.2s var(--ease);
+}
+
+.comment-send:disabled {
+  opacity: 0.3;
+}
+
+.post-loader {
+  display: grid;
+  place-items: center;
+  min-height: 60px;
+  color: var(--muted);
+}
+
+.post-empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 30px 20px;
+}
+
+.post-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 140px;
+}
+
+.profile-posts {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.profile-posts .post-list,
+.profile-posts .composer {
+  width: 100%;
+}

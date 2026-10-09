@@ -1,0 +1,204 @@
+/* ---------- Kopfzeile: Sprache, Design, Konto ---------- */
+
+.menu-anchor {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  width: 300px;
+  padding: 10px;
+  border-radius: 24px;
+  background: var(--menu-bg);
+  border: 1px solid var(--border-strong);
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
+  box-shadow: 0 30px 70px -20px var(--shadow);
+  transform-origin: top right;
+  z-index: 60;
+  top: calc(100% + 8px);
+  max-height: min(78vh, 640px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.menu-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 12px;
+}
+
+.menu-head .avatar {
+  margin-left: 0;
+  width: 42px;
+  height: 42px;
+  font-size: 18px;
+  flex: none;
+}
+
+.menu-head .who {
+  min-width: 0;
+}
+
+.menu-head .who b {
+  display: block;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.menu-head .who span {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--tint-2);
+  color: var(--text-2);
+}
+
+.role-badge.escort {
+  background: linear-gradient(145deg, var(--accent-2), var(--accent));
+  color: #fff;
+}
+
+.menu-sep {
+  height: 1px;
+  background: var(--border-strong);
+  margin: 6px 4px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  text-align: left;
+  transition: background 0.2s var(--ease);
+}
+
+.menu-item:hover {
+  background: var(--tint-2);
+}
+
+.menu-item.danger {
+  color: var(--danger);
+}
+
+.menu-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 8px 12px 6px;
+}
+
+.lang-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 0 4px 4px;
+}
+
+.lang-opt {
+  position: relative;
+  padding: 9px 0;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+  background: var(--tint);
+  transition:
+    color 0.25s var(--ease),
+    background 0.25s var(--ease);
+}
+
+.lang-opt:hover {
+  color: var(--text);
+  background: var(--tint-2);
+}
+
+.lang-opt.active {
+  color: var(--cta-fg);
+}
+
+.lang-opt .chip-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: var(--cta-bg);
+}
+
+.lang-opt span {
+  position: relative;
+}
+
+.theme-switch {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  margin: 0 4px 4px;
+  border-radius: 999px;
+  background: var(--tint);
+}
+
+.theme-switch button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 0;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.theme-switch button.active {
+  color: var(--cta-fg);
+}
+
+.theme-switch .chip-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--cta-bg);
+}
+
+.theme-switch span {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 720px) {
+  .menu {
+    position: fixed;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    top: 60px;
+  }
+}

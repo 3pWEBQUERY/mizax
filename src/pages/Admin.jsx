@@ -78,8 +78,21 @@ function Dashboard({ status }) {
           ['profiles', t('admin.tabProfiles')],
           ['users', t('admin.tabUsers')],
         ].map(([k, label]) => (
-          <button key={k} type="button" role="tab" aria-selected={tab === k} className={tab === k ? 'active' : ''} onClick={() => setTab(k)}>
-            {tab === k && <motion.span layoutId="admin-tab" className="chip-bg" transition={{ type: 'spring', stiffness: 420, damping: 36 }} />}
+          <button
+            key={k}
+            type="button"
+            role="tab"
+            aria-selected={tab === k}
+            className={tab === k ? 'active' : ''}
+            onClick={() => setTab(k)}
+          >
+            {tab === k && (
+              <motion.span
+                layoutId="admin-tab"
+                className="chip-bg"
+                transition={{ type: 'spring', stiffness: 420, damping: 36 }}
+              />
+            )}
             <span>{label}</span>
           </button>
         ))}
@@ -122,7 +135,11 @@ function Profiles({ status }) {
         <div className="admin-list">
           {!list && <div className="empty">{t('admin.loading')}</div>}
           {list?.map((e) => (
-            <button key={e.id} className={`admin-item ${selected === e.id ? 'active' : ''}`} onClick={() => setSelected(e.id)}>
+            <button
+              key={e.id}
+              className={`admin-item ${selected === e.id ? 'active' : ''}`}
+              onClick={() => setSelected(e.id)}
+            >
               <div className="admin-thumb">
                 {e.photos[0] ? <img src={e.photos[0].thumb} alt="" /> : <Placeholder escort={e} />}
               </div>
@@ -249,7 +266,11 @@ function Users() {
                   <td className="muted">{fmt(u.last_login_at)}</td>
                   <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                     {u.id !== me?.id && (
-                      <button type="button" className="status-pill admin-role-btn" onClick={() => setAdmin(u, !u.is_admin)}>
+                      <button
+                        type="button"
+                        className="status-pill admin-role-btn"
+                        onClick={() => setAdmin(u, !u.is_admin)}
+                      >
                         {u.is_admin ? t('admin.removeAdmin') : t('admin.makeAdmin')}
                       </button>
                     )}

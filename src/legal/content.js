@@ -230,9 +230,7 @@ export const TERMS = [
   },
   {
     title: '10. Datenschutz',
-    body: [
-      'Informationen zur Bearbeitung deiner Personendaten findest du in unserer Datenschutzerklärung.',
-    ],
+    body: ['Informationen zur Bearbeitung deiner Personendaten findest du in unserer Datenschutzerklärung.'],
   },
   {
     title: '11. Änderungen der AGB',

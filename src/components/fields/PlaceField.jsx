@@ -91,7 +91,11 @@ export default function PlaceField({ city, zip, canton, onChange }) {
           onChange={(e) => {
             search(e.target.value);
             // freie Eingabe ohne Auswahl: Ort wird beim Speichern serverseitig gesucht
-            onChange({ city: e.target.value.replace(/^\d{4}\s*/, ''), zip: (e.target.value.match(/^\d{4}/) || [''])[0], canton: '' });
+            onChange({
+              city: e.target.value.replace(/^\d{4}\s*/, ''),
+              zip: (e.target.value.match(/^\d{4}/) || [''])[0],
+              canton: '',
+            });
           }}
           onFocus={() => results.length && setOpen(true)}
           onKeyDown={onKey}

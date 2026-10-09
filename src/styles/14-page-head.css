@@ -1,0 +1,88 @@
+/* ---------- Mein Profil: kompakter Kopfbereich ---------- */
+
+.me-head {
+  max-width: 760px;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px 20px;
+  flex-wrap: wrap;
+}
+
+.me-head-text {
+  min-width: 0;
+  flex: 1 1 320px;
+}
+
+.me-title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.me-intro {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--muted);
+  max-width: 460px;
+}
+
+.me-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px 0 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.small-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 34px;
+  padding: 0 12px 0 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+  transition:
+    transform 0.25s var(--ease),
+    opacity 0.25s var(--ease);
+}
+
+.small-btn:hover {
+  opacity: 0.9;
+}
+
+.small-btn:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 720px) {
+  .me-title {
+    font-size: 26px;
+  }
+  .me-head {
+    align-items: flex-start;
+  }
+}

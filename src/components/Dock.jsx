@@ -11,8 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api.js';
 import { refreshUnread } from '../lib/inbox.js';
 
-const SpeechRecognition =
-  typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition);
+const SpeechRecognition = typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition);
 
 const spring = { type: 'spring', stiffness: 380, damping: 32 };
 
@@ -173,7 +172,10 @@ export default function Dock() {
       if (!message.trim() || sending) return;
       setSending(true);
       try {
-        const r = await api('/api/messages/start', { method: 'POST', body: { slug: escort.slug, body: message.trim() } });
+        const r = await api('/api/messages/start', {
+          method: 'POST',
+          body: { slug: escort.slug, body: message.trim() },
+        });
         setMessage('');
         setMessageOpen(false);
         toast(t('msg.sent'));
@@ -250,9 +252,7 @@ export default function Dock() {
                           </a>
                         ))
                       ) : (
-                        <div className="dock-pop-title">
-                          {locked ? t('dock.noteLocked') : t('dock.noContact')}
-                        </div>
+                        <div className="dock-pop-title">{locked ? t('dock.noteLocked') : t('dock.noContact')}</div>
                       )}
                     </>
                   ) : (
@@ -319,12 +319,7 @@ export default function Dock() {
               </div>
 
               {mode === 'search' && value && (
-                <button
-                  type="button"
-                  className="dock-btn"
-                  aria-label={t('dock.clear')}
-                  onClick={() => setQuery('')}
-                >
+                <button type="button" className="dock-btn" aria-label={t('dock.clear')} onClick={() => setQuery('')}>
                   <CloseIcon width={18} height={18} />
                 </button>
               )}
@@ -334,11 +329,7 @@ export default function Dock() {
                 aria-label={mode === 'message' ? t('dock.contactOptions') : t('dock.filterCity')}
                 onClick={() => setOpen((o) => !o)}
               >
-                <motion.span
-                  animate={{ rotate: open ? 45 : 0 }}
-                  transition={spring}
-                  style={{ display: 'grid' }}
-                >
+                <motion.span animate={{ rotate: open ? 45 : 0 }} transition={spring} style={{ display: 'grid' }}>
                   <PlusIcon />
                 </motion.span>
               </button>
@@ -378,7 +369,11 @@ export default function Dock() {
 
 function CityChip({ label, count, active, muted, onClick }) {
   return (
-    <button type="button" className={`chip ${active ? 'active' : ''} ${muted && !active ? 'muted' : ''}`} onClick={onClick}>
+    <button
+      type="button"
+      className={`chip ${active ? 'active' : ''} ${muted && !active ? 'muted' : ''}`}
+      onClick={onClick}
+    >
       {active && <motion.span layoutId="dock-city" className="chip-bg" transition={spring} />}
       <span>
         {label}

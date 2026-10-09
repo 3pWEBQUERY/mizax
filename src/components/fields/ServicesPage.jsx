@@ -146,7 +146,13 @@ export default function ServicesPage({ open, value, onSave, onBack }) {
               <section className="svc-group">
                 <div className="svc-chips">
                   {legacy.map((k) => (
-                    <button key={k} type="button" className="chip svc-chip active" onClick={() => toggle(k)} aria-pressed>
+                    <button
+                      key={k}
+                      type="button"
+                      className="chip svc-chip active"
+                      onClick={() => toggle(k)}
+                      aria-pressed
+                    >
                       <span className="chip-bg" />
                       <span>{k}</span>
                     </button>

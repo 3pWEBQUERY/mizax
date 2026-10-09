@@ -69,7 +69,10 @@ export function CantonChips({ escorts }) {
   }, [escorts]);
 
   // Kantone mit Profilen direkt als Chips, alle 26 im durchsuchbaren Auswahlfeld
-  const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([c]) => c);
+  const top = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([c]) => c);
   if (canton && !top.includes(canton)) top.push(canton);
   const options = useMemo(
     () =>
@@ -100,12 +103,27 @@ export function CantonChips({ escorts }) {
   return (
     <LayoutGroup id="canton-chips">
       <div className="chips">
-        <Chip active={!canton && !geo} layoutId="canton-pill" onClick={() => { setCanton(''); setGeo(null); setRadius(null); }}>
+        <Chip
+          active={!canton && !geo}
+          layoutId="canton-pill"
+          onClick={() => {
+            setCanton('');
+            setGeo(null);
+            setRadius(null);
+          }}
+        >
           {t('home.all')}
           <small>{escorts.length}</small>
         </Chip>
-        <Chip active={Boolean(geo)} layoutId="near-pill" onClick={toggleNear} className="near-chip" aria-pressed={Boolean(geo)}>
-          {locating ? <SpinnerIcon width={14} height={14} /> : <PinIcon />} {locating ? t('geo.locating') : t('geo.nearMe')}
+        <Chip
+          active={Boolean(geo)}
+          layoutId="near-pill"
+          onClick={toggleNear}
+          className="near-chip"
+          aria-pressed={Boolean(geo)}
+        >
+          {locating ? <SpinnerIcon width={14} height={14} /> : <PinIcon />}{' '}
+          {locating ? t('geo.locating') : t('geo.nearMe')}
         </Chip>
         {top.map((c) => (
           <Chip key={c} active={canton === c} layoutId="canton-pill" onClick={() => setCanton(canton === c ? '' : c)}>
@@ -147,7 +165,12 @@ export function CantonChips({ escorts }) {
           >
             <span className="chips-label">{t('geo.radius')}</span>
             {RADII.map((r) => (
-              <Chip key={r} active={radius === r} layoutId="radius-pill" onClick={() => setRadius(radius === r ? null : r)}>
+              <Chip
+                key={r}
+                active={radius === r}
+                layoutId="radius-pill"
+                onClick={() => setRadius(radius === r ? null : r)}
+              >
                 {t('geo.km', { n: r })}
               </Chip>
             ))}

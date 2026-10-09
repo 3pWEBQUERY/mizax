@@ -1,0 +1,147 @@
+/* ---------- Mobil: Navigationsleiste unten im Liquid-Glass-Stil ---------- */
+
+@media (max-width: 720px) {
+  .topbar .icon-btn,
+  .topbar .segmented,
+  .topbar .search-pill,
+  .topbar .avatar {
+    position: relative;
+    isolation: isolate;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-tint);
+    backdrop-filter: blur(6px) saturate(160%);
+    -webkit-backdrop-filter: blur(6px) saturate(160%);
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      inset 0 -1px 0 var(--glass-lo),
+      var(--glass-shadow);
+    transition:
+      transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background 0.3s var(--ease);
+  }
+
+  .topbar .avatar {
+    background: rgba(110, 80, 245, 0.55);
+  }
+
+  /* Glanzlicht (Spiegelung) oben links wie bei Liquid Glass */
+  .topbar .icon-btn::after,
+  .topbar .segmented::after,
+  .topbar .search-pill::after,
+  .topbar .avatar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 2;
+    background: radial-gradient(90% 55% at 30% 0%, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 60%);
+    mix-blend-mode: soft-light;
+  }
+
+  /* „Squish“ beim Antippen */
+  .topbar .icon-btn:active,
+  .topbar .search-pill:active,
+  .topbar .avatar:active {
+    transform: scale(0.88);
+    transition-duration: 0.15s;
+  }
+
+  .topbar .segmented:active {
+    transform: scale(0.97);
+  }
+
+  .topbar .icon-btn,
+  .topbar .avatar,
+  .topbar .search-pill {
+    width: 48px;
+    height: 48px;
+  }
+
+  .topbar .segmented {
+    padding: 4px;
+  }
+
+  .topbar .segmented a {
+    padding: 10px 16px;
+    font-size: 14.5px;
+  }
+
+  .topbar .segmented .pill {
+    box-shadow:
+      0 4px 14px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  .search-dot {
+    top: 9px;
+    right: 9px;
+  }
+
+  /* Menü öffnet sich nach oben */
+  .menu,
+  .topbar .menu {
+    top: auto;
+    bottom: calc(80px + env(safe-area-inset-bottom));
+    transform-origin: bottom right;
+    isolation: isolate;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-tint);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      inset 0 -1px 0 var(--glass-lo),
+      var(--glass-shadow);
+  }
+
+  /* Inhalte: oben kein Kopfbereich mehr, unten Platz für die Leiste */
+
+  .svc-bar {
+    bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  .toast {
+    top: calc(16px + env(safe-area-inset-top));
+  }
+}
+
+/* Mobil: Konto-Menü im gleichen Glas-Stil wie die Navigationsleiste */
+@media (max-width: 720px) {
+  .menu::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(90% 40% at 30% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 60%);
+    mix-blend-mode: soft-light;
+  }
+
+  .menu .menu-sep {
+    background: var(--glass-border);
+    opacity: 0.6;
+  }
+
+  .menu .lang-opt,
+  .menu .theme-switch {
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  .menu .menu-item:hover,
+  .menu .lang-opt:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  :root[data-theme='light'] .menu .lang-opt,
+  :root[data-theme='light'] .menu .theme-switch {
+    background: rgba(255, 255, 255, 0.35);
+  }
+
+  /* im hellen Modus etwas mehr Weiß, damit dunkler Text über dunklen Fotos lesbar bleibt */
+  :root[data-theme='light'] .menu {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(18px) saturate(170%);
+    -webkit-backdrop-filter: blur(18px) saturate(170%);
+  }
+}

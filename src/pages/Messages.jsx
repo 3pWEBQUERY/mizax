@@ -4,6 +4,7 @@ import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import Page from '../components/Page.jsx';
 import PageHead from '../components/PageHead.jsx';
 import Avatar from '../components/Avatar.jsx';
+import { ConversationRow, otherLink } from '../components/ConversationRow.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
 import { useToast } from '../components/Toast.jsx';
 import { SendIcon, InboxIcon, ChevronR, DoubleCheckIcon, CheckIcon } from '../components/Icons.jsx';
@@ -12,32 +13,7 @@ import { useAuth } from '../lib/auth.jsx';
 import { useDock } from '../lib/dock.jsx';
 import { useI18n, errorText } from '../lib/i18n.jsx';
 import { refreshUnread, useUnread } from '../lib/inbox.js';
-import { timeAgo, clockTime, dayLabel, sameDay } from '../lib/time.js';
-
-export function otherLink(other, viewer) {
-  if (other.kind === 'escort') return `/escort/${other.slug}`;
-  if (viewer && (viewer.role === 'escort' || viewer.isAdmin)) return `/member/${other.memberId}`;
-  return null;
-}
-
-export function ConversationRow({ c, compact = false }) {
-  const { t, locale } = useI18n();
-  return (
-    <Link to={`/messages/${c.id}`} className={`conv-row ${compact ? 'compact' : ''} ${c.unread ? 'unread' : ''}`}>
-      <Avatar name={c.other.name} thumb={c.other.thumb} size={compact ? 38 : 48} />
-      <span className="conv-main">
-        <span className="conv-top">
-          <b>{c.other.name}</b>
-          <small>{c.last ? timeAgo(c.last.at, locale, 'short') : ''}</small>
-        </span>
-        <span className="conv-snippet">
-          {c.last ? `${c.last.mine ? `${t('msg.you')}: ` : ''}${c.last.body}` : ''}
-        </span>
-      </span>
-      {c.unread > 0 && <span className="count-badge">{c.unread}</span>}
-    </Link>
-  );
-}
+import { clockTime, dayLabel, sameDay } from '../lib/time.js';
 
 export function Messages() {
   useDock({ mode: 'hidden' });
@@ -57,10 +33,7 @@ export function Messages() {
 
   return (
     <Page>
-      <PageHead
-        title={t('msg.title')}
-        text={user?.role === 'escort' ? t('msg.introEscort') : t('msg.introMember')}
-      >
+      <PageHead title={t('msg.title')} text={user?.role === 'escort' ? t('msg.introEscort') : t('msg.introMember')}>
         {unread > 0 && (
           <span className="status-pill">
             <span className="count-badge">{unread}</span>
@@ -307,7 +280,12 @@ export function Chat() {
                 aria-label={t('msg.write')}
               />
             </div>
-            <button type="submit" className="dock-btn send" disabled={!body.trim() || sending} aria-label={t('dock.send')}>
+            <button
+              type="submit"
+              className="dock-btn send"
+              disabled={!body.trim() || sending}
+              aria-label={t('dock.send')}
+            >
               <SendIcon width={20} height={20} />
             </button>
           </div>

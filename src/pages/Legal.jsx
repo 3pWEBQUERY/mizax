@@ -57,11 +57,7 @@ function LegalPage({ titleKey, sections, other }) {
 
 export function Privacy() {
   return (
-    <LegalPage
-      titleKey="legal.privacyTitle"
-      sections={PRIVACY}
-      other={{ to: '/agb', label: 'legal.termsTitle' }}
-    />
+    <LegalPage titleKey="legal.privacyTitle" sections={PRIVACY} other={{ to: '/agb', label: 'legal.termsTitle' }} />
   );
 }
 

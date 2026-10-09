@@ -1,0 +1,287 @@
+/* ---------- Auswahlfelder im Profil-Editor ---------- */
+
+.select-wrap {
+  position: relative;
+}
+
+.select-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  min-height: 46px;
+  cursor: pointer;
+}
+
+.select-trigger.open,
+.select-trigger:focus-visible {
+  border-color: var(--tint-3);
+  background: var(--tint-2);
+  outline: none;
+}
+
+.select-value {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.select-placeholder {
+  flex: 1;
+  color: var(--muted);
+}
+
+.select-chevron {
+  flex: none;
+  color: var(--muted);
+  transition: transform 0.3s var(--ease);
+}
+
+.select-trigger.open .select-chevron {
+  transform: rotate(180deg);
+}
+
+.picker {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: max(100%, 280px);
+  z-index: 30;
+  padding: 8px;
+  border-radius: 20px;
+  background: var(--menu-bg);
+  border: 1px solid var(--border-strong);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 26px 60px -18px var(--shadow);
+  transform-origin: top left;
+}
+
+.picker-search {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--tint);
+  outline: none;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.picker-search:focus {
+  border-color: var(--tint-3);
+}
+
+.picker-list {
+  max-height: 264px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.picker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+.picker-item.active {
+  background: var(--tint-2);
+  color: var(--text);
+}
+
+.picker-item.selected {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.picker-name {
+  flex: 1;
+}
+
+.picker-prefix {
+  font-size: 18px;
+  line-height: 1;
+  width: 22px;
+  text-align: center;
+}
+
+.picker-empty {
+  padding: 14px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.langs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.lang-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 8px 8px 14px;
+  border-radius: 14px;
+  background: var(--tint);
+  border: 1px solid var(--border-strong);
+  overflow: hidden;
+  flex-wrap: wrap;
+}
+
+.lang-name {
+  font-weight: 600;
+  min-width: 110px;
+}
+
+.level-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--tint);
+  margin-left: auto;
+}
+
+.level-switch button {
+  position: relative;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.level-switch button.active {
+  color: var(--cta-fg);
+}
+
+.level-switch .chip-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--cta-bg);
+}
+
+.level-switch span {
+  position: relative;
+}
+
+.lang-remove {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  flex: none;
+}
+
+.lang-remove:hover {
+  background: var(--tint-2);
+  color: var(--danger);
+}
+
+.field-empty {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.phone-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  cursor: text;
+}
+
+.phone-field:focus-within {
+  border-color: var(--tint-3);
+  background: var(--tint-2);
+}
+
+.phone-field input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  border: 0;
+  outline: none;
+  background: none;
+  font-size: 15px;
+}
+
+.phone-field input::placeholder {
+  color: var(--muted);
+}
+
+.wa-logo {
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.phone-prefix {
+  flex: none;
+  font-weight: 600;
+  padding-right: 10px;
+  border-right: 1px solid var(--border-strong);
+  color: var(--text);
+  user-select: none;
+}
+
+.services-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  min-height: 52px;
+  cursor: pointer;
+  transition:
+    border-color 0.25s var(--ease),
+    background 0.25s var(--ease);
+}
+
+.services-field:hover {
+  border-color: var(--tint-3);
+  background: var(--tint-2);
+}
+
+.services-chips {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.services-chips .tag {
+  font-size: 13px;
+  padding: 5px 10px;
+}
+
+.services-open {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-2);
+}

@@ -89,7 +89,11 @@ export default function Member() {
                   {member.self ? t('member.noBioSelf') : t('member.noBio')}
                 </Bubble>
               )}
-              {member.self && <Bubble i={4} className="member-nobio">{t('member.selfHint')}</Bubble>}
+              {member.self && (
+                <Bubble i={4} className="member-nobio">
+                  {t('member.selfHint')}
+                </Bubble>
+              )}
             </div>
           </>
         ) : (

@@ -8,7 +8,10 @@ const MAX_AGE = 60 * 60 * 24 * 30; // 30 Tage
 
 export const SECRET =
   process.env.SESSION_SECRET ||
-  crypto.createHash('sha256').update(`mizax:${process.env.ADMIN_PASSWORD || 'dev'}`).digest('hex');
+  crypto
+    .createHash('sha256')
+    .update(`mizax:${process.env.ADMIN_PASSWORD || 'dev'}`)
+    .digest('hex');
 
 export function httpError(status, code, message) {
   return Object.assign(new Error(message || code), { status, code });
@@ -99,9 +102,10 @@ export async function attachUser(req, res, next) {
   const parts = token && verifySigned(token);
   if (parts && parts[0] === 'u' && hasDb()) {
     try {
-      const { rows } = await query('SELECT id, email, name, role, locale, is_admin, show_visits, bio, created_at FROM users WHERE id = $1', [
-        Number(parts[1]),
-      ]);
+      const { rows } = await query(
+        'SELECT id, email, name, role, locale, is_admin, show_visits, bio, created_at FROM users WHERE id = $1',
+        [Number(parts[1])],
+      );
       req.user = rows[0] || null;
     } catch {
       req.user = null;
@@ -125,7 +129,9 @@ export function requireAdmin(req, res, next) {
 // bzw. gibt einem bestehenden Konto mit dieser E-Mail Admin-Rechte. Das Passwort wird nur beim
 // Anlegen gesetzt, damit eine spätere Änderung nicht überschrieben wird.
 export async function ensureAdmin() {
-  const email = String(process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+  const email = String(process.env.ADMIN_EMAIL || '')
+    .trim()
+    .toLowerCase();
   const password = process.env.ADMIN_PASSWORD || '';
   if (!email || !password) return null;
   const { rows } = await query('SELECT id FROM users WHERE lower(email) = $1', [email]);
@@ -147,12 +153,17 @@ export function requireEscort(req, res, next) {
   next();
 }
 
+// Echte Client-IP: Railway setzt X-Real-IP am Edge. Lokal (ohne Proxy) die Socket-Adresse.
+export function clientIp(req) {
+  return req.get('x-real-ip') || req.ip;
+}
+
 // ---------- einfaches Rate-Limit für Login/Registrierung ----------
 
 const hits = new Map();
 export function rateLimit(max = 30, windowMs = 15 * 60 * 1000) {
   return (req, res, next) => {
-    const key = `${req.ip}:${req.path}`;
+    const key = `${clientIp(req)}:${req.path}`;
     const now = Date.now();
     const entry = hits.get(key);
     if (!entry || entry.reset < now) {
@@ -174,9 +185,13 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const LOCALES = ['de', 'en', 'fr', 'es', 'hu', 'pl', 'ro'];
 
 export async function register(body) {
-  const email = String(body.email || '').trim().toLowerCase();
+  const email = String(body.email || '')
+    .trim()
+    .toLowerCase();
   const password = String(body.password || '');
-  const name = String(body.name || '').trim().slice(0, 60);
+  const name = String(body.name || '')
+    .trim()
+    .slice(0, 60);
   const role = body.role;
   const locale = LOCALES.includes(body.locale) ? body.locale : 'de';
   if (!['member', 'escort'].includes(role)) throw httpError(400, 'role_required', 'Bitte Kontotyp wählen');
@@ -204,14 +219,14 @@ export async function register(body) {
 }
 
 export async function login(body) {
-  const email = String(body.email || '').trim().toLowerCase();
+  const email = String(body.email || '')
+    .trim()
+    .toLowerCase();
   const password = String(body.password || '');
   const { rows } = await query('SELECT * FROM users WHERE lower(email) = $1', [email]);
   const user = rows[0];
   // gleiche Laufzeit auch bei unbekannter E-Mail
-  const ok = user
-    ? await verifyPassword(password, user.password_hash)
-    : (await hashPassword(password), false);
+  const ok = user ? await verifyPassword(password, user.password_hash) : (await hashPassword(password), false);
   if (!ok) throw httpError(401, 'invalid_credentials', 'E-Mail oder Passwort falsch');
   await query('UPDATE users SET last_login_at = now() WHERE id = $1', [user.id]);
   return user;

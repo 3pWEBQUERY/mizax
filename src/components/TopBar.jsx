@@ -2,8 +2,21 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
-  HomeIcon, BackIcon, SunIcon, MoonIcon, UserIcon, EditIcon, LogoutIcon, LoginIcon, HeartIcon, SearchIcon, ShieldIcon,
-  GearIcon, InboxIcon, ChartIcon, FeedIcon,
+  HomeIcon,
+  BackIcon,
+  SunIcon,
+  MoonIcon,
+  UserIcon,
+  EditIcon,
+  LogoutIcon,
+  LoginIcon,
+  HeartIcon,
+  SearchIcon,
+  ShieldIcon,
+  GearIcon,
+  InboxIcon,
+  ChartIcon,
+  FeedIcon,
 } from './Icons.jsx';
 import { useUnread } from '../lib/inbox.js';
 import { useDockState } from '../lib/dock.jsx';
@@ -143,7 +156,12 @@ export default function TopBar({ onSearch, searchOpen }) {
 
       <nav className="segmented topbar-center" aria-label={t('nav.navigation')}>
         {tabs.map((tab) => (
-          <NavLink key={tab.to} to={tab.to} className={`${tab.className || ''} ${active === tab.to ? 'active' : ''}`} end>
+          <NavLink
+            key={tab.to}
+            to={tab.to}
+            className={`${tab.className || ''} ${active === tab.to ? 'active' : ''}`}
+            end
+          >
             {active === tab.to && <motion.div layoutId="nav-pill" className="pill" transition={spring} />}
             <span>{tab.label}</span>
           </NavLink>
@@ -186,7 +204,10 @@ export default function TopBar({ onSearch, searchOpen }) {
                         <b>{user.name}</b>
                         <span>{user.email}</span>
                       </div>
-                      <span className={`role-badge ${user.isAdmin ? 'admin' : user.role}`} style={{ marginLeft: 'auto' }}>
+                      <span
+                        className={`role-badge ${user.isAdmin ? 'admin' : user.role}`}
+                        style={{ marginLeft: 'auto' }}
+                      >
                         {user.isAdmin ? t('menu.adminBadge') : t(`menu.${user.role}`)}
                       </span>
                     </div>

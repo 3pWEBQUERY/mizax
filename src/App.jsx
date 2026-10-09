@@ -5,7 +5,8 @@ import TopBar from './components/TopBar.jsx';
 import Clock from './components/Clock.jsx';
 import Dock from './components/Dock.jsx';
 import AgeGate from './components/AgeGate.jsx';
-import Sidebar, { useMedia } from './components/Sidebar.jsx';
+import Sidebar from './components/Sidebar.jsx';
+import { useMedia } from './lib/useMedia.js';
 import { ToastProvider } from './components/Toast.jsx';
 import { DockProvider, useDockState } from './lib/dock.jsx';
 import { I18nProvider } from './lib/i18n.jsx';
@@ -23,7 +24,7 @@ import { Privacy, Terms } from './pages/Legal.jsx';
 import FeedPage from './pages/Feed.jsx';
 import { Messages, Chat } from './pages/Messages.jsx';
 import Stats from './pages/Stats.jsx';
-import Settings from './pages/Settings.jsx';
+import Settings from './pages/settings/Settings.jsx';
 import Member from './pages/Member.jsx';
 
 // Unterseiten, die beim Wechsel innerhalb desselben Bereichs nicht neu eingeblendet werden

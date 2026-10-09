@@ -8,7 +8,10 @@ function niceTicks(max) {
   const m = Math.max(1, max);
   const raw = m / 3;
   const p = 10 ** Math.floor(Math.log10(raw));
-  const step = Math.max(1, [1, 2, 5, 10].map((k) => k * p).find((s) => s >= raw));
+  const step = Math.max(
+    1,
+    [1, 2, 5, 10].map((k) => k * p).find((s) => s >= raw),
+  );
   const top = Math.ceil(m / step) * step;
   const ticks = [];
   for (let v = 0; v <= top; v += step) ticks.push(v);
@@ -55,7 +58,12 @@ export default function BarChart({ data, label, height = 220, compact = false })
     const x = padL + slot * i + (slot - barW) / 2;
     const y = base - h;
     const r = Math.min(4, barW / 2, h);
-    return { x, y, h, path: `M${x},${base} V${y + r} Q${x},${y} ${x + r},${y} H${x + barW - r} Q${x + barW},${y} ${x + barW},${y + r} V${base} Z` };
+    return {
+      x,
+      y,
+      h,
+      path: `M${x},${base} V${y + r} Q${x},${y} ${x + r},${y} H${x + barW - r} Q${x + barW},${y} ${x + barW},${y + r} V${base} Z`,
+    };
   };
 
   const active = hover != null ? data[hover] : null;
