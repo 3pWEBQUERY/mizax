@@ -78,6 +78,7 @@ export default {
     noBucket: 'Bucket neconectat',
   },
   admin: {
+    intro: 'Gestionează profilurile, membrii și drepturile într-un singur loc.',
     noAccess: 'Acces interzis – această zonă este doar pentru administratori.', makeAdmin: 'Fă admin', removeAdmin: 'Elimină admin', adminUpdated: 'Drepturi actualizate',
     title: 'Administrare.', loginText: 'Autentifică-te cu parola de administrator pentru a gestiona profiluri și membri.',
     password: 'Parolă', login: 'Autentificare', manage: 'Administrare', dbOk: 'Postgres conectat', dbNo: 'Fără bază de date',

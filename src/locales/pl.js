@@ -78,6 +78,7 @@ export default {
     noBucket: 'Bucket niepołączony',
   },
   admin: {
+    intro: 'Zarządzaj profilami, członkami i uprawnieniami w jednym miejscu.',
     noAccess: 'Brak dostępu – ta sekcja jest tylko dla administratorów.', makeAdmin: 'Nadaj admina', removeAdmin: 'Odbierz admina', adminUpdated: 'Uprawnienia zaktualizowane',
     title: 'Administracja.', loginText: 'Zaloguj się hasłem administratora, aby zarządzać profilami i członkami.',
     password: 'Hasło', login: 'Zaloguj się', manage: 'Administracja', dbOk: 'Postgres połączony', dbNo: 'Brak bazy danych',

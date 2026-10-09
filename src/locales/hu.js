@@ -78,6 +78,7 @@ export default {
     noBucket: 'A bucket nincs csatlakoztatva',
   },
   admin: {
+    intro: 'Profilok, tagok és jogosultságok kezelése egy helyen.',
     noAccess: 'Nincs hozzáférés – ez a terület csak adminisztrátoroknak szól.', makeAdmin: 'Adminná tétel', removeAdmin: 'Admin jog elvétele', adminUpdated: 'Jogosultságok frissítve',
     title: 'Adminisztráció.', loginText: 'Jelentkezz be az admin jelszóval a profilok és tagok kezeléséhez.',
     password: 'Jelszó', login: 'Bejelentkezés', manage: 'Adminisztráció', dbOk: 'Postgres csatlakoztatva', dbNo: 'Nincs adatbázis',

@@ -78,6 +78,7 @@ export default {
     noBucket: 'Bucket not connected',
   },
   admin: {
+    intro: 'Manage profiles, members and permissions in one place.',
     noAccess: 'No access – this area is for administrators only.', makeAdmin: 'Make admin', removeAdmin: 'Remove admin', adminUpdated: 'Permissions updated',
     title: 'Administration.', loginText: 'Log in with the admin password to manage profiles and members.',
     password: 'Password', login: 'Log in', manage: 'Administration', dbOk: 'Postgres connected', dbNo: 'No database',

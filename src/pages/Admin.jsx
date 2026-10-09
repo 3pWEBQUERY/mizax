@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useState } from 'react';
 import Page from '../components/Page.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
+import PageHead from '../components/PageHead.jsx';
 import { Placeholder } from '../components/Media.jsx';
 import { useToast } from '../components/Toast.jsx';
 import ProfileEditor from '../components/ProfileEditor.jsx';
@@ -57,19 +58,22 @@ function Dashboard({ status }) {
 
   return (
     <>
-      <div className="admin-head">
-        <h1 className="admin-title">{t('admin.manage')}</h1>
-        <div className="status-row">
-          {status && (
-            <>
-              <span className="badge">{status.db ? `● ${t('admin.dbOk')}` : `○ ${t('admin.dbNo')}`}</span>
-              <span className="badge">{status.storage ? `● ${t('admin.bucketOk')}` : `○ ${t('admin.bucketNo')}`}</span>
-            </>
-          )}
-        </div>
-      </div>
+      <PageHead wide title={t('admin.manage')} text={t('admin.intro')}>
+        {status && (
+          <>
+            <span className="status-pill">
+              <span className={`dot ${status.db ? '' : 'off'}`} />
+              {status.db ? t('admin.dbOk') : t('admin.dbNo')}
+            </span>
+            <span className="status-pill">
+              <span className={`dot ${status.storage ? '' : 'off'}`} />
+              {status.storage ? t('admin.bucketOk') : t('admin.bucketNo')}
+            </span>
+          </>
+        )}
+      </PageHead>
 
-      <div className="tabs" role="tablist">
+      <div className="range-switch admin-tabs" role="tablist">
         {[
           ['profiles', t('admin.tabProfiles')],
           ['users', t('admin.tabUsers')],
@@ -112,7 +116,7 @@ function Profiles({ status }) {
   return (
     <div className="admin-grid">
       <div className="panel">
-        <button className="menu-item" onClick={() => setSelected('new')} style={{ marginBottom: 6 }}>
+        <button type="button" className="admin-new" onClick={() => setSelected('new')}>
           <PlusIcon width={18} height={18} /> {t('admin.newProfile')}
         </button>
         <div className="admin-list">
@@ -123,7 +127,7 @@ function Profiles({ status }) {
                 {e.photos[0] ? <img src={e.photos[0].thumb} alt="" /> : <Placeholder escort={e} />}
               </div>
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontWeight: 600 }}>
+                <div className="admin-name">
                   {e.name}, {e.age}
                 </div>
                 <div className="meta">
@@ -205,7 +209,7 @@ function Users() {
     d ? new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(d)) : '–';
 
   return (
-    <div className="panel" style={{ padding: 16 }}>
+    <div className="panel admin-users">
       {!users ? (
         <div className="empty">{t('admin.loading')}</div>
       ) : !users.length ? (
@@ -236,7 +240,7 @@ function Users() {
                       </span>
                     )}
                     {u.slug && (
-                      <a href={`/escort/${u.slug}`} target="_blank" rel="noreferrer" style={{ marginLeft: 8, fontSize: 13, textDecoration: 'underline' }}>
+                      <a href={`/escort/${u.slug}`} target="_blank" rel="noreferrer" className="inline-link admin-view">
                         {t('me.view')}
                       </a>
                     )}
@@ -245,7 +249,7 @@ function Users() {
                   <td className="muted">{fmt(u.last_login_at)}</td>
                   <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                     {u.id !== me?.id && (
-                      <button type="button" className="toggle" onClick={() => setAdmin(u, !u.is_admin)}>
+                      <button type="button" className="status-pill admin-role-btn" onClick={() => setAdmin(u, !u.is_admin)}>
                         {u.is_admin ? t('admin.removeAdmin') : t('admin.makeAdmin')}
                       </button>
                     )}
