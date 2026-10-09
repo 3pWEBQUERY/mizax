@@ -4223,11 +4223,11 @@ a.status-pill:hover {
 .post-card {
   position: relative;
   padding: 16px;
-  border-radius: 26px;
+  border-radius: var(--radius);
   background: var(--surface);
   border: 1px solid var(--border);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .composer {
@@ -4248,7 +4248,7 @@ a.status-pill:hover {
   min-height: 44px;
   padding: 11px 16px;
   border-radius: 22px;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-strong);
   background: var(--tint);
   outline: none;
   resize: none;
@@ -4259,7 +4259,7 @@ a.status-pill:hover {
 
 .composer-input:focus {
   background: var(--tint-2);
-  border-color: var(--border-strong);
+  border-color: var(--tint-3);
 }
 
 .composer-input::placeholder {
@@ -4308,7 +4308,7 @@ a.status-pill:hover {
   justify-content: space-between;
   margin-top: 10px;
   padding-top: 8px;
-  border-top: 1px solid var(--row-sep);
+  border-top: 1px solid var(--border-strong);
 }
 
 .composer-tool {
@@ -4329,7 +4329,7 @@ a.status-pill:hover {
 }
 
 .composer-tool svg {
-  color: #34d399;
+  color: var(--muted);
 }
 
 .composer-tool:disabled {
@@ -4375,7 +4375,7 @@ a.status-pill:hover {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .post-author small {
@@ -4389,8 +4389,8 @@ a.status-pill:hover {
   border-radius: 50%;
   display: inline-grid;
   place-items: center;
-  background: #3b82f6;
-  color: #fff;
+  background: var(--cta-bg);
+  color: var(--cta-fg);
 }
 
 .post-menu-anchor {
@@ -4442,7 +4442,7 @@ a.status-pill:hover {
   right: 0;
   bottom: 0;
   padding-left: 40px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text);
   background: linear-gradient(90deg, transparent, var(--bg-2) 40%);
 }
@@ -4460,8 +4460,9 @@ a.status-pill:hover {
 
 .post-photos {
   display: grid;
-  gap: 3px;
-  margin: 0 -16px 10px;
+  gap: 4px;
+  margin: 0 0 10px;
+  border-radius: 16px;
   overflow: hidden;
 }
 
@@ -4563,7 +4564,7 @@ a.status-pill:hover {
   grid-template-columns: 1fr 1fr;
   gap: 4px;
   padding-top: 6px;
-  border-top: 1px solid var(--row-sep);
+  border-top: 1px solid var(--border-strong);
 }
 
 .post-actions button {
@@ -4572,9 +4573,9 @@ a.status-pill:hover {
   justify-content: center;
   gap: 8px;
   height: 40px;
-  border-radius: 14px;
+  border-radius: 999px;
   font-size: 14.5px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-2);
   transition: background 0.2s var(--ease), color 0.2s var(--ease);
 }
@@ -4592,14 +4593,14 @@ a.status-pill:hover {
   flex-direction: column;
   gap: 8px;
   padding-top: 10px;
-  border-top: 1px solid var(--row-sep);
+  border-top: 1px solid var(--border-strong);
   margin-top: 6px;
 }
 
 .comments-more {
   align-self: flex-start;
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--muted);
 }
 
@@ -4627,7 +4628,7 @@ a.status-pill:hover {
 .comment-bubble b {
   display: block;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .comment-bubble p {
@@ -4647,7 +4648,7 @@ a.status-pill:hover {
 }
 
 .comment-meta button {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--muted);
 }
 
@@ -4731,7 +4732,7 @@ a.status-pill:hover {
   gap: 8px;
   margin: 0 0 12px 4px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-2);
 }
 
