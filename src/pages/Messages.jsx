@@ -227,27 +227,30 @@ export function Chat() {
   return (
     <Page className="chat-page" scrollRef={scrollRef}>
       {conv && (
-        <Rise i={0} className="chat-head">
-          {link ? (
-            <Link to={link} className="chat-who">
-              <Avatar name={conv.other.name} thumb={conv.other.thumb} size={46} />
-              <span>
-                <b>{conv.other.name}</b>
-                <small>
+        <div className="me-head member-head chat-head">
+          <Rise i={0}>
+            {link ? (
+              <Link to={link} aria-label={conv.other.name}>
+                <Avatar name={conv.other.name} thumb={conv.other.thumb} size={52} />
+              </Link>
+            ) : (
+              <Avatar name={conv.other.name} size={52} />
+            )}
+          </Rise>
+          <div className="me-head-text">
+            <Rise i={0} as="h1" className="me-title">
+              {conv.other.name}
+            </Rise>
+            {link && (
+              <Rise i={1} as="p" className="me-intro">
+                <Link to={link} className="chat-profile-link">
                   {conv.other.kind === 'escort' ? t('msg.viewProfile') : t('msg.viewMember')}
                   <ChevronR width={12} height={12} />
-                </small>
-              </span>
-            </Link>
-          ) : (
-            <div className="chat-who">
-              <Avatar name={conv.other.name} size={46} />
-              <span>
-                <b>{conv.other.name}</b>
-              </span>
-            </div>
-          )}
-        </Rise>
+                </Link>
+              </Rise>
+            )}
+          </div>
+        </div>
       )}
 
       <div className="chat-list">

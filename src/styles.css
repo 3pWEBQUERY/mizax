@@ -5504,3 +5504,28 @@ a.status-pill:hover {
     width: 40px;
   }
 }
+
+/* Chat: Kopfbereich wie die übrigen Seiten */
+.chat-page .chat-head {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0 0 10px;
+  max-width: none;
+}
+
+.chat-profile-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--muted);
+  transition: color 0.2s var(--ease);
+}
+
+.chat-profile-link:hover {
+  color: var(--text);
+}
+
+.chat-page .chat-list {
+  padding-top: 4px;
+  border-top: 1px solid var(--border-strong);
+}
