@@ -3039,3 +3039,46 @@ textarea.input {
 :root[data-theme='light'] .picker .picker-item.active {
   background: rgba(255, 255, 255, 0.6);
 }
+
+/* Favoriten: Kopfbereich über die volle Breite des Grids */
+.page-head-wide {
+  max-width: none;
+  margin-bottom: 22px;
+}
+
+.fav-pill {
+  color: #ff5c8a;
+  border-color: rgba(255, 92, 138, 0.35);
+  background: rgba(255, 92, 138, 0.1);
+}
+
+a.status-pill:hover {
+  color: var(--text);
+}
+
+/* Profil: Aktions-Buttons kompakter */
+.profile-body .actions {
+  gap: 8px;
+}
+
+.profile-body .actions .white-btn,
+.profile-body .actions .ghost-btn {
+  height: 44px;
+  padding: 0 16px;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.profile-body .actions svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 720px) {
+  .profile-body .actions .white-btn,
+  .profile-body .actions .ghost-btn {
+    height: 40px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+}
