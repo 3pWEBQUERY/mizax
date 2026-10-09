@@ -1,21 +1,28 @@
 import { query } from './db.js';
+import { findPlace } from './places.js';
+
+// Demo-Profile lagen früher in deutschen Städten; die Seite ist jetzt auf die Schweiz ausgerichtet
+const DEMO_CITY_TO_CH = {
+  Berlin: 'Zürich', München: 'Genève', Hamburg: 'Basel', Frankfurt: 'Bern',
+  Köln: 'Lausanne', Düsseldorf: 'Luzern', Stuttgart: 'Lugano', Leipzig: 'St. Gallen',
+};
 
 const demo = [
-  ['Valentina', 24, 'Berlin', 'Elegant, charmant und immer ein Lächeln.', '#8b5cf6', 168, 'IT'],
-  ['Mia', 22, 'München', 'Sportlich, lebensfroh und spontan.', '#ec4899', 165, 'DE'],
-  ['Sofia', 27, 'Hamburg', 'Kultivierte Begleitung für besondere Abende.', '#6366f1', 172, 'ES'],
-  ['Elena', 25, 'Frankfurt', 'Business-Dinner, Events und mehr.', '#0ea5e9', 170, 'RU'],
-  ['Lara', 23, 'Köln', 'Natürlich, warmherzig und neugierig.', '#f97316', 163, 'DE'],
-  ['Amélie', 26, 'Düsseldorf', 'Französischer Charme trifft Stil.', '#14b8a6', 169, 'FR'],
-  ['Nina', 29, 'Stuttgart', 'Reisebegleitung mit Klasse.', '#a855f7', 174, 'DE'],
-  ['Isabella', 24, 'Berlin', 'Kunst, Kultur und gute Gespräche.', '#e11d48', 166, 'BR'],
-  ['Clara', 28, 'München', 'Die perfekte Begleitung für Ihren Abend.', '#3b82f6', 171, 'AT'],
-  ['Jasmin', 21, 'Hamburg', 'Jung, frech und voller Energie.', '#d946ef', 160, 'DE'],
-  ['Victoria', 30, 'Frankfurt', 'Diskret, gebildet, international.', '#06b6d4', 175, 'GB'],
-  ['Leonie', 25, 'Leipzig', 'Bodenständig mit einem Hauch Glamour.', '#84cc16', 167, 'DE'],
-  ['Aurora', 26, 'Köln', 'Für Momente, die man nicht vergisst.', '#f59e0b', 168, 'SE'],
-  ['Melina', 23, 'Düsseldorf', 'Fröhlich, offen und unkompliziert.', '#ef4444', 164, 'GR'],
-  ['Zara', 27, 'Berlin', 'Modern, stilsicher und weltoffen.', '#8b5cf6', 173, 'NL'],
+  ['Valentina', 24, 'Zürich', 'Elegant, charmant und immer ein Lächeln.', '#8b5cf6', 168, 'IT'],
+  ['Mia', 22, 'Genève', 'Sportlich, lebensfroh und spontan.', '#ec4899', 165, 'DE'],
+  ['Sofia', 27, 'Basel', 'Kultivierte Begleitung für besondere Abende.', '#6366f1', 172, 'ES'],
+  ['Elena', 25, 'Bern', 'Business-Dinner, Events und mehr.', '#0ea5e9', 170, 'RU'],
+  ['Lara', 23, 'Lausanne', 'Natürlich, warmherzig und neugierig.', '#f97316', 163, 'DE'],
+  ['Amélie', 26, 'Luzern', 'Französischer Charme trifft Stil.', '#14b8a6', 169, 'FR'],
+  ['Nina', 29, 'Lugano', 'Reisebegleitung mit Klasse.', '#a855f7', 174, 'DE'],
+  ['Isabella', 24, 'Zürich', 'Kunst, Kultur und gute Gespräche.', '#e11d48', 166, 'BR'],
+  ['Clara', 28, 'Genève', 'Die perfekte Begleitung für Ihren Abend.', '#3b82f6', 171, 'AT'],
+  ['Jasmin', 21, 'Basel', 'Jung, frech und voller Energie.', '#d946ef', 160, 'DE'],
+  ['Victoria', 30, 'Bern', 'Diskret, gebildet, international.', '#06b6d4', 175, 'GB'],
+  ['Leonie', 25, 'St. Gallen', 'Bodenständig mit einem Hauch Glamour.', '#84cc16', 167, 'DE'],
+  ['Aurora', 26, 'Lausanne', 'Für Momente, die man nicht vergisst.', '#f59e0b', 168, 'SE'],
+  ['Melina', 23, 'Luzern', 'Fröhlich, offen und unkompliziert.', '#ef4444', 164, 'GR'],
+  ['Zara', 27, 'Zürich', 'Modern, stilsicher und weltoffen.', '#8b5cf6', 173, 'NL'],
 ];
 
 const services = [
@@ -41,6 +48,23 @@ const LEGACY_SERVICE = {
 };
 
 export async function normalizeLegacy() {
+  // Ort: Demo-Profile in die Schweiz verlegen und fehlende Kantone/Koordinaten ergänzen
+  const { rows: located } = await query('SELECT id, city, zip, user_id FROM escorts WHERE lat IS NULL');
+  for (const r of located) {
+    const city = r.user_id ? r.city : DEMO_CITY_TO_CH[r.city] || r.city;
+    const place = findPlace(r.zip, city);
+    if (place) {
+      await query('UPDATE escorts SET city = $1, zip = $2, canton = $3, lat = $4, lng = $5 WHERE id = $6', [
+        place.name,
+        place.zip,
+        place.canton,
+        place.lat,
+        place.lng,
+        r.id,
+      ]);
+    }
+  }
+
   const { rows } = await query('SELECT id, nationality, languages, services FROM escorts');
   for (const r of rows) {
     const nationality = LEGACY_NATIONALITY[r.nationality] || r.nationality;
@@ -81,6 +105,7 @@ export async function seedIfEmpty() {
 
   for (let i = 0; i < demo.length; i++) {
     const [name, age, city, tagline, accent, height, nationality] = demo[i];
+    const place = findPlace('', city);
     const bio = [
       `Hey, ich bin ${name}.`,
       `Ich lebe in ${city} und begleite dich gerne zu Dinner, Events oder auf Reisen.`,
@@ -89,8 +114,8 @@ export async function seedIfEmpty() {
     await query(
       `INSERT INTO escorts
         (slug, name, age, city, tagline, bio, height, nationality, languages, services, rates,
-         phone, whatsapp, accent, verified, available, featured, sort)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`,
+         phone, whatsapp, accent, verified, available, featured, sort, zip, canton, lat, lng)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)`,
       [
         `${slugify(name)}-${slugify(city)}`,
         name,
@@ -114,6 +139,10 @@ export async function seedIfEmpty() {
         i % 5 !== 4,
         i < 5,
         i,
+        place?.zip || '',
+        place?.canton || '',
+        place?.lat ?? null,
+        place?.lng ?? null,
       ],
     );
   }

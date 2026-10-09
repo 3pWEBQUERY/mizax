@@ -21,6 +21,11 @@ nahtlos in das jeweilige Profil übergehen.
 - Gäste sehen nur die Karten; Beschreibung, Honorar und Kontaktdaten sind Mitgliedern vorbehalten
 - **Escort-Konten** pflegen ihr eigenes Profil unter `/me` (Texte, Honorar, Kontakt, Fotos)
 - Favoriten pro Konto (serverseitig, auf allen Geräten)
+- **Standort (nur Schweiz, ohne Google):** Escorts wählen ihren Ort per PLZ/Name aus einem lokalen
+  Verzeichnis aller Schweizer Orte (`server/data/ch-places.json`, Quelle: GeoNames, CC BY 4.0) oder per
+  Button „Aktuellen Standort verwenden“. Gespeichert wird nur das Ortszentrum mit Kanton, nie der genaue
+  Standort. Besucher filtern nach allen 26 Kantonen oder per „In meiner Nähe“ (Browser-Standort nur nach
+  Klick, wird nicht an den Server gesendet) mit Umkreis 10–100 km und Sortierung nach Entfernung.
 - **Dark/Light Mode** (folgt anfangs der Systemeinstellung, umschaltbar)
 - **7 Sprachen:** Deutsch, Englisch, Französisch, Spanisch, Ungarisch, Polnisch, Rumänisch
   (`src/locales/*.js`, automatische Erkennung, Auswahl wird im Konto gespeichert)

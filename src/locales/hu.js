@@ -15,7 +15,7 @@ export default {
   home: { all: 'Mind', empty: 'Nincs találat.', loadError: 'A profilokat nem sikerült betölteni.' },
   card: { verified: 'Ellenőrzött', addFav: 'Hozzáadás a kedvencekhez', removeFav: 'Eltávolítás a kedvencekből' },
   dock: {
-    searchPlaceholder: 'Keresés név vagy város szerint', searchIn: 'Keresés itt: {city}', messageTo: 'Üzenet neki: {name}',
+    searchPlaceholder: 'Keresés név, település vagy kanton szerint', searchIn: 'Keresés itt: {city}', messageTo: 'Üzenet neki: {name}',
     noteSearch: 'Minden bemutatott személy elmúlt 18 éves.',
     noteMessage: 'Diszkréten és közvetlenül – az üzenet WhatsAppban, SMS-ben vagy e-mailben nyílik meg.',
     noteLocked: 'Üzenetküldéshez jelentkezz be.',
@@ -25,6 +25,7 @@ export default {
     noContactToast: 'Ehhez a profilhoz még nincsenek elérhetőségek',
   },
   profile: {
+    place: 'Település',
     available: 'Elérhető', unavailable: 'Jelenleg nem elérhető', age: 'Életkor', years: '{n} év', height: 'Magasság',
     origin: 'Állampolgárság', city: 'Város', languages: 'Nyelvek', servicesTitle: 'Szívesen elkísérlek', rates: 'Díjak',
     write: 'Üzenet írása', save: 'Mentés', saved: 'Elmentve', notFound: 'Sajnos ez a profil már nem elérhető.',
@@ -57,6 +58,7 @@ export default {
     onlyEscorts: 'Saját profilt csak escort-fiókok hozhatnak létre.',
   },
   editor: {
+    place: 'Település (irányítószám vagy név)', placePlaceholder: 'pl. 8001 vagy Zürich', useLocation: 'Jelenlegi helyzet használata', placeHint: 'Válassz települést a listából. A profilodon csak a település látszik, a pontos helyed soha.',
     chooseNationality: 'Állampolgárság kiválasztása', search: 'Keresés…', noResults: 'Nincs találat', addLanguage: 'Nyelv hozzáadása', removeLanguage: 'Nyelv eltávolítása', noLanguages: 'Még nincs kiválasztott nyelv', chooseServices: 'Szolgáltatások kiválasztása', noServices: 'Még nincs kiválasztott szolgáltatás', selected: '{n} kiválasztva', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Feltöltés… {done}/{total}',
     name: 'Név', age: 'Életkor (min. 18)', city: 'Város', origin: 'Állampolgárság', height: 'Magasság (cm)', accent: 'Kiemelő szín',
@@ -88,6 +90,9 @@ export default {
     items: {
       dinner_date: 'Vacsorarandi', events: 'Kísérés rendezvényekre', travel: 'Utazási kísérő', overnight: 'Egész éjszaka', weekend: 'Hétvége', gfe: 'Barátnő-élmény', kissing: 'Csók', french_kissing: 'Francia csók', cuddling: 'Összebújás', shower: 'Közös zuhanyzás', striptease: 'Sztriptíz', lingerie: 'Fehérnemű', erotic_massage: 'Erotikus masszázs', body_to_body: 'Body-to-body masszázs', tantra: 'Tantra masszázs', handjob: 'Kézi kényeztetés', oral_condom: 'Orális óvszerrel', oral_without: 'Orális óvszer nélkül', cunnilingus: 'Cunnilingus', sixty_nine: '69', intercourse: 'Közösülés', multiple: 'Többszöri együttlét', positions: 'Különböző pózok', anal: 'Anál', roleplay: 'Szerepjáték', toys: 'Szexjátékok', dominant: 'Domináns', submissive: 'Alázatos', fetish: 'Fétis', duo: 'Duó barátnővel', couples: 'Párok',
     },
+  },
+  geo: {
+    nearMe: 'A közelemben', locating: 'Helymeghatározás…', denied: 'Helyhozzáférés elutasítva – a böngésző beállításaiban engedélyezheted.', unavailable: 'A helyzet nem határozható meg.', radius: 'Körzet', all: 'Mind', km: '{n} km', away: '≈ {n} km', near: '< 1 km', canton: 'Kanton', cantons: 'Kantonok', chooseCanton: 'Kanton kiválasztása', allCantons: 'Minden kanton',
   },
   errors: {
     too_many_photos: 'Profilonként legfeljebb 20 fotó.',

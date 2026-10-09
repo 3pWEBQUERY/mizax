@@ -80,8 +80,8 @@ export default function TopBar({ onSearch, searchOpen }) {
   const { t } = useI18n();
   const { user, logout } = useAuth();
   const toast = useToast();
-  const { query, city } = useDockState();
-  const filtered = Boolean(query.trim() || city);
+  const { query, canton, geo } = useDockState();
+  const filtered = Boolean(query.trim() || canton || geo);
   const [menu, setMenu] = useState(false);
   const accRef = useRef(null);
   useOutside(accRef, menu, () => setMenu(false));

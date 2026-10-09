@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { query, migrate, hasDb } from './db.js';
 import { hasStorage, putObject, getObject, deleteObject } from './storage.js';
 import { seedIfEmpty, normalizeLegacy, slugify } from './seed.js';
+import { searchPlaces, findPlace, nearestPlace } from './places.js';
 import {
   attachUser,
   requireUser,
@@ -72,6 +73,10 @@ function escortOut(row, photos = []) {
     name: row.name,
     age: row.age,
     city: row.city,
+    zip: row.zip,
+    canton: row.canton,
+    lat: row.lat,
+    lng: row.lng,
     tagline: row.tagline,
     bio: row.bio,
     height: row.height,
@@ -102,6 +107,10 @@ function cardOut(e) {
     name: e.name,
     age: e.age,
     city: e.city,
+    zip: e.zip,
+    canton: e.canton,
+    lat: e.lat,
+    lng: e.lng,
     accent: e.accent,
     verified: e.verified,
     available: e.available,
@@ -169,10 +178,16 @@ function escortInput(body) {
         .map((r) => ({ label: String(r.label || '').slice(0, 60), price: String(r.price || '').slice(0, 40) }))
     : [];
   const str = (v, n = 200) => String(v || '').trim().slice(0, n);
+  // Ort immer serverseitig aus dem Schweizer Ortsverzeichnis auflösen (Kanton + Ortszentrum)
+  const place = findPlace(body.zip, body.city);
   return {
     name: str(body.name, 60),
     age,
-    city: str(body.city, 80),
+    city: place ? place.name : str(body.city, 80),
+    zip: place ? place.zip : '',
+    canton: place ? place.canton : '',
+    lat: place ? place.lat : null,
+    lng: place ? place.lng : null,
     tagline: str(body.tagline, 200),
     bio: str(body.bio, 5000),
     height: body.height ? Number(body.height) || null : null,
@@ -193,7 +208,7 @@ function escortInput(body) {
 }
 
 const FIELDS = [
-  'name', 'age', 'city', 'tagline', 'bio', 'height', 'nationality', 'languages', 'services',
+  'name', 'age', 'city', 'zip', 'canton', 'lat', 'lng', 'tagline', 'bio', 'height', 'nationality', 'languages', 'services',
   'rates', 'phone', 'whatsapp', 'email', 'accent', 'verified', 'available', 'featured',
   'published', 'sort',
 ];
@@ -347,6 +362,24 @@ app.get(
     }
   }),
 );
+
+// ---------- Schweizer Orte ----------
+
+app.get('/api/places', (req, res) => {
+  res.set('Cache-Control', 'public, max-age=86400');
+  res.json(searchPlaces(String(req.query.q || '').slice(0, 60), Math.min(Number(req.query.limit) || 12, 30)));
+});
+
+app.get('/api/places/nearest', (req, res, next) => {
+  const lat = Number(req.query.lat);
+  const lng = Number(req.query.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+    return next(httpError(400, 'invalid_location', 'Ungültiger Standort'));
+  }
+  // Der Standort wird nur für diese Abfrage verwendet und nicht gespeichert
+  res.set('Cache-Control', 'no-store');
+  res.json(nearestPlace(lat, lng));
+});
 
 // ---------- Konto ----------
 

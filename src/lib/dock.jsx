@@ -5,7 +5,10 @@ const DockCtx = createContext(null);
 export function DockProvider({ children }) {
   const [config, setConfig] = useState({ mode: 'search' });
   const [query, setQuery] = useState('');
-  const [city, setCity] = useState('');
+  const [canton, setCanton] = useState('');
+  // Standort des Besuchers (nur nach Klick auf „In meiner Nähe“, wird nicht gespeichert)
+  const [geo, setGeo] = useState(null);
+  const [radius, setRadius] = useState(null);
   // Suchleiste ist standardmäßig versteckt und erscheint erst über den Suchen-Button
   const [searchOpen, setSearchOpen] = useState(false);
   // Nachrichtenleiste auf Profilen erscheint erst über „Nachricht schreiben“
@@ -17,15 +20,19 @@ export function DockProvider({ children }) {
       setConfig,
       query,
       setQuery,
-      city,
-      setCity,
+      canton,
+      setCanton,
+      geo,
+      setGeo,
+      radius,
+      setRadius,
       inputRef,
       searchOpen,
       setSearchOpen,
       messageOpen,
       setMessageOpen,
     }),
-    [config, query, city, searchOpen, messageOpen],
+    [config, query, canton, geo, radius, searchOpen, messageOpen],
   );
   return <DockCtx.Provider value={value}>{children}</DockCtx.Provider>;
 }

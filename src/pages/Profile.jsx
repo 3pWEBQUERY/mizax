@@ -7,6 +7,7 @@ import { Photo } from '../components/Media.jsx';
 import { CheckIcon, ChatIcon, PhoneIcon, MailIcon, HeartIcon, CloseIcon, ChevronL, ChevronR, LockIcon, WhatsAppIcon } from '../components/Icons.jsx';
 import { useI18n } from '../lib/i18n.jsx';
 import { countryName, flag, languageName, parseLanguage, serviceLabel } from '../lib/catalog.js';
+import { cantonName } from '../lib/cantons.js';
 import { useAuth } from '../lib/auth.jsx';
 import { useEscort, useFavorites, toggleFavorite, preloadImage } from '../lib/store.js';
 import { useDock, useDockState } from '../lib/dock.jsx';
@@ -93,7 +94,8 @@ export default function Profile() {
         ? `${flag(escort.nationality)} ${countryName(escort.nationality, locale)}`
         : escort.nationality,
     ],
-    [t('profile.city'), escort.city],
+    [t('profile.place'), [escort.zip, escort.city].filter(Boolean).join(' ')],
+    [t('geo.canton'), escort.canton ? cantonName(escort.canton, locale) : null],
     [
       t('profile.languages'),
       (escort.languages || [])

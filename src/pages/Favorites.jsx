@@ -14,10 +14,13 @@ export default function Favorites() {
   const { escorts } = useEscorts();
   const favs = useFavorites();
   const { user, ready } = useAuth();
-  const { query, city } = useDockState();
+  const { query, canton, geo, radius } = useDockState();
   const t = useT();
   const mine = useMemo(() => (escorts ? escorts.filter((e) => favs.has(e.slug)) : []), [escorts, favs]);
-  const list = useMemo(() => filterEscorts(mine, query, city), [mine, query, city]);
+  const list = useMemo(
+    () => filterEscorts(mine, { query, canton, geo, radius }),
+    [mine, query, canton, geo, radius],
+  );
 
   if (ready && !user) {
     return (

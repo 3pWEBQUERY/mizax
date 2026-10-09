@@ -15,7 +15,7 @@ export default {
   home: { all: 'Alle', empty: 'Keine Profile gefunden.', loadError: 'Profile konnten nicht geladen werden.' },
   card: { verified: 'Verifiziert', addFav: 'Zu Favoriten hinzufügen', removeFav: 'Aus Favoriten entfernen' },
   dock: {
-    searchPlaceholder: 'Suche nach Name oder Stadt', searchIn: 'Suche in {city}', messageTo: 'Nachricht an {name}',
+    searchPlaceholder: 'Suche nach Name, Ort oder Kanton', searchIn: 'Suche in {city}', messageTo: 'Nachricht an {name}',
     noteSearch: 'Alle gezeigten Personen sind mindestens 18 Jahre alt.',
     noteMessage: 'Diskret & direkt – deine Nachricht öffnet sich in WhatsApp, SMS oder E-Mail.',
     noteLocked: 'Melde dich an, um Nachrichten zu senden.',
@@ -25,6 +25,7 @@ export default {
     noContactToast: 'Für dieses Profil sind noch keine Kontaktdaten hinterlegt',
   },
   profile: {
+    place: 'Ort',
     available: 'Verfügbar', unavailable: 'Derzeit nicht verfügbar', age: 'Alter', years: '{n} Jahre', height: 'Größe',
     origin: 'Nationalität', city: 'Stadt', languages: 'Sprachen', servicesTitle: 'Ich begleite dich gerne zu', rates: 'Honorar',
     write: 'Nachricht schreiben', save: 'Merken', saved: 'Gemerkt', notFound: 'Dieses Profil ist leider nicht mehr verfügbar.',
@@ -57,6 +58,7 @@ export default {
     onlyEscorts: 'Nur Escort-Konten können ein eigenes Profil anlegen.',
   },
   editor: {
+    place: 'Ort (PLZ oder Name)', placePlaceholder: 'z. B. 8001 oder Zürich', useLocation: 'Aktuellen Standort verwenden', placeHint: 'Bitte einen Ort aus der Liste wählen. Auf dem Profil erscheint nur der Ort, nie dein genauer Standort.',
     chooseNationality: 'Nationalität wählen', search: 'Suchen…', noResults: 'Keine Treffer', addLanguage: 'Sprache hinzufügen', removeLanguage: 'Sprache entfernen', noLanguages: 'Noch keine Sprachen ausgewählt', chooseServices: 'Leistungen auswählen', noServices: 'Noch keine Leistungen ausgewählt', selected: '{n} ausgewählt', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Lädt hoch… {done}/{total}',
     name: 'Name', age: 'Alter (mind. 18)', city: 'Stadt', origin: 'Nationalität', height: 'Größe (cm)', accent: 'Akzentfarbe',
@@ -88,6 +90,9 @@ export default {
     items: {
       dinner_date: 'Dinner-Date', events: 'Begleitung zu Events', travel: 'Reisebegleitung', overnight: 'Übernachtung', weekend: 'Wochenende', gfe: 'Girlfriend-Experience', kissing: 'Küssen', french_kissing: 'Zungenküsse', cuddling: 'Kuscheln', shower: 'Gemeinsames Duschen', striptease: 'Striptease', lingerie: 'Dessous', erotic_massage: 'Erotische Massage', body_to_body: 'Body-to-Body-Massage', tantra: 'Tantramassage', handjob: 'Handentspannung', oral_condom: 'Oral mit Kondom', oral_without: 'Oral ohne Kondom', cunnilingus: 'Cunnilingus', sixty_nine: '69', intercourse: 'Geschlechtsverkehr', multiple: 'Mehrmals Verkehr', positions: 'Verschiedene Stellungen', anal: 'Anal', roleplay: 'Rollenspiele', toys: 'Spielzeug', dominant: 'Dominant', submissive: 'Devot', fetish: 'Fetisch', duo: 'Duo mit Freundin', couples: 'Paare',
     },
+  },
+  geo: {
+    nearMe: 'In meiner Nähe', locating: 'Standort wird ermittelt…', denied: 'Standortzugriff abgelehnt – du kannst ihn in den Browser-Einstellungen erlauben.', unavailable: 'Standort konnte nicht ermittelt werden.', radius: 'Umkreis', all: 'Alle', km: '{n} km', away: '≈ {n} km', near: '< 1 km', canton: 'Kanton', cantons: 'Kantone', chooseCanton: 'Kanton wählen', allCantons: 'Alle Kantone',
   },
   errors: {
     too_many_photos: 'Maximal 20 Fotos pro Profil.',

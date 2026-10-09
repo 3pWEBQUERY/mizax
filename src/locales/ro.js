@@ -15,7 +15,7 @@ export default {
   home: { all: 'Toate', empty: 'Nu s-au găsit profiluri.', loadError: 'Profilurile nu au putut fi încărcate.' },
   card: { verified: 'Verificată', addFav: 'Adaugă la favorite', removeFav: 'Elimină din favorite' },
   dock: {
-    searchPlaceholder: 'Caută după nume sau oraș', searchIn: 'Caută în {city}', messageTo: 'Mesaj pentru {name}',
+    searchPlaceholder: 'Caută după nume, localitate sau canton', searchIn: 'Caută în {city}', messageTo: 'Mesaj pentru {name}',
     noteSearch: 'Toate persoanele prezentate au cel puțin 18 ani.',
     noteMessage: 'Discret și direct – mesajul se deschide în WhatsApp, SMS sau e-mail.',
     noteLocked: 'Autentifică-te pentru a trimite mesaje.',
@@ -25,6 +25,7 @@ export default {
     noContactToast: 'Acest profil nu are încă date de contact',
   },
   profile: {
+    place: 'Localitate',
     available: 'Disponibilă', unavailable: 'Momentan indisponibilă', age: 'Vârstă', years: '{n} ani', height: 'Înălțime',
     origin: 'Naționalitate', city: 'Oraș', languages: 'Limbi', servicesTitle: 'Te însoțesc cu plăcere la', rates: 'Tarife',
     write: 'Scrie un mesaj', save: 'Salvează', saved: 'Salvat', notFound: 'Din păcate, acest profil nu mai este disponibil.',
@@ -57,6 +58,7 @@ export default {
     onlyEscorts: 'Doar conturile de escort își pot crea un profil propriu.',
   },
   editor: {
+    place: 'Localitate (cod poștal sau nume)', placePlaceholder: 'ex. 8001 sau Zürich', useLocation: 'Folosește locația actuală', placeHint: 'Alege o localitate din listă. Profilul arată doar localitatea, niciodată locația exactă.',
     chooseNationality: 'Alege naționalitatea', search: 'Caută…', noResults: 'Niciun rezultat', addLanguage: 'Adaugă o limbă', removeLanguage: 'Elimină limba', noLanguages: 'Nicio limbă selectată', chooseServices: 'Alege serviciile', noServices: 'Niciun serviciu selectat', selected: '{n} selectate', phonePlaceholder: '79 123 45 67',
     photoCount: '{n} / {max}', uploading: 'Se încarcă… {done}/{total}',
     name: 'Nume', age: 'Vârstă (min. 18)', city: 'Oraș', origin: 'Naționalitate', height: 'Înălțime (cm)', accent: 'Culoare de accent',
@@ -88,6 +90,9 @@ export default {
     items: {
       dinner_date: 'Cină romantică', events: 'Însoțire la evenimente', travel: 'Însoțire în călătorii', overnight: 'Noapte întreagă', weekend: 'Weekend', gfe: 'Experiență de iubită', kissing: 'Sărutări', french_kissing: 'Sărut franțuzesc', cuddling: 'Îmbrățișări', shower: 'Duș împreună', striptease: 'Striptease', lingerie: 'Lenjerie', erotic_massage: 'Masaj erotic', body_to_body: 'Masaj body to body', tantra: 'Masaj tantric', handjob: 'Masturbare manuală', oral_condom: 'Oral cu prezervativ', oral_without: 'Oral fără prezervativ', cunnilingus: 'Cunnilingus', sixty_nine: '69', intercourse: 'Act sexual', multiple: 'Mai multe runde', positions: 'Poziții diferite', anal: 'Anal', roleplay: 'Jocuri de rol', toys: 'Jucării', dominant: 'Dominantă', submissive: 'Supusă', fetish: 'Fetiș', duo: 'Duo cu o prietenă', couples: 'Cupluri',
     },
+  },
+  geo: {
+    nearMe: 'În apropiere', locating: 'Se determină locația…', denied: 'Acces la locație refuzat – îl poți permite în setările browserului.', unavailable: 'Locația nu a putut fi determinată.', radius: 'Rază', all: 'Toate', km: '{n} km', away: '≈ {n} km', near: '< 1 km', canton: 'Canton', cantons: 'Cantoane', chooseCanton: 'Alege cantonul', allCantons: 'Toate cantoanele',
   },
   errors: {
     too_many_photos: 'Maximum 20 de fotografii per profil.',

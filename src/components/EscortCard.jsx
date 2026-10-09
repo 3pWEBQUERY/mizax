@@ -90,6 +90,12 @@ export default function EscortCard({ escort, index = 0, instant = false }) {
           <div className="card-city">
             <span className={`dot ${escort.available ? '' : 'off'}`} />
             {escort.city || <PinIcon />}
+            {escort.canton && <span className="card-canton">{escort.canton}</span>}
+            {escort.distance != null && (
+              <span className="card-distance">
+                {escort.distance < 1 ? t('geo.near') : t('geo.away', { n: Math.round(escort.distance) })}
+              </span>
+            )}
           </div>
         </div>
       </Link>

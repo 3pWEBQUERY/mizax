@@ -5,6 +5,7 @@ import { ChevronL, ChevronR, TrashIcon, SpinnerIcon } from './Icons.jsx';
 import NationalityField from './fields/NationalityField.jsx';
 import LanguagesField from './fields/LanguagesField.jsx';
 import PhoneField from './fields/PhoneField.jsx';
+import PlaceField from './fields/PlaceField.jsx';
 import ServicesPage, { ServicesField } from './fields/ServicesPage.jsx';
 import { api } from '../lib/api.js';
 import { useT, errorText } from '../lib/i18n.jsx';
@@ -13,6 +14,8 @@ const empty = {
   name: '',
   age: 21,
   city: '',
+  zip: '',
+  canton: '',
   tagline: '',
   bio: '',
   height: '',
@@ -149,8 +152,13 @@ export default function ProfileEditor({
         <Field label={t('editor.age')}>
           <input className="input" type="number" min={18} max={99} value={form.age} onChange={set('age')} required />
         </Field>
-        <Field label={t('editor.city')}>
-          <input className="input" value={form.city} onChange={set('city')} />
+        <Field label={t('editor.place')} full>
+          <PlaceField
+            city={form.city}
+            zip={form.zip}
+            canton={form.canton}
+            onChange={(p) => setForm((f) => ({ ...f, ...p }))}
+          />
         </Field>
         <Field label={t('editor.origin')}>
           <NationalityField value={form.nationality} onChange={setValue('nationality')} />

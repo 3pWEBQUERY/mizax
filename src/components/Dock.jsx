@@ -5,7 +5,8 @@ import { useEscorts } from '../lib/store.js';
 import { contactLinks } from '../lib/contact.js';
 import { PlusIcon, MicIcon, SendIcon, CloseIcon } from './Icons.jsx';
 import { useToast } from './Toast.jsx';
-import { useT } from '../lib/i18n.jsx';
+import { useT, useI18n } from '../lib/i18n.jsx';
+import { CANTONS, cantonName } from '../lib/cantons.js';
 import { useNavigate } from 'react-router-dom';
 
 const SpeechRecognition =
@@ -36,8 +37,19 @@ const formVariants = {
 };
 
 export default function Dock() {
-  const { config, query, setQuery, city, setCity, inputRef, searchOpen, setSearchOpen, messageOpen, setMessageOpen } =
-    useDockState();
+  const {
+    config,
+    query,
+    setQuery,
+    canton,
+    setCanton,
+    inputRef,
+    searchOpen,
+    setSearchOpen,
+    messageOpen,
+    setMessageOpen,
+  } = useDockState();
+  const { locale } = useI18n();
   const formRef = useRef(null);
   const { escorts } = useEscorts();
   const toast = useToast();
@@ -89,11 +101,14 @@ export default function Dock() {
     };
   }, [panelVisible, inputRef, setSearchOpen, setMessageOpen]);
 
-  const cities = useMemo(() => {
+  // alle 26 Kantone mit Anzahl Profile, alphabetisch nach Name in der aktuellen Sprache
+  const cantons = useMemo(() => {
     const m = new Map();
-    (escorts || []).forEach((e) => e.city && m.set(e.city, (m.get(e.city) || 0) + 1));
-    return [...m.entries()].sort((a, b) => b[1] - a[1]);
-  }, [escorts]);
+    (escorts || []).forEach((e) => e.canton && m.set(e.canton, (m.get(e.canton) || 0) + 1));
+    return CANTONS.map((c) => [c.code, cantonName(c.code, locale), m.get(c.code) || 0]).sort((a, b) =>
+      a[1].localeCompare(b[1]),
+    );
+  }, [escorts, locale]);
 
   const value = mode === 'message' ? message : query;
   const setValue = mode === 'message' ? setMessage : setQuery;
@@ -101,8 +116,8 @@ export default function Dock() {
   const placeholder =
     mode === 'message'
       ? t('dock.messageTo', { name: escort?.name || '' })
-      : city
-        ? t('dock.searchIn', { city })
+      : canton
+        ? t('dock.searchIn', { city: cantonName(canton, locale) })
         : t('dock.searchPlaceholder');
 
   const note =
@@ -215,23 +230,24 @@ export default function Dock() {
                     </>
                   ) : (
                     <>
-                      <div className="dock-pop-title">{t('dock.chooseCity')}</div>
+                      <div className="dock-pop-title">{t('geo.chooseCanton')}</div>
                       <CityChip
-                        label={t('dock.allCities')}
-                        active={!city}
+                        label={t('geo.allCantons')}
+                        active={!canton}
                         onClick={() => {
-                          setCity('');
+                          setCanton('');
                           setOpen(false);
                         }}
                       />
-                      {cities.map(([c, n]) => (
+                      {cantons.map(([c, name, n]) => (
                         <CityChip
                           key={c}
-                          label={c}
+                          label={name}
                           count={n}
-                          active={city === c}
+                          muted={!n}
+                          active={canton === c}
                           onClick={() => {
-                            setCity(city === c ? '' : c);
+                            setCanton(canton === c ? '' : c);
                             setOpen(false);
                           }}
                         />
@@ -287,7 +303,7 @@ export default function Dock() {
               )}
               <button
                 type="button"
-                className={`dock-btn ${open || (mode === 'search' && city) ? 'on' : ''}`}
+                className={`dock-btn ${open || (mode === 'search' && canton) ? 'on' : ''}`}
                 aria-label={mode === 'message' ? t('dock.contactOptions') : t('dock.filterCity')}
                 onClick={() => setOpen((o) => !o)}
               >
@@ -333,9 +349,9 @@ export default function Dock() {
   );
 }
 
-function CityChip({ label, count, active, onClick }) {
+function CityChip({ label, count, active, muted, onClick }) {
   return (
-    <button type="button" className={`chip ${active ? 'active' : ''}`} onClick={onClick}>
+    <button type="button" className={`chip ${active ? 'active' : ''} ${muted && !active ? 'muted' : ''}`} onClick={onClick}>
       {active && <motion.span layoutId="dock-city" className="chip-bg" transition={spring} />}
       <span>
         {label}
