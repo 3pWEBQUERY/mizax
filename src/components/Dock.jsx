@@ -36,7 +36,8 @@ const formVariants = {
 };
 
 export default function Dock() {
-  const { config, query, setQuery, city, setCity, inputRef, searchOpen, setSearchOpen } = useDockState();
+  const { config, query, setQuery, city, setCity, inputRef, searchOpen, setSearchOpen, messageOpen, setMessageOpen } =
+    useDockState();
   const formRef = useRef(null);
   const { escorts } = useEscorts();
   const toast = useToast();
@@ -53,24 +54,31 @@ export default function Dock() {
   useEffect(() => {
     setOpen(false);
     setMessage('');
-  }, [mode, escort?.slug]);
+    setMessageOpen(false);
+  }, [mode, escort?.slug, setMessageOpen]);
 
   const searchVisible = mode === 'search' && searchOpen;
+  const messageVisible = mode === 'message' && messageOpen && !locked;
+  const panelVisible = searchVisible || messageVisible;
 
-  // Suchleiste: Fokus beim Öffnen, schließen bei Klick außerhalb oder Escape
+  // Such- bzw. Nachrichtenleiste: Fokus beim Öffnen, schließen bei Klick außerhalb oder Escape
   useEffect(() => {
-    if (!searchVisible) {
+    if (!panelVisible) {
       setOpen(false);
       return;
     }
+    const close = () => {
+      setSearchOpen(false);
+      setMessageOpen(false);
+    };
     const focusTimer = window.setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 120);
     const onDown = (e) => {
       if (formRef.current?.contains(e.target)) return;
-      if (e.target.closest?.('[data-search-toggle]')) return;
-      setSearchOpen(false);
+      if (e.target.closest?.('[data-search-toggle], [data-message-toggle]')) return;
+      close();
     };
     const onKey = (e) => {
-      if (e.key === 'Escape') setSearchOpen(false);
+      if (e.key === 'Escape') close();
     };
     document.addEventListener('pointerdown', onDown);
     document.addEventListener('keydown', onKey);
@@ -79,7 +87,7 @@ export default function Dock() {
       document.removeEventListener('pointerdown', onDown);
       document.removeEventListener('keydown', onKey);
     };
-  }, [searchVisible, inputRef, setSearchOpen]);
+  }, [panelVisible, inputRef, setSearchOpen, setMessageOpen]);
 
   const cities = useMemo(() => {
     const m = new Map();
@@ -144,9 +152,10 @@ export default function Dock() {
     if (links[0].kind === 'whatsapp') window.open(links[0].href, '_blank', 'noopener');
     else window.location.href = links[0].href;
     setMessage('');
+    setMessageOpen(false);
   }
 
-  const visible = mode === 'message' || searchVisible;
+  const visible = panelVisible;
 
   const links = mode === 'message' && escort && !locked ? contactLinks(escort, message.trim(), t) : [];
 

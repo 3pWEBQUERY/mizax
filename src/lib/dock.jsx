@@ -8,10 +8,24 @@ export function DockProvider({ children }) {
   const [city, setCity] = useState('');
   // Suchleiste ist standardmäßig versteckt und erscheint erst über den Suchen-Button
   const [searchOpen, setSearchOpen] = useState(false);
+  // Nachrichtenleiste auf Profilen erscheint erst über „Nachricht schreiben“
+  const [messageOpen, setMessageOpen] = useState(false);
   const inputRef = useRef(null);
   const value = useMemo(
-    () => ({ config, setConfig, query, setQuery, city, setCity, inputRef, searchOpen, setSearchOpen }),
-    [config, query, city, searchOpen],
+    () => ({
+      config,
+      setConfig,
+      query,
+      setQuery,
+      city,
+      setCity,
+      inputRef,
+      searchOpen,
+      setSearchOpen,
+      messageOpen,
+      setMessageOpen,
+    }),
+    [config, query, city, searchOpen, messageOpen],
   );
   return <DockCtx.Provider value={value}>{children}</DockCtx.Provider>;
 }

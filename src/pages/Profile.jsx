@@ -19,7 +19,7 @@ export default function Profile() {
   const { slug } = useParams();
   const { escort, error } = useEscort(slug);
   const favs = useFavorites();
-  const { inputRef } = useDockState();
+  const { messageOpen, setMessageOpen } = useDockState();
   const { t, locale } = useI18n();
   const { user } = useAuth();
   const [active, setActive] = useState(0);
@@ -232,26 +232,29 @@ export default function Profile() {
 
             {!locked && (
             <Rise i={i++} className="actions">
-              {links.length ? (
-                links.map((l, idx) => {
-                  const Icon = kindIcon[l.kind];
-                  return (
-                    <a
-                      key={l.kind}
-                      href={l.href}
-                      className={idx === 0 ? 'white-btn' : 'ghost-btn'}
-                      target={l.kind === 'whatsapp' ? '_blank' : undefined}
-                      rel="noreferrer"
-                    >
-                      <Icon /> {l.label}
-                    </a>
-                  );
-                })
-              ) : (
-                <button type="button" className="white-btn" onClick={() => inputRef.current?.focus()}>
-                  <ChatIcon /> {t('profile.write')}
-                </button>
-              )}
+              <button
+                type="button"
+                className={`white-btn ${messageOpen ? 'pressed' : ''}`}
+                data-message-toggle
+                aria-expanded={messageOpen}
+                onClick={() => setMessageOpen(!messageOpen)}
+              >
+                <ChatIcon /> {t('profile.write')}
+              </button>
+              {links.map((l) => {
+                const Icon = kindIcon[l.kind];
+                return (
+                  <a
+                    key={l.kind}
+                    href={l.href}
+                    className="ghost-btn"
+                    target={l.kind === 'whatsapp' ? '_blank' : undefined}
+                    rel="noreferrer"
+                  >
+                    <Icon /> {l.label}
+                  </a>
+                );
+              })}
               <button
                 type="button"
                 className="ghost-btn"
