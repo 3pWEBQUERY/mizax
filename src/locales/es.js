@@ -26,6 +26,7 @@ export default {
     noContactToast: 'Este perfil aún no tiene datos de contacto',
   },
   profile: {
+    details: 'Detalles',
     place: 'Localidad',
     available: 'Disponible', unavailable: 'No disponible ahora', age: 'Edad', years: '{n} años', height: 'Altura',
     origin: 'Nacionalidad', city: 'Ciudad', languages: 'Idiomas', servicesTitle: 'Te acompaño con gusto a', rates: 'Tarifas',

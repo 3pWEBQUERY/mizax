@@ -26,6 +26,7 @@ export default {
     noContactToast: 'Ten profil nie ma jeszcze danych kontaktowych',
   },
   profile: {
+    details: 'Szczegóły',
     place: 'Miejscowość',
     available: 'Dostępna', unavailable: 'Obecnie niedostępna', age: 'Wiek', years: '{n} lat', height: 'Wzrost',
     origin: 'Narodowość', city: 'Miasto', languages: 'Języki', servicesTitle: 'Chętnie będę ci towarzyszyć', rates: 'Cennik',

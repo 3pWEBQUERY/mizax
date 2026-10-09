@@ -26,6 +26,7 @@ export default {
     noContactToast: 'Ce profil n’a pas encore de coordonnées',
   },
   profile: {
+    details: 'Détails',
     place: 'Localité',
     available: 'Disponible', unavailable: 'Actuellement indisponible', age: 'Âge', years: '{n} ans', height: 'Taille',
     origin: 'Nationalité', city: 'Ville', languages: 'Langues', servicesTitle: 'Je vous accompagne volontiers pour', rates: 'Tarifs',

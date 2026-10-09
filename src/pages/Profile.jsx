@@ -196,51 +196,6 @@ export default function Profile() {
                 {escort.tagline}
               </Rise>
             )}
-            {paragraphs.map((p, idx) => (
-              <Bubble key={idx} i={i++}>
-                {p}
-              </Bubble>
-            ))}
-
-            {!locked && facts.length > 0 && (
-              <Bubble i={i++} style={{ width: '100%' }}>
-                <dl className="facts" style={{ margin: 0 }}>
-                  {facts.map(([k, v]) => (
-                    <div className="fact" key={k}>
-                      <dt>{k}</dt>
-                      <dd>{v}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </Bubble>
-            )}
-
-            {escort.services?.length > 0 && (
-              <Bubble i={i++} style={{ width: '100%' }}>
-                <div className="bubble-label">{t('editor.services')}</div>
-                <div className="tags">
-                  {escort.services.map((s) => (
-                    <span className="tag" key={s}>
-                      {serviceLabel(t, s)}
-                    </span>
-                  ))}
-                </div>
-              </Bubble>
-            )}
-
-            {escort.rates?.length > 0 && (
-              <Bubble i={i++} style={{ width: '100%' }}>
-                <div className="bubble-label">{t('profile.rates')}</div>
-                <div className="rates">
-                  {escort.rates.map((r, idx) => (
-                    <div className="rate" key={idx}>
-                      <span>{r.label}</span>
-                      <b>{r.price}</b>
-                    </div>
-                  ))}
-                </div>
-              </Bubble>
-            )}
 
             {!locked && (
             <Rise i={i++} className="actions">
@@ -271,15 +226,69 @@ export default function Profile() {
               })}
               <button
                 type="button"
-                className="ghost-btn"
+                className="ghost-btn save-btn"
                 onClick={() => toggleFavorite(escort.slug).catch(() => {})}
                 aria-pressed={isFav}
+                aria-label={isFav ? t('profile.saved') : t('profile.save')}
+                title={isFav ? t('profile.saved') : t('profile.save')}
                 style={isFav ? { color: '#ff5c8a' } : undefined}
               >
                 <HeartIcon filled={isFav} width={20} height={20} />
-                {isFav ? t('profile.saved') : t('profile.save')}
               </button>
             </Rise>
+            )}
+
+
+            {paragraphs.length > 0 && (
+              <Rise i={i++} className="profile-card">
+                <h2 className="profile-card-title">{t('settings.about')}</h2>
+                {paragraphs.map((p, idx) => (
+                  <p key={idx} className="profile-text">
+                    {p}
+                  </p>
+                ))}
+              </Rise>
+            )}
+
+            {!locked && facts.length > 0 && (
+              <Rise i={i++} className="profile-card">
+                <h2 className="profile-card-title">{t('profile.details')}</h2>
+                <dl className="facts" style={{ margin: 0 }}>
+                  {facts.map(([k, v]) => (
+                    <div className="fact" key={k}>
+                      <dt>{k}</dt>
+                      <dd>{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </Rise>
+            )}
+
+            {escort.services?.length > 0 && (
+              <Rise i={i++} className="profile-card">
+                <h2 className="profile-card-title">{t('editor.services')}</h2>
+                <div className="tags">
+                  {escort.services.map((s) => (
+                    <span className="tag" key={s}>
+                      {serviceLabel(t, s)}
+                    </span>
+                  ))}
+                </div>
+              </Rise>
+            )}
+
+            {escort.rates?.length > 0 && (
+              <Rise i={i++} className="profile-card">
+                <h2 className="profile-card-title">{t('profile.rates')}</h2>
+                <div className="rates">
+                  {escort.rates.map((r, idx) => (
+                    <div className="rate" key={idx}>
+                      <span>{r.label}</span>
+                      <b>{r.price}</b>
+                    </div>
+                  ))}
+                </div>
+              </Rise>
             )}
 
             {!locked && user && <ProfilePosts slug={escort.slug} own={own} name={escort.name} i={i++} />}

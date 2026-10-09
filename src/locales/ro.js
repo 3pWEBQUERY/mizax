@@ -26,6 +26,7 @@ export default {
     noContactToast: 'Acest profil nu are încă date de contact',
   },
   profile: {
+    details: 'Detalii',
     place: 'Localitate',
     available: 'Disponibilă', unavailable: 'Momentan indisponibilă', age: 'Vârstă', years: '{n} ani', height: 'Înălțime',
     origin: 'Naționalitate', city: 'Oraș', languages: 'Limbi', servicesTitle: 'Te însoțesc cu plăcere la', rates: 'Tarife',

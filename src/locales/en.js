@@ -26,6 +26,7 @@ export default {
     noContactToast: 'This profile has no contact details yet',
   },
   profile: {
+    details: 'Details',
     place: 'Place',
     available: 'Available', unavailable: 'Currently unavailable', age: 'Age', years: '{n} years', height: 'Height',
     origin: 'Nationality', city: 'City', languages: 'Languages', servicesTitle: 'I’d love to join you for', rates: 'Rates',

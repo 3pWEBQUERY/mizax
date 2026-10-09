@@ -26,6 +26,7 @@ export default {
     noContactToast: 'Ehhez a profilhoz még nincsenek elérhetőségek',
   },
   profile: {
+    details: 'Részletek',
     place: 'Település',
     available: 'Elérhető', unavailable: 'Jelenleg nem elérhető', age: 'Életkor', years: '{n} év', height: 'Magasság',
     origin: 'Állampolgárság', city: 'Város', languages: 'Nyelvek', servicesTitle: 'Szívesen elkísérlek', rates: 'Díjak',

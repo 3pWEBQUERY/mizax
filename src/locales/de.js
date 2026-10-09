@@ -26,6 +26,7 @@ export default {
     noContactToast: 'Für dieses Profil sind noch keine Kontaktdaten hinterlegt',
   },
   profile: {
+    details: 'Details',
     place: 'Ort',
     available: 'Verfügbar', unavailable: 'Derzeit nicht verfügbar', age: 'Alter', years: '{n} Jahre', height: 'Größe',
     origin: 'Nationalität', city: 'Stadt', languages: 'Sprachen', servicesTitle: 'Ich begleite dich gerne zu', rates: 'Honorar',
