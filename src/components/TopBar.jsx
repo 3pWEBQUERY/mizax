@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   HomeIcon, BackIcon, SunIcon, MoonIcon, UserIcon, EditIcon, LogoutIcon, LoginIcon, HeartIcon, SearchIcon, ShieldIcon,
+  GearIcon, InboxIcon, ChartIcon, FeedIcon,
 } from './Icons.jsx';
+import { useUnread } from '../lib/inbox.js';
 import { useDockState } from '../lib/dock.jsx';
 import { LegalLinks } from '../pages/Legal.jsx';
 import { useI18n, LOCALES, dictionaries } from '../lib/i18n.jsx';
@@ -81,7 +83,8 @@ export default function TopBar({ onSearch, searchOpen }) {
   const { t } = useI18n();
   const { user, logout } = useAuth();
   const toast = useToast();
-  const { query, canton, geo } = useDockState();
+  const { query, canton, geo, sidebarOpen, setSidebarOpen } = useDockState();
+  const unread = useUnread();
   const filtered = Boolean(query.trim() || canton || geo);
   const [menu, setMenu] = useState(false);
   const accRef = useRef(null);
@@ -89,13 +92,23 @@ export default function TopBar({ onSearch, searchOpen }) {
 
   useEffect(() => setMenu(false), [pathname]);
 
-  const isSub = pathname.startsWith('/escort/') || pathname === '/me/services';
+  const isSub =
+    pathname.startsWith('/escort/') ||
+    pathname === '/me/services' ||
+    /^\/messages\/./.test(pathname) ||
+    pathname.startsWith('/member/');
   const tabs = [
     { to: '/', label: t('nav.discover') },
     { to: '/favorites', label: t('nav.favorites') },
+    { to: '/feed', label: t('nav.feed'), className: 'tab-feed' },
   ];
   const active =
-    pathname === '/favorites' ? '/favorites' : pathname === '/' || pathname.startsWith('/escort/') ? '/' : null;
+    pathname === '/favorites' || pathname === '/feed'
+      ? pathname
+      : pathname === '/' || pathname.startsWith('/escort/')
+        ? '/'
+        : null;
+  const fallback = pathname === '/me/services' ? '/me' : pathname.startsWith('/messages/') ? '/messages' : '/';
   const initial = user ? user.name.trim().charAt(0).toUpperCase() || 'M' : null;
 
   return (
@@ -103,13 +116,16 @@ export default function TopBar({ onSearch, searchOpen }) {
       <div className="topbar-left">
         <button
           type="button"
-          className="icon-btn"
-          aria-label={isSub ? t('nav.back') : t('nav.home')}
+          className={`icon-btn side-toggle ${sidebarOpen && !isSub ? 'active' : ''}`}
+          aria-label={isSub ? t('nav.back') : t('nav.panel')}
+          aria-expanded={isSub ? undefined : sidebarOpen}
           onClick={() => {
-            if (isSub && window.history.state?.idx > 0) navigate(-1);
-            else navigate(pathname === '/me/services' ? '/me' : '/');
+            if (!isSub) setSidebarOpen(!sidebarOpen);
+            else if (window.history.state?.idx > 0) navigate(-1);
+            else navigate(fallback);
           }}
         >
+          {!isSub && !sidebarOpen && unread > 0 && <span className="search-dot" />}
           <AnimatePresence mode="wait" initial={false}>
             <motion.span
               key={isSub ? 'back' : 'home'}
@@ -127,7 +143,7 @@ export default function TopBar({ onSearch, searchOpen }) {
 
       <nav className="segmented topbar-center" aria-label={t('nav.navigation')}>
         {tabs.map((tab) => (
-          <NavLink key={tab.to} to={tab.to} className={active === tab.to ? 'active' : ''} end>
+          <NavLink key={tab.to} to={tab.to} className={`${tab.className || ''} ${active === tab.to ? 'active' : ''}`} end>
             {active === tab.to && <motion.div layoutId="nav-pill" className="pill" transition={spring} />}
             <span>{tab.label}</span>
           </NavLink>
@@ -157,6 +173,7 @@ export default function TopBar({ onSearch, searchOpen }) {
             onClick={() => setMenu(!menu)}
           >
             {initial || <UserIcon width={22} height={22} />}
+            {unread > 0 && <span className="avatar-badge">{unread > 9 ? '9+' : unread}</span>}
           </button>
           <AnimatePresence>
             {menu && (
@@ -184,8 +201,21 @@ export default function TopBar({ onSearch, searchOpen }) {
                         <EditIcon /> {t('menu.myProfile')}
                       </button>
                     )}
+                    <button type="button" className="menu-item" onClick={() => navigate('/messages')}>
+                      <InboxIcon /> {t('msg.title')}
+                      {unread > 0 && <span className="count-badge">{unread}</span>}
+                    </button>
+                    <button type="button" className="menu-item" onClick={() => navigate('/feed')}>
+                      <FeedIcon /> {t('feed.title')}
+                    </button>
+                    <button type="button" className="menu-item" onClick={() => navigate('/stats')}>
+                      <ChartIcon /> {t('stats.title')}
+                    </button>
                     <button type="button" className="menu-item" onClick={() => navigate('/favorites')}>
                       <HeartIcon width={20} height={20} /> {t('menu.favorites')}
+                    </button>
+                    <button type="button" className="menu-item" onClick={() => navigate('/settings')}>
+                      <GearIcon /> {t('menu.settings')}
                     </button>
                   </>
                 ) : (
@@ -224,7 +254,7 @@ export default function TopBar({ onSearch, searchOpen }) {
                         setMenu(false);
                         await logout();
                         toast(t('auth.loggedOut'));
-                        if (['/me', '/favorites', '/admin'].includes(pathname)) navigate('/');
+                        if (/^\/(me|favorites|admin|messages|stats|settings|feed|member)/.test(pathname)) navigate('/');
                       }}
                     >
                       <LogoutIcon /> {t('menu.logout')}

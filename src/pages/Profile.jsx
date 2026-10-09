@@ -1,10 +1,13 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Page from '../components/Page.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
 import { Photo } from '../components/Media.jsx';
-import { CheckIcon, ChatIcon, PhoneIcon, MailIcon, HeartIcon, CloseIcon, ChevronL, ChevronR, LockIcon, WhatsAppIcon } from '../components/Icons.jsx';
+import { CheckIcon, ChatIcon, PhoneIcon, MailIcon, HeartIcon, LockIcon, WhatsAppIcon, FeedIcon } from '../components/Icons.jsx';
+import Lightbox from '../components/Lightbox.jsx';
+import { Composer, PostList, usePosts } from '../components/Feed.jsx';
+import { api } from '../lib/api.js';
 import { useI18n } from '../lib/i18n.jsx';
 import { countryName, flag, languageName, parseLanguage, serviceLabel } from '../lib/catalog.js';
 import { cantonName } from '../lib/cantons.js';
@@ -26,6 +29,12 @@ export default function Profile() {
   const [active, setActive] = useState(0);
   const locked = Boolean(escort && !escort.full);
   const [lightbox, setLightbox] = useState(false);
+  const own = Boolean(user && escort?.userId === user.id);
+
+  // Aufruf für die Statistik zählen (einmal pro Seitenaufruf, eigenes Profil zählt serverseitig nicht)
+  useEffect(() => {
+    api(`/api/escorts/${encodeURIComponent(slug)}/view`, { method: 'POST' }).catch(() => {});
+  }, [slug]);
 
   useDock(
     escort
@@ -33,6 +42,7 @@ export default function Profile() {
           mode: 'message',
           locked: !user,
           escort: {
+            inbox: Boolean(escort.inbox && user && !own),
             slug: escort.slug,
             name: escort.name,
             phone: escort.phone,
@@ -234,15 +244,17 @@ export default function Profile() {
 
             {!locked && (
             <Rise i={i++} className="actions">
-              <button
-                type="button"
-                className={`white-btn ${messageOpen ? 'pressed' : ''}`}
-                data-message-toggle
-                aria-expanded={messageOpen}
-                onClick={() => setMessageOpen(!messageOpen)}
-              >
-                <ChatIcon /> {t('profile.write')}
-              </button>
+              {!own && (
+                <button
+                  type="button"
+                  className={`white-btn ${messageOpen ? 'pressed' : ''}`}
+                  data-message-toggle
+                  aria-expanded={messageOpen}
+                  onClick={() => setMessageOpen(!messageOpen)}
+                >
+                  <ChatIcon /> {t('profile.write')}
+                </button>
+              )}
               {links.map((l) => {
                 const Icon = kindIcon[l.kind];
                 return (
@@ -269,6 +281,8 @@ export default function Profile() {
               </button>
             </Rise>
             )}
+
+            {!locked && user && <ProfilePosts slug={escort.slug} own={own} name={escort.name} i={i++} />}
           </div>
         </div>
       </div>
@@ -289,50 +303,18 @@ export default function Profile() {
   );
 }
 
-function Lightbox({ photos, index, onIndex, onClose, name, t }) {
-  const go = useCallback(
-    (d) => onIndex((index + d + photos.length) % photos.length),
-    [index, onIndex, photos.length],
-  );
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') go(1);
-      if (e.key === 'ArrowLeft') go(-1);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [go, onClose]);
-  const p = photos[index];
-
+function ProfilePosts({ slug, own, name, i }) {
+  const { t } = useI18n();
+  const feed = usePosts(`/api/escorts/${encodeURIComponent(slug)}/posts`);
+  if (!own && feed.posts && !feed.posts.length) return null;
   return (
-    <motion.div className="lightbox" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <div className="lightbox-bg" onClick={onClose} />
-      <AnimatePresence mode="popLayout" initial={false}>
-        <motion.div
-          key={p.id}
-          className="lightbox-img"
-          initial={{ opacity: 0, scale: 0.94 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.98 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        >
-          <img src={p.url} alt={name} />
-        </motion.div>
-      </AnimatePresence>
-      <button type="button" className="icon-btn" style={{ position: 'absolute', top: 18, right: 20 }} onClick={onClose} aria-label={t('profile.close')}>
-        <CloseIcon />
-      </button>
-      {photos.length > 1 && (
-        <>
-          <button type="button" className="icon-btn lightbox-nav" style={{ left: 20 }} onClick={() => go(-1)} aria-label={t('profile.prev')}>
-            <ChevronL />
-          </button>
-          <button type="button" className="icon-btn lightbox-nav" style={{ right: 20 }} onClick={() => go(1)} aria-label={t('profile.next')}>
-            <ChevronR />
-          </button>
-        </>
-      )}
-    </motion.div>
+    <Rise i={i} className="profile-posts">
+      <div className="section-title">
+        <FeedIcon width={18} height={18} />
+        {t('feed.profileTitle')}
+      </div>
+      {own && <Composer onPosted={feed.prepend} />}
+      <PostList feed={feed} empty={t('feed.emptyOwn', { name })} />
+    </Rise>
   );
 }

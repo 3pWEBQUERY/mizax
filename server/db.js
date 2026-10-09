@@ -89,5 +89,90 @@ export async function migrate() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       PRIMARY KEY (user_id, escort_id)
     );
+    CREATE INDEX IF NOT EXISTS favorites_escort_idx ON favorites (escort_id, created_at DESC);
+
+    -- Einstellungen: NULL = Standard der Kontoart (Escorts sichtbar, Mitglieder anonym)
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS show_visits BOOLEAN;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT NOT NULL DEFAULT '';
+
+    -- Statistik: Aufrufe von Escort-Profilen
+    CREATE TABLE IF NOT EXISTS profile_views (
+      id         BIGSERIAL PRIMARY KEY,
+      escort_id  INTEGER NOT NULL REFERENCES escorts(id) ON DELETE CASCADE,
+      viewer_id  INTEGER REFERENCES users(id) ON DELETE SET NULL,
+      viewer_key TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE INDEX IF NOT EXISTS profile_views_escort_idx ON profile_views (escort_id, created_at DESC);
+    CREATE INDEX IF NOT EXISTS profile_views_key_idx ON profile_views (escort_id, viewer_key, created_at DESC);
+    CREATE INDEX IF NOT EXISTS profile_views_viewer_idx ON profile_views (viewer_id, created_at DESC);
+
+    -- Statistik: Besuche von Mitgliederprofilen (nur durch angemeldete Escorts)
+    CREATE TABLE IF NOT EXISTS member_views (
+      id         BIGSERIAL PRIMARY KEY,
+      member_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      viewer_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE INDEX IF NOT EXISTS member_views_member_idx ON member_views (member_id, created_at DESC);
+
+    -- Nachrichten zwischen Mitglied und Escort-Profil
+    CREATE TABLE IF NOT EXISTS conversations (
+      id              SERIAL PRIMARY KEY,
+      user_id         INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      escort_id       INTEGER NOT NULL REFERENCES escorts(id) ON DELETE CASCADE,
+      created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+      last_message_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      UNIQUE (user_id, escort_id)
+    );
+    CREATE INDEX IF NOT EXISTS conversations_escort_idx ON conversations (escort_id, last_message_at DESC);
+
+    CREATE TABLE IF NOT EXISTS messages (
+      id              BIGSERIAL PRIMARY KEY,
+      conversation_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+      sender_id       INTEGER REFERENCES users(id) ON DELETE SET NULL,
+      body            TEXT NOT NULL,
+      created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+      read_at         TIMESTAMPTZ
+    );
+    CREATE INDEX IF NOT EXISTS messages_conv_idx ON messages (conversation_id, id);
+    CREATE INDEX IF NOT EXISTS messages_unread_idx ON messages (conversation_id) WHERE read_at IS NULL;
+
+    -- Feed der Escorts
+    CREATE TABLE IF NOT EXISTS posts (
+      id         SERIAL PRIMARY KEY,
+      escort_id  INTEGER NOT NULL REFERENCES escorts(id) ON DELETE CASCADE,
+      body       TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE INDEX IF NOT EXISTS posts_newest_idx ON posts (id DESC);
+    CREATE INDEX IF NOT EXISTS posts_escort_idx ON posts (escort_id, id DESC);
+
+    CREATE TABLE IF NOT EXISTS post_photos (
+      id       SERIAL PRIMARY KEY,
+      post_id  INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+      key      TEXT NOT NULL,
+      width    INTEGER,
+      height   INTEGER,
+      position INTEGER NOT NULL DEFAULT 0
+    );
+    CREATE INDEX IF NOT EXISTS post_photos_post_idx ON post_photos (post_id, position);
+
+    CREATE TABLE IF NOT EXISTS post_likes (
+      post_id    INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+      user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (post_id, user_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS post_comments (
+      id         SERIAL PRIMARY KEY,
+      post_id    INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+      user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      body       TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE INDEX IF NOT EXISTS post_comments_post_idx ON post_comments (post_id, id);
   `);
 }

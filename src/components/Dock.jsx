@@ -5,9 +5,11 @@ import { useEscorts } from '../lib/store.js';
 import { contactLinks } from '../lib/contact.js';
 import { PlusIcon, MicIcon, SendIcon, CloseIcon } from './Icons.jsx';
 import { useToast } from './Toast.jsx';
-import { useT, useI18n } from '../lib/i18n.jsx';
+import { useT, useI18n, errorText } from '../lib/i18n.jsx';
 import { CANTONS, cantonName } from '../lib/cantons.js';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../lib/api.js';
+import { refreshUnread } from '../lib/inbox.js';
 
 const SpeechRecognition =
   typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition);
@@ -58,6 +60,7 @@ export default function Dock() {
   const [message, setMessage] = useState('');
   const [open, setOpen] = useState(false);
   const [listening, setListening] = useState(false);
+  const [sending, setSending] = useState(false);
   const recRef = useRef(null);
   const mode = config.mode;
   const escort = config.escort;
@@ -121,7 +124,13 @@ export default function Dock() {
         : t('dock.searchPlaceholder');
 
   const note =
-    mode === 'message' ? (locked ? t('dock.noteLocked') : t('dock.noteMessage')) : t('dock.noteSearch');
+    mode === 'message'
+      ? locked
+        ? t('dock.noteLocked')
+        : escort?.inbox
+          ? t('dock.noteInbox', { name: escort.name })
+          : t('dock.noteMessage')
+      : t('dock.noteSearch');
 
   function toggleMic() {
     if (locked) {
@@ -152,11 +161,29 @@ export default function Dock() {
     setListening(true);
   }
 
-  function send(e) {
+  async function send(e) {
     e?.preventDefault();
     if (mode !== 'message' || !escort) return;
     if (locked) {
       navigate('/login');
+      return;
+    }
+    // Profile mit Konto: Nachricht direkt ins Postfach auf Mizax
+    if (escort.inbox) {
+      if (!message.trim() || sending) return;
+      setSending(true);
+      try {
+        const r = await api('/api/messages/start', { method: 'POST', body: { slug: escort.slug, body: message.trim() } });
+        setMessage('');
+        setMessageOpen(false);
+        toast(t('msg.sent'));
+        refreshUnread();
+        navigate(`/messages/${r.conversationId}`);
+      } catch (err) {
+        toast(errorText(t, err));
+      } finally {
+        setSending(false);
+      }
       return;
     }
     const links = contactLinks(escort, message.trim(), t);

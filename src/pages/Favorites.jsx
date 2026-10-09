@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Page from '../components/Page.jsx';
-import { Rise } from '../components/Bubble.jsx';
+import PageHead from '../components/PageHead.jsx';
 import { GridSkeleton } from '../components/EscortCard.jsx';
 import { HeartIcon, ChevronR } from '../components/Icons.jsx';
 import { useEscorts, useFavorites } from '../lib/store.js';
@@ -10,28 +10,7 @@ import { useT } from '../lib/i18n.jsx';
 import { useAuth } from '../lib/auth.jsx';
 import { EscortGrid, filterEscorts } from './Home.jsx';
 
-// Kompakter Kopfbereich wie auf „Mein Profil“
-function Head({ title, text, children }) {
-  return (
-    <div className="me-head page-head-wide">
-      <div className="me-head-text">
-        <Rise i={0} as="h1" className="me-title">
-          {title}
-        </Rise>
-        {text && (
-          <Rise i={1} as="p" className="me-intro">
-            {text}
-          </Rise>
-        )}
-      </div>
-      {children && (
-        <Rise i={2} className="me-status">
-          {children}
-        </Rise>
-      )}
-    </div>
-  );
-}
+const Head = (props) => <PageHead wide {...props} />;
 
 export default function Favorites() {
   useDock({ mode: 'search' });

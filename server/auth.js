@@ -71,8 +71,25 @@ export function clearSession(res) {
   res.append('Set-Cookie', `${COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
 }
 
+// Ob andere sehen dürfen, dass dieses Konto ein Profil besucht hat (Standard: Escorts ja, Mitglieder nein)
+export function showsVisits(u) {
+  return u.show_visits ?? u.role === 'escort';
+}
+
 export function userOut(u) {
-  return u && { id: u.id, email: u.email, name: u.name, role: u.role, locale: u.locale, isAdmin: Boolean(u.is_admin) };
+  return (
+    u && {
+      id: u.id,
+      email: u.email,
+      name: u.name,
+      role: u.role,
+      locale: u.locale,
+      isAdmin: Boolean(u.is_admin),
+      showVisits: showsVisits(u),
+      bio: u.bio || '',
+      createdAt: u.created_at,
+    }
+  );
 }
 
 // Hängt den angemeldeten Benutzer (falls vorhanden) an req.user
@@ -82,7 +99,7 @@ export async function attachUser(req, res, next) {
   const parts = token && verifySigned(token);
   if (parts && parts[0] === 'u' && hasDb()) {
     try {
-      const { rows } = await query('SELECT id, email, name, role, locale, is_admin FROM users WHERE id = $1', [
+      const { rows } = await query('SELECT id, email, name, role, locale, is_admin, show_visits, bio, created_at FROM users WHERE id = $1', [
         Number(parts[1]),
       ]);
       req.user = rows[0] || null;
@@ -176,7 +193,7 @@ export async function register(body) {
   try {
     const { rows } = await query(
       `INSERT INTO users (email, password_hash, name, role, locale, last_login_at, terms_accepted_at)
-       VALUES ($1,$2,$3,$4,$5, now(), now()) RETURNING id, email, name, role, locale, is_admin`,
+       VALUES ($1,$2,$3,$4,$5, now(), now()) RETURNING id, email, name, role, locale, is_admin, show_visits, bio, created_at`,
       [email, hash, name, role, locale],
     );
     return rows[0];

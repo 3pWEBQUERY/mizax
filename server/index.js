@@ -1,14 +1,14 @@
 import express from 'express';
 import compression from 'compression';
 import multer from 'multer';
-import sharp from 'sharp';
-import crypto from 'node:crypto';
 import path from 'node:path';
 import fs from 'node:fs';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { query, migrate, hasDb } from './db.js';
-import { hasStorage, putObject, getObject, deleteObject } from './storage.js';
+import { hasStorage, getObject } from './storage.js';
+import { storeImage, removeImages, photoOut, isImage } from './media.js';
+import { registerSocial } from './social.js';
 import { seedIfEmpty, normalizeLegacy, slugify } from './seed.js';
 import { searchPlaces, findPlace, nearestPlace } from './places.js';
 import {
@@ -56,16 +56,6 @@ const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).cat
 
 // ---------- Serialisierung ----------
 
-function photoOut(p) {
-  return {
-    id: p.id,
-    url: `/media/${p.key}.webp`,
-    thumb: `/media/${p.key}_sm.webp`,
-    width: p.width,
-    height: p.height,
-  };
-}
-
 function escortOut(row, photos = []) {
   return {
     id: row.id,
@@ -94,6 +84,7 @@ function escortOut(row, photos = []) {
     published: row.published,
     sort: row.sort,
     userId: row.user_id,
+    inbox: Boolean(row.user_id),
     photos: photos.map(photoOut),
     full: true,
   };
@@ -252,30 +243,16 @@ async function savePhotos(escortId, files = []) {
     'SELECT COALESCE(MAX(position), -1)::int AS m, count(*)::int AS n FROM escort_photos WHERE escort_id = $1',
     [escortId],
   );
-  const images = files.filter((f) => /^image\//.test(f.mimetype));
+  const images = files.filter(isImage);
   if (maxRows[0].n + images.length > MAX_PHOTOS) {
     throw httpError(400, 'too_many_photos', `Maximal ${MAX_PHOTOS} Fotos pro Profil`);
   }
   let position = maxRows[0].m + 1;
-  for (const file of files) {
-    if (!/^image\//.test(file.mimetype)) continue;
-    const base = sharp(file.path, { failOn: 'none' }).rotate();
-    const large = await base
-      .clone()
-      .resize({ width: 1600, height: 2400, fit: 'inside', withoutEnlargement: true })
-      .webp({ quality: 82 })
-      .toBuffer({ resolveWithObject: true });
-    const small = await base
-      .clone()
-      .resize({ width: 640, height: 960, fit: 'inside', withoutEnlargement: true })
-      .webp({ quality: 78 })
-      .toBuffer();
-    const key = `escorts/${escortId}/${crypto.randomUUID()}`;
-    await putObject(`${key}.webp`, large.data, 'image/webp');
-    await putObject(`${key}_sm.webp`, small, 'image/webp');
+  for (const file of images) {
+    const img = await storeImage(file, `escorts/${escortId}`);
     await query(
       'INSERT INTO escort_photos (escort_id, key, width, height, position) VALUES ($1,$2,$3,$4,$5)',
-      [escortId, key, large.info.width, large.info.height, position++],
+      [escortId, img.key, img.width, img.height, position++],
     );
   }
 }
@@ -296,16 +273,18 @@ async function deletePhoto(photoId, escortId = null) {
     escortId ? [photoId, escortId] : [photoId],
   );
   if (!rows[0]) throw httpError(404, 'not_found', 'Nicht gefunden');
-  await Promise.allSettled([deleteObject(`${rows[0].key}.webp`), deleteObject(`${rows[0].key}_sm.webp`)]);
+  await removeImages([rows[0].key]);
   return rows[0].escort_id;
 }
 
 async function deleteEscort(id) {
-  const { rows } = await query('SELECT key FROM escort_photos WHERE escort_id = $1', [id]);
-  await query('DELETE FROM escorts WHERE id = $1', [id]);
-  await Promise.allSettled(
-    rows.flatMap((r) => [deleteObject(`${r.key}.webp`), deleteObject(`${r.key}_sm.webp`)]),
+  const { rows } = await query(
+    `SELECT key FROM escort_photos WHERE escort_id = $1
+     UNION ALL SELECT pp.key FROM post_photos pp JOIN posts p ON p.id = pp.post_id WHERE p.escort_id = $1`,
+    [id],
   );
+  await query('DELETE FROM escorts WHERE id = $1', [id]);
+  await removeImages(rows.map((r) => r.key));
 }
 
 // ---------- Öffentliche API ----------
@@ -650,6 +629,8 @@ app.delete(
     res.json(await getEscortById(escortId));
   }),
 );
+
+registerSocial(app, { upload, requireDb });
 
 app.use('/api', (req, res) => res.status(404).json({ error: 'Nicht gefunden', code: 'not_found' }));
 

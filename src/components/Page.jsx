@@ -7,7 +7,7 @@ const scrollPositions = new Map();
 
 // Jede Seite ist ein eigener Scroll-Container. Beim Wechsel bleiben beide
 // Seiten kurz übereinander stehen und blenden ineinander über.
-export default function Page({ children, className = '' }) {
+export default function Page({ children, className = '', scrollRef }) {
   const ref = useRef(null);
   const { pathname } = useLocation();
 
@@ -21,7 +21,10 @@ export default function Page({ children, className = '' }) {
 
   return (
     <motion.main
-      ref={ref}
+      ref={(el) => {
+        ref.current = el;
+        if (scrollRef) scrollRef.current = el;
+      }}
       className={`page ${className}`}
       variants={pageVariants}
       initial="initial"

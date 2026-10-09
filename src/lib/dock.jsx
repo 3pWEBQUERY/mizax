@@ -13,6 +13,8 @@ export function DockProvider({ children }) {
   const [searchOpen, setSearchOpen] = useState(false);
   // Nachrichtenleiste auf Profilen erscheint erst über „Nachricht schreiben“
   const [messageOpen, setMessageOpen] = useState(false);
+  // aufklappbare Seitenleiste (Nachrichten, Statistik, Feed …)
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const inputRef = useRef(null);
   const value = useMemo(
     () => ({
@@ -31,8 +33,10 @@ export function DockProvider({ children }) {
       setSearchOpen,
       messageOpen,
       setMessageOpen,
+      sidebarOpen,
+      setSidebarOpen,
     }),
-    [config, query, canton, geo, radius, searchOpen, messageOpen],
+    [config, query, canton, geo, radius, searchOpen, messageOpen, sidebarOpen],
   );
   return <DockCtx.Provider value={value}>{children}</DockCtx.Provider>;
 }

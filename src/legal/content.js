@@ -53,74 +53,89 @@ export const PRIVACY = [
     ],
   },
   {
-    title: '7. Kontaktaufnahme mit Escorts',
+    title: '7. Nachrichten und Kontaktaufnahme',
     body: [
-      'Nachrichten an Escorts werden nicht über unsere Server versendet. Beim Senden öffnet sich WhatsApp, die SMS-App oder dein E-Mail-Programm. Für die weitere Kommunikation gelten die Datenschutzbestimmungen des jeweiligen Anbieters.',
+      'Hat ein Escort ein Konto auf Mizax, kannst du ihm direkt über die Plattform schreiben. Dabei speichern wir den Inhalt der Nachrichten, Absender, Empfänger, Zeitpunkt und Lesestatus. Nachrichten sind nur für die beiden Beteiligten sichtbar; wir sehen sie nur ein, wenn dies zur Abwehr von Missbrauch oder aufgrund einer gesetzlichen Pflicht nötig ist.',
+      'Für Profile ohne Mizax-Postfach werden Nachrichten nicht über unsere Server versendet. Beim Senden öffnet sich WhatsApp, die SMS-App oder dein E-Mail-Programm. Für die weitere Kommunikation gelten die Datenschutzbestimmungen des jeweiligen Anbieters.',
     ],
   },
   {
-    title: '8. Cookies und lokale Speicherung',
+    title: '8. Feed, Likes und Kommentare',
+    body: [
+      'Escorts können im Feed Beiträge mit Text und Fotos veröffentlichen. Angemeldete Mitglieder können Beiträge mit „Gefällt mir“ markieren und kommentieren. Beiträge, Kommentare und Likes sind für alle angemeldeten Mitglieder sichtbar; bei Kommentaren wird dein Anzeigename angezeigt. Du kannst eigene Kommentare jederzeit löschen; Escorts können Beiträge und Kommentare unter ihren Beiträgen löschen.',
+    ],
+  },
+  {
+    title: '9. Statistik und Profilbesuche',
+    body: [
+      'Damit Escorts sehen, wie oft ihr Profil aufgerufen wird, zählen wir Profilaufrufe. Bei angemeldeten Besuchern speichern wir dazu das Konto und den Zeitpunkt des Aufrufs. Bei Gästen speichern wir nur einen täglich wechselnden, nicht umkehrbaren Schlüssel (aus IP-Adresse und Browserkennung berechnet) – die IP-Adresse selbst wird dafür nicht gespeichert. Mehrfache Aufrufe innert 30 Minuten zählen als einer.',
+      'Ob Escorts in ihrer Statistik deinen Anzeigenamen sehen, legst du in den Einstellungen unter „Privatsphäre“ fest. Bei Mitgliedern ist dies standardmässig ausgeschaltet; sie erscheinen dann als „Anonymes Mitglied“. Escorts, die ein Mitgliederprofil ansehen, erscheinen in der Statistik des Mitglieds, sofern sie dies nicht ausgeschaltet haben.',
+      'Dein Mitgliederprofil (Anzeigename, „Über mich“, Registrierungsmonat) ist nur für Escorts und die Verwaltung sichtbar.',
+    ],
+  },
+  {
+    title: '10. Cookies und lokale Speicherung',
     body: [
       'Wir verwenden nur technisch notwendige Speicherungen und keine Tracking- oder Werbe-Cookies:',
       {
         list: [
           'Ein Sitzungs-Cookie („mizax_sid“, HttpOnly, 30 Tage), damit du angemeldet bleibst.',
-          'Lokale Speicherung im Browser für deine Altersbestätigung, die gewählte Sprache und das Design (hell/dunkel).',
+          'Lokale Speicherung im Browser für deine Altersbestätigung, die gewählte Sprache, das Design (hell/dunkel) und ob die Seitenleiste geöffnet ist.',
         ],
       },
     ],
   },
   {
-    title: '9. Spracheingabe',
+    title: '11. Spracheingabe',
     body: [
       'Die optionale Spracheingabe im Suchfeld nutzt die Spracherkennung deines Browsers. Je nach Browser kann die Audioaufnahme vom Browser-Hersteller (z. B. Google oder Apple) verarbeitet werden. Wir selbst erhalten nur den erkannten Text. Die Funktion wird nur aktiv, wenn du auf das Mikrofon tippst.',
     ],
   },
   {
-    title: '10. Zwecke und Rechtsgrundlagen',
+    title: '12. Zwecke und Rechtsgrundlagen',
     body: [
       'Wir bearbeiten deine Daten zur Bereitstellung der Plattform und deines Kontos, zur Veröffentlichung von Profilen, zur Gewährleistung von Sicherheit und Missbrauchsprävention sowie zur Erfüllung gesetzlicher Pflichten. Soweit die DSGVO anwendbar ist, stützen wir uns auf Art. 6 Abs. 1 lit. b (Vertrag), lit. c (rechtliche Pflicht), lit. f (berechtigtes Interesse an einem sicheren Betrieb) sowie für besonders schützenswerte Angaben auf Art. 9 Abs. 2 lit. a und e DSGVO (ausdrückliche Einwilligung bzw. offensichtlich öffentlich gemachte Daten).',
     ],
   },
   {
-    title: '11. Empfänger und Hosting',
+    title: '13. Empfänger und Hosting',
     body: [
       'Die Plattform, die Datenbank und die Fotos werden bei Railway Corporation (USA) gehostet; die Server und der Speicher befinden sich in Europa (Amsterdam, Niederlande). Railway bearbeitet die Daten ausschliesslich in unserem Auftrag. Soweit dabei ein Zugriff aus den USA möglich ist, erfolgt dieser auf Grundlage geeigneter Garantien (insbesondere Standardvertragsklauseln).',
       'Eine Weitergabe an sonstige Dritte findet nicht statt, ausser wir sind gesetzlich dazu verpflichtet (z. B. auf behördliche Anordnung).',
     ],
   },
   {
-    title: '12. Aufbewahrung',
+    title: '14. Aufbewahrung',
     body: [
-      'Kontodaten und Profile speichern wir, solange dein Konto besteht. Nach einer Löschung werden Profil, Fotos und Kontodaten innert 30 Tagen entfernt, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen. Server-Protokolle werden nach kurzer Zeit automatisch gelöscht.',
+      'Kontodaten, Profile, Nachrichten, Beiträge und Statistikdaten speichern wir, solange dein Konto besteht. Du kannst dein Konto jederzeit selbst in den Einstellungen löschen; dabei werden Konto, Profil, Fotos, Beiträge, Kommentare, Likes, Favoriten und Unterhaltungen sofort entfernt. Verbleibende Kopien in Sicherungen werden innert 30 Tagen gelöscht, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen. Server-Protokolle werden nach kurzer Zeit automatisch gelöscht.',
     ],
   },
   {
-    title: '13. Datensicherheit',
+    title: '15. Datensicherheit',
     body: [
       'Die Übertragung erfolgt verschlüsselt (HTTPS). Passwörter werden mit einem modernen Hash-Verfahren gespeichert, das Sitzungs-Cookie ist für Skripte nicht lesbar. Zugriff auf die Verwaltung haben nur berechtigte Administratoren.',
     ],
   },
   {
-    title: '14. Deine Rechte',
+    title: '16. Deine Rechte',
     body: [
       `Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Bearbeitung, Datenherausgabe bzw. -übertragung sowie auf Widerspruch und Widerruf erteilter Einwilligungen. Wende dich dafür an ${O.email}. Zudem kannst du dich beim Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten (EDÖB) bzw. bei der zuständigen Aufsichtsbehörde in deinem EU-Land beschweren.`,
     ],
   },
   {
-    title: '15. Minderjährige',
+    title: '17. Minderjährige',
     body: [
       'Die Plattform richtet sich ausschliesslich an volljährige Personen (18+). Wir bearbeiten wissentlich keine Daten von Minderjährigen und löschen solche Konten umgehend.',
     ],
   },
   {
-    title: '16. Quellen',
+    title: '18. Quellen',
     body: [
       'Ortsdaten (Postleitzahlen, Orte, Kantone, Koordinaten): © GeoNames (www.geonames.org), lizenziert unter Creative Commons Attribution 4.0 (CC BY 4.0).',
     ],
   },
   {
-    title: '17. Änderungen',
+    title: '19. Änderungen',
     body: [
       'Wir können diese Datenschutzerklärung anpassen, wenn sich die Plattform oder die Rechtslage ändert. Es gilt die jeweils hier veröffentlichte Fassung.',
     ],
@@ -137,7 +152,7 @@ export const TERMS = [
   {
     title: '2. Leistungen der Plattform',
     body: [
-      'Mizax ist eine Werbe- und Informationsplattform, auf der volljährige Escorts eigenverantwortlich Profile veröffentlichen und Mitglieder diese Profile ansehen können.',
+      'Mizax ist eine Werbe- und Informationsplattform, auf der volljährige Escorts eigenverantwortlich Profile und Beiträge (Feed) veröffentlichen und Mitglieder diese ansehen, kommentieren und Escorts über die Plattform Nachrichten senden können.',
       'Mizax vermittelt keine Dienstleistungen, ist nicht Vertragspartei zwischen Mitgliedern und Escorts und erhält keine Beteiligung an Vereinbarungen zwischen ihnen. Absprachen, Treffen und Zahlungen erfolgen ausschliesslich zwischen den Beteiligten und in deren eigener Verantwortung.',
       'Die Nutzung ist derzeit kostenlos. Allfällige kostenpflichtige Zusatzleistungen werden vorgängig klar ausgewiesen und gesondert vereinbart.',
     ],
@@ -210,7 +225,7 @@ export const TERMS = [
   {
     title: '9. Beendigung und Löschung',
     body: [
-      `Du kannst dein Konto jederzeit löschen lassen; eine Nachricht an ${O.email} genügt. Escorts können ihr Profil zudem jederzeit selbst auf „nicht veröffentlicht“ stellen. Wir können die Nutzung bei Verstössen jederzeit beenden.`,
+      `Du kannst dein Konto jederzeit selbst in den Einstellungen löschen oder löschen lassen; eine Nachricht an ${O.email} genügt. Escorts können ihr Profil zudem jederzeit selbst auf „nicht veröffentlicht“ stellen. Wir können die Nutzung bei Verstössen jederzeit beenden.`,
     ],
   },
   {
