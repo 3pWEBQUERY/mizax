@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Page from '../components/Page.jsx';
-import { Bubble, Rise } from '../components/Bubble.jsx';
+import { Rise } from '../components/Bubble.jsx';
+import PageHead from '../components/PageHead.jsx';
+import { ChevronR } from '../components/Icons.jsx';
 import { useDock } from '../lib/dock.jsx';
 import { useI18n } from '../lib/i18n.jsx';
 import { PRIVACY, TERMS } from '../legal/content.js';
@@ -13,13 +15,12 @@ function LegalPage({ titleKey, sections, other }) {
   return (
     <Page>
       <div className="legal">
-        <div className="bubbles" style={{ maxWidth: 760, margin: '0 0 18px' }}>
-          <Bubble i={0}>{t(titleKey)}</Bubble>
-          {locale !== 'de' && <Bubble i={1}>{t('legal.germanOnly')}</Bubble>}
-        </div>
-        <Rise i={2} className="legal-meta">
-          {t('legal.updated', { date: LEGAL_UPDATED })}
-        </Rise>
+        <PageHead
+          title={t(titleKey)}
+          text={[t('legal.updated', { date: LEGAL_UPDATED }), locale !== 'de' ? t('legal.germanOnly') : null]
+            .filter(Boolean)
+            .join(' · ')}
+        />
         <Rise i={3} as="article" className="panel legal-body" lang="de">
           {sections.map((s, idx) => (
             <motion.section
@@ -44,8 +45,9 @@ function LegalPage({ titleKey, sections, other }) {
           ))}
         </Rise>
         <div className="legal-other">
-          <Link to={other.to} className="ghost-btn">
+          <Link to={other.to} className="small-btn">
             {t(other.label)}
+            <ChevronR width={14} height={14} />
           </Link>
         </div>
       </div>
