@@ -100,6 +100,7 @@ export default {
     privacy: 'Prywatność', privacyTitle: 'Polityka prywatności', terms: 'Regulamin', termsTitle: 'Regulamin', updated: 'Stan na: {date}', germanOnly: 'Dokument jest dostępny tylko w języku niemieckim; wiążąca jest wersja niemiecka.',
   },
   msg: {
+    unreadLabel: 'nieprzeczytane',
     title: 'Wiadomości', introEscort: 'Zapytania od członków – odpowiadaj na nie bezpośrednio na Mizax.', introMember: 'Wszystkie Twoje rozmowy z escortkami w jednym miejscu.',
     unread: 'Nieprzeczytane: {n}', empty: 'Brak wiadomości.', emptyEscort: 'Gdy napisze do Ciebie członek, rozmowa pojawi się tutaj.',
     emptyMember: 'Otwórz profil i stuknij „Napisz wiadomość”, aby rozpocząć rozmowę.',

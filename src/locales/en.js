@@ -100,6 +100,7 @@ export default {
     privacy: 'Privacy', privacyTitle: 'Privacy policy', terms: 'Terms', termsTitle: 'Terms and conditions', updated: 'Last updated: {date}', germanOnly: 'This document is only available in German; the German version is legally binding.',
   },
   msg: {
+    unreadLabel: 'unread',
     title: 'Messages', introEscort: 'Requests from members – reply right here on Mizax.', introMember: 'Your conversations with escorts, all in one place.',
     unread: '{n} unread', empty: 'No messages yet.', emptyEscort: 'As soon as a member writes to you, the conversation will appear here.',
     emptyMember: 'Open a profile and tap “Write a message” to start a conversation.',

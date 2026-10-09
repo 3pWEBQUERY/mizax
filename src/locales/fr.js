@@ -100,6 +100,7 @@ export default {
     privacy: 'Confidentialité', privacyTitle: 'Politique de confidentialité', terms: 'CGU', termsTitle: 'Conditions générales d’utilisation', updated: 'Mise à jour : {date}', germanOnly: 'Ce document n’est disponible qu’en allemand ; la version allemande fait foi.',
   },
   msg: {
+    unreadLabel: 'non lus',
     title: 'Messages', introEscort: 'Les demandes des membres – répondez-y directement ici sur Mizax.', introMember: 'Vos conversations avec les escorts, réunies au même endroit.',
     unread: '{n} non lu(s)', empty: 'Pas encore de messages.', emptyEscort: 'Dès qu’un membre vous écrit, la conversation apparaît ici.',
     emptyMember: 'Ouvrez un profil et touchez « Écrire un message » pour commencer une conversation.',

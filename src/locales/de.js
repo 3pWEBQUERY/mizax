@@ -100,6 +100,7 @@ export default {
     privacy: 'Datenschutz', privacyTitle: 'Datenschutzerklärung', terms: 'AGB', termsTitle: 'Allgemeine Geschäftsbedingungen', updated: 'Stand: {date}', germanOnly: 'Die verbindliche Fassung ist Deutsch.',
   },
   msg: {
+    unreadLabel: 'ungelesen',
     title: 'Nachrichten', introEscort: 'Anfragen von Mitgliedern – direkt hier auf Mizax beantworten.', introMember: 'Deine Unterhaltungen mit Escorts an einem Ort.',
     unread: '{n} ungelesen', empty: 'Noch keine Nachrichten.', emptyEscort: 'Sobald dir ein Mitglied schreibt, erscheint die Unterhaltung hier.',
     emptyMember: 'Öffne ein Profil und tippe auf „Nachricht schreiben“, um eine Unterhaltung zu beginnen.',

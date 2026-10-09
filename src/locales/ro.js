@@ -100,6 +100,7 @@ export default {
     privacy: 'Confidențialitate', privacyTitle: 'Politica de confidențialitate', terms: 'Termeni', termsTitle: 'Termeni și condiții', updated: 'Actualizat: {date}', germanOnly: 'Acest document este disponibil doar în germană; versiunea germană este cea obligatorie.',
   },
   msg: {
+    unreadLabel: 'necitite',
     title: 'Mesaje', introEscort: 'Cereri de la membri – răspunde-le direct aici, pe Mizax.', introMember: 'Toate conversațiile tale cu escortele, într-un singur loc.',
     unread: '{n} necitite', empty: 'Încă nu ai mesaje.', emptyEscort: 'Când îți scrie un membru, conversația apare aici.',
     emptyMember: 'Deschide un profil și atinge „Scrie un mesaj” pentru a începe o conversație.',

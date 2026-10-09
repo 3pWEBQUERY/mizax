@@ -3983,7 +3983,28 @@ a.status-pill:hover {
 .conv-panel {
   max-width: 760px;
   margin: 0 auto;
-  padding: 8px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.conv-panel .conv-row {
+  position: relative;
+  padding: 12px 16px;
+  border-radius: 0;
+}
+
+.conv-panel .conv-row + .conv-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 76px;
+  right: 16px;
+  height: 1px;
+  background: var(--border-strong);
+}
+
+.conv-panel .conv-top b {
+  font-size: 15.5px;
 }
 
 .conv-row {
@@ -4020,7 +4041,7 @@ a.status-pill:hover {
 }
 
 .conv-top b {
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -4098,7 +4119,7 @@ a.status-pill:hover {
 }
 
 .chat-who b {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .chat-who small {
@@ -4120,18 +4141,19 @@ a.status-pill:hover {
   margin: 14px 0 8px;
   padding: 4px 12px;
   border-radius: 999px;
-  background: var(--tint);
-  font-size: 12px;
-  font-weight: 600;
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--muted);
 }
 
 .msg {
   max-width: min(78%, 520px);
-  padding: 11px 16px;
-  border-radius: 22px;
-  font-size: 16px;
-  line-height: 1.38;
+  padding: 13px 17px;
+  border-radius: var(--radius);
+  font-size: 17px;
+  font-weight: 450;
+  line-height: 1.33;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -5109,4 +5131,8 @@ a.status-pill:hover {
 
 .chart-tip.beside-right {
   transform: none;
+}
+
+.status-pill .count-badge {
+  margin-left: -6px;
 }

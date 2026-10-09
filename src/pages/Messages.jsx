@@ -62,9 +62,9 @@ export function Messages() {
         text={user?.role === 'escort' ? t('msg.introEscort') : t('msg.introMember')}
       >
         {unread > 0 && (
-          <span className="status-pill on">
-            <span className="dot" />
-            {t('msg.unread', { n: unread })}
+          <span className="status-pill">
+            <span className="count-badge">{unread}</span>
+            {t('msg.unreadLabel')}
           </span>
         )}
       </PageHead>

@@ -100,6 +100,7 @@ export default {
     privacy: 'Adatvédelem', privacyTitle: 'Adatvédelmi nyilatkozat', terms: 'ÁSZF', termsTitle: 'Általános szerződési feltételek', updated: 'Hatályos: {date}', germanOnly: 'Ez a dokumentum csak németül érhető el; a német változat a kötelező érvényű.',
   },
   msg: {
+    unreadLabel: 'olvasatlan',
     title: 'Üzenetek', introEscort: 'Megkeresések tagoktól – válaszolj rájuk közvetlenül itt, a Mizaxon.', introMember: 'Az escortokkal folytatott beszélgetéseid egy helyen.',
     unread: '{n} olvasatlan', empty: 'Még nincsenek üzenetek.', emptyEscort: 'Amint egy tag ír neked, a beszélgetés itt jelenik meg.',
     emptyMember: 'Nyiss meg egy profilt, és koppints az „Üzenet írása” gombra, hogy beszélgetést kezdj.',
