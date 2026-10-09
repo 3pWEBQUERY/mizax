@@ -3089,7 +3089,7 @@ a.status-pill:hover {
 
 :root {
   --sidebar-w: 340px;
-  --chart-1: #8f74ff;
+  --chart-1: rgba(255, 255, 255, 0.86);
   --chart-grid: rgba(255, 255, 255, 0.07);
   --chart-base: rgba(255, 255, 255, 0.18);
   --row-sep: rgba(255, 255, 255, 0.07);
@@ -3098,7 +3098,7 @@ a.status-pill:hover {
 }
 
 :root[data-theme='light'] {
-  --chart-1: #5b3dd8;
+  --chart-1: #1b2244;
   --chart-grid: rgba(18, 23, 52, 0.07);
   --chart-base: rgba(18, 23, 52, 0.2);
   --row-sep: rgba(18, 23, 52, 0.07);
@@ -3686,7 +3686,9 @@ a.status-pill:hover {
   padding: 3px;
   border-radius: 999px;
   background: var(--surface);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .range-switch button {
@@ -3695,7 +3697,7 @@ a.status-pill:hover {
   padding: 0 12px;
   border-radius: 999px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--muted);
   transition: color 0.3s var(--ease);
 }
@@ -3725,7 +3727,7 @@ a.status-pill:hover {
 .stat-tile {
   min-height: 104px;
   padding: 16px;
-  border-radius: 22px;
+  border-radius: var(--radius);
   background: var(--surface);
   border: 1px solid var(--border);
   backdrop-filter: blur(14px);
@@ -3742,9 +3744,9 @@ a.status-pill:hover {
 }
 
 .stat-value {
-  font-size: 30px;
-  font-weight: 500;
-  letter-spacing: -0.03em;
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.035em;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
@@ -3759,7 +3761,7 @@ a.status-pill:hover {
 
 .delta {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--muted);
   white-space: nowrap;
 }
@@ -3787,8 +3789,9 @@ a.status-pill:hover {
 
 .panel-title h2 {
   margin: 0;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-2);
   letter-spacing: -0.01em;
 }
 
@@ -3862,7 +3865,7 @@ a.status-pill:hover {
 
 .visitor-main b {
   font-size: 14.5px;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3912,7 +3915,7 @@ a.status-pill:hover {
 
 .viewed-card b {
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3925,12 +3928,22 @@ a.status-pill:hover {
 
 .stats-tips ul {
   margin: 0;
-  padding-left: 18px;
+  padding: 0;
+  list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0;
   font-size: 14px;
   color: var(--text-2);
+}
+
+.stats-tips li {
+  padding: 10px 0;
+  line-height: 1.45;
+}
+
+.stats-tips li + li {
+  border-top: 1px solid var(--border-strong);
 }
 
 .stats-tip-actions {
@@ -5088,4 +5101,12 @@ a.status-pill:hover {
 .icon-btn.sm {
   width: 34px;
   height: 34px;
+}
+
+.chart-tip.beside {
+  transform: translate(-100%, 0);
+}
+
+.chart-tip.beside-right {
+  transform: none;
 }

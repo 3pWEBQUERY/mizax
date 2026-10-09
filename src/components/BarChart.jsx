@@ -123,11 +123,18 @@ export default function BarChart({ data, label, height = 220, compact = false })
       )}
       {active && (
         <div
-          className="chart-tip"
-          style={{
-            left: Math.min(Math.max(padL + slot * hover + slot / 2, 60), width - 60),
-            top: Math.max(activeBar.y - 8, 0),
-          }}
+          className={`chart-tip ${!compact && activeBar.y < 70 ? (activeBar.x > 170 ? 'beside' : 'beside-right') : ''}`}
+          style={
+            !compact && activeBar.y < 70
+              ? {
+                  left: activeBar.x > 170 ? activeBar.x - 8 : activeBar.x + barW + 8,
+                  top: activeBar.y,
+                }
+              : {
+                  left: Math.min(Math.max(padL + slot * hover + slot / 2, 60), width - 60),
+                  top: Math.max(activeBar.y - 8, 0),
+                }
+          }
         >
           <b>{formatNumber(active.value, locale)}</b> {label}
           <span>{longFmt.format(parseDay(active.day))}</span>
