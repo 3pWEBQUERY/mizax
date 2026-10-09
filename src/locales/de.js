@@ -41,6 +41,7 @@ export default {
     guest: 'Melde dich an, um Favoriten zu speichern – sie sind dann auf all deinen Geräten verfügbar.',
   },
   auth: {
+    acceptTerms: 'Ich akzeptiere die {terms} und die {privacy}.',
     loginTitle: 'Willkommen zurück.', loginText: 'Melde dich mit deiner E-Mail-Adresse an.',
     email: 'E-Mail', password: 'Passwort', name: 'Anzeigename', submitLogin: 'Anmelden',
     noAccount: 'Noch kein Konto?', haveAccount: 'Schon registriert?',
@@ -94,7 +95,11 @@ export default {
   geo: {
     nearMe: 'In meiner Nähe', locating: 'Standort wird ermittelt…', denied: 'Standortzugriff abgelehnt – du kannst ihn in den Browser-Einstellungen erlauben.', unavailable: 'Standort konnte nicht ermittelt werden.', radius: 'Umkreis', all: 'Alle', km: '{n} km', away: '≈ {n} km', near: '< 1 km', canton: 'Kanton', cantons: 'Kantone', chooseCanton: 'Kanton wählen', allCantons: 'Alle Kantone',
   },
+  legal: {
+    privacy: 'Datenschutz', privacyTitle: 'Datenschutzerklärung', terms: 'AGB', termsTitle: 'Allgemeine Geschäftsbedingungen', updated: 'Stand: {date}', germanOnly: 'Die verbindliche Fassung ist Deutsch.',
+  },
   errors: {
+    terms_required: 'Bitte akzeptiere die AGB und die Datenschutzerklärung.',
     too_many_photos: 'Maximal 20 Fotos pro Profil.',
     forbidden: 'Keine Berechtigung.', self_admin: 'Du kannst dir die Admin-Rechte nicht selbst entziehen.',
     invalid_credentials: 'E-Mail oder Passwort ist falsch.', email_taken: 'Diese E-Mail-Adresse ist bereits registriert.',

@@ -9,6 +9,7 @@ import { useEscorts } from '../lib/store.js';
 import { useDock, useDockState } from '../lib/dock.jsx';
 import { useI18n } from '../lib/i18n.jsx';
 import { CANTONS, cantonName, distanceKm, locate } from '../lib/cantons.js';
+import { LegalLinks } from './Legal.jsx';
 
 let introPlayed = false;
 const RADII = [10, 25, 50, 100];
@@ -210,6 +211,8 @@ export default function Home() {
           {t('home.empty')}
         </motion.div>
       )}
+
+      {escorts && <LegalLinks className="page-legal" />}
     </Page>
   );
 }

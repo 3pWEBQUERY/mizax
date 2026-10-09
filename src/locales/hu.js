@@ -41,6 +41,7 @@ export default {
     guest: 'Jelentkezz be a kedvencek mentéséhez – így minden eszközödön elérhetők lesznek.',
   },
   auth: {
+    acceptTerms: 'Elfogadom: {terms}, {privacy}.',
     loginTitle: 'Üdv újra.', loginText: 'Jelentkezz be az e-mail-címeddel.',
     email: 'E-mail', password: 'Jelszó', name: 'Megjelenített név', submitLogin: 'Bejelentkezés',
     noAccount: 'Még nincs fiókod?', haveAccount: 'Már regisztráltál?',
@@ -94,7 +95,11 @@ export default {
   geo: {
     nearMe: 'A közelemben', locating: 'Helymeghatározás…', denied: 'Helyhozzáférés elutasítva – a böngésző beállításaiban engedélyezheted.', unavailable: 'A helyzet nem határozható meg.', radius: 'Körzet', all: 'Mind', km: '{n} km', away: '≈ {n} km', near: '< 1 km', canton: 'Kanton', cantons: 'Kantonok', chooseCanton: 'Kanton kiválasztása', allCantons: 'Minden kanton',
   },
+  legal: {
+    privacy: 'Adatvédelem', privacyTitle: 'Adatvédelmi nyilatkozat', terms: 'ÁSZF', termsTitle: 'Általános szerződési feltételek', updated: 'Hatályos: {date}', germanOnly: 'Ez a dokumentum csak németül érhető el; a német változat a kötelező érvényű.',
+  },
   errors: {
+    terms_required: 'Kérjük, fogadd el az ÁSZF-et és az adatvédelmi nyilatkozatot.',
     too_many_photos: 'Profilonként legfeljebb 20 fotó.',
     forbidden: 'Nincs jogosultságod.', self_admin: 'A saját admin jogodat nem veheted el.',
     invalid_credentials: 'Hibás e-mail-cím vagy jelszó.', email_taken: 'Ez az e-mail-cím már regisztrálva van.',

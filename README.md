@@ -35,6 +35,13 @@ nahtlos in das jeweilige Profil übergehen.
   `ADMIN_PASSWORD` angelegt (existiert die E-Mail schon, bekommt dieses Konto Admin-Rechte).
 - Beim ersten Start werden 15 Demo-Profile angelegt (abschaltbar mit `SEED_DEMO=false`)
 
+## Rechtstexte
+
+Datenschutzerklärung (`/datenschutz`) und AGB (`/agb`) liegen in `src/legal/content.js`.
+**Vor dem Livegang** in `src/legal/operator.js` die Platzhalter (Betreiber, Adresse, E-Mail,
+UID, Gerichtsstand) ausfüllen und die Texte von einer Fachperson prüfen lassen.
+Bei der Registrierung müssen AGB und Datenschutzerklärung akzeptiert werden (Zeitpunkt wird gespeichert).
+
 ## Umgebungsvariablen
 
 | Variable | Beschreibung |

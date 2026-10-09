@@ -5,6 +5,7 @@ import {
   HomeIcon, BackIcon, SunIcon, MoonIcon, UserIcon, EditIcon, LogoutIcon, LoginIcon, HeartIcon, SearchIcon, ShieldIcon,
 } from './Icons.jsx';
 import { useDockState } from '../lib/dock.jsx';
+import { LegalLinks } from '../pages/Legal.jsx';
 import { useI18n, LOCALES, dictionaries } from '../lib/i18n.jsx';
 import { useTheme } from '../lib/theme.jsx';
 import { useAuth } from '../lib/auth.jsx';
@@ -212,6 +213,7 @@ export default function TopBar({ onSearch, searchOpen }) {
                 <LanguagePicker id="acc-lang" />
                 <div className="menu-label">{t('menu.theme')}</div>
                 <ThemeSwitch />
+                <LegalLinks className="menu-legal" />
                 {user && (
                   <>
                     <div className="menu-sep" />

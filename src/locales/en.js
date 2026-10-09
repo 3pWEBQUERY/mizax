@@ -41,6 +41,7 @@ export default {
     guest: 'Log in to save favorites – they’ll be available on all your devices.',
   },
   auth: {
+    acceptTerms: 'I accept the {terms} and the {privacy}.',
     loginTitle: 'Welcome back.', loginText: 'Log in with your email address.',
     email: 'Email', password: 'Password', name: 'Display name', submitLogin: 'Log in',
     noAccount: 'No account yet?', haveAccount: 'Already registered?',
@@ -94,7 +95,11 @@ export default {
   geo: {
     nearMe: 'Near me', locating: 'Finding your location…', denied: 'Location access denied – you can allow it in your browser settings.', unavailable: 'Your location could not be determined.', radius: 'Radius', all: 'All', km: '{n} km', away: '≈ {n} km', near: '< 1 km', canton: 'Canton', cantons: 'Cantons', chooseCanton: 'Choose canton', allCantons: 'All cantons',
   },
+  legal: {
+    privacy: 'Privacy', privacyTitle: 'Privacy policy', terms: 'Terms', termsTitle: 'Terms and conditions', updated: 'Last updated: {date}', germanOnly: 'This document is only available in German; the German version is legally binding.',
+  },
   errors: {
+    terms_required: 'Please accept the terms and the privacy policy.',
     too_many_photos: 'Maximum 20 photos per profile.',
     forbidden: 'No permission.', self_admin: 'You can’t remove your own admin rights.',
     invalid_credentials: 'Email or password is incorrect.', email_taken: 'This email address is already registered.',

@@ -18,6 +18,7 @@ import Admin from './pages/Admin.jsx';
 import MyProfile from './pages/MyProfile.jsx';
 import NotFound from './pages/NotFound.jsx';
 import { Login, Register } from './pages/Auth.jsx';
+import { Privacy, Terms } from './pages/Legal.jsx';
 
 function Backdrop() {
   return <div className="backdrop" aria-hidden="true" />;
@@ -60,6 +61,8 @@ function Shell() {
               <Route path="/me" element={<MyProfile />} />
               <Route path="/me/services" element={<MyProfile />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/datenschutz" element={<Privacy />} />
+              <Route path="/agb" element={<Terms />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AnimatePresence>

@@ -167,6 +167,7 @@ export async function register(body) {
   if (!EMAIL_RE.test(email) || email.length > 200) throw httpError(400, 'invalid_email', 'Ungültige E-Mail');
   if (password.length < 8 || password.length > 200) throw httpError(400, 'weak_password', 'Passwort zu kurz');
   if (body.adult !== true) throw httpError(400, 'age_confirm_required', 'Altersbestätigung fehlt');
+  if (body.terms !== true) throw httpError(400, 'terms_required', 'AGB und Datenschutzerklärung nicht akzeptiert');
 
   const { rows: existing } = await query('SELECT 1 FROM users WHERE lower(email) = $1', [email]);
   if (existing.length) throw httpError(409, 'email_taken', 'E-Mail bereits registriert');
@@ -174,8 +175,8 @@ export async function register(body) {
   const hash = await hashPassword(password);
   try {
     const { rows } = await query(
-      `INSERT INTO users (email, password_hash, name, role, locale, last_login_at)
-       VALUES ($1,$2,$3,$4,$5, now()) RETURNING id, email, name, role, locale, is_admin`,
+      `INSERT INTO users (email, password_hash, name, role, locale, last_login_at, terms_accepted_at)
+       VALUES ($1,$2,$3,$4,$5, now(), now()) RETURNING id, email, name, role, locale, is_admin`,
       [email, hash, name, role, locale],
     );
     return rows[0];

@@ -1,5 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { LegalLinks } from '../pages/Legal.jsx';
 import { Bubble, Rise } from './Bubble.jsx';
 import { LanguagePicker } from './TopBar.jsx';
 import { useT } from '../lib/i18n.jsx';
@@ -17,10 +19,13 @@ function accepted() {
 export default function AgeGate() {
   const [ok, setOk] = useState(accepted);
   const t = useT();
+  // Rechtstexte sollen auch ohne Altersbestätigung lesbar sein
+  const { pathname } = useLocation();
+  const legalPage = pathname === '/agb' || pathname === '/datenschutz';
 
   return (
     <AnimatePresence>
-      {!ok && (
+      {!ok && !legalPage && (
         <motion.div
           className="gate"
           initial={{ opacity: 1 }}
@@ -54,6 +59,9 @@ export default function AgeGate() {
             </Rise>
             <Rise i={3} style={{ width: '100%', maxWidth: 300, marginTop: 8 }}>
               <LanguagePicker id="gate-lang" />
+            </Rise>
+            <Rise i={4}>
+              <LegalLinks />
             </Rise>
           </div>
         </motion.div>

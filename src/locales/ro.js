@@ -41,6 +41,7 @@ export default {
     guest: 'Autentifică-te pentru a salva favorite – vor fi disponibile pe toate dispozitivele tale.',
   },
   auth: {
+    acceptTerms: 'Accept {terms} și {privacy}.',
     loginTitle: 'Bine ai revenit.', loginText: 'Autentifică-te cu adresa ta de e-mail.',
     email: 'E-mail', password: 'Parolă', name: 'Nume afișat', submitLogin: 'Autentificare',
     noAccount: 'Nu ai încă un cont?', haveAccount: 'Ești deja înregistrat?',
@@ -94,7 +95,11 @@ export default {
   geo: {
     nearMe: 'În apropiere', locating: 'Se determină locația…', denied: 'Acces la locație refuzat – îl poți permite în setările browserului.', unavailable: 'Locația nu a putut fi determinată.', radius: 'Rază', all: 'Toate', km: '{n} km', away: '≈ {n} km', near: '< 1 km', canton: 'Canton', cantons: 'Cantoane', chooseCanton: 'Alege cantonul', allCantons: 'Toate cantoanele',
   },
+  legal: {
+    privacy: 'Confidențialitate', privacyTitle: 'Politica de confidențialitate', terms: 'Termeni', termsTitle: 'Termeni și condiții', updated: 'Actualizat: {date}', germanOnly: 'Acest document este disponibil doar în germană; versiunea germană este cea obligatorie.',
+  },
   errors: {
+    terms_required: 'Te rugăm să accepți termenii și politica de confidențialitate.',
     too_many_photos: 'Maximum 20 de fotografii per profil.',
     forbidden: 'Nu ai permisiunea.', self_admin: 'Nu îți poți elimina propriile drepturi de admin.',
     invalid_credentials: 'E-mail sau parolă incorectă.', email_taken: 'Această adresă de e-mail este deja înregistrată.',

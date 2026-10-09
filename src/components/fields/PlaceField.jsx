@@ -140,9 +140,6 @@ export default function PlaceField({ city, zip, canton, onChange }) {
         )}
       </div>
       <div className="field-hint">{t('editor.placeHint')}</div>
-      <div className="field-hint attribution">
-        Ortsdaten: © <a href="https://www.geonames.org" target="_blank" rel="noreferrer">GeoNames</a> (CC BY 4.0)
-      </div>
     </div>
   );
 }

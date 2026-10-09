@@ -73,6 +73,7 @@ export async function migrate() {
     );
     CREATE UNIQUE INDEX IF NOT EXISTS users_email_idx ON users (lower(email));
     ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT false;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMPTZ;
 
     ALTER TABLE escorts ADD COLUMN IF NOT EXISTS zip TEXT NOT NULL DEFAULT '';
     ALTER TABLE escorts ADD COLUMN IF NOT EXISTS canton TEXT NOT NULL DEFAULT '';

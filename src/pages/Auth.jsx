@@ -112,6 +112,24 @@ export function Login() {
   );
 }
 
+// „Ich akzeptiere die AGB und die Datenschutzerklärung“ mit Links (öffnen in neuem Tab)
+function AcceptTerms({ t }) {
+  const parts = t('auth.acceptTerms').split(/(\{terms\}|\{privacy\})/);
+  return parts.map((part, i) =>
+    part === '{terms}' ? (
+      <a key={i} href="/agb" target="_blank" rel="noreferrer" className="inline-link">
+        {t('legal.terms')}
+      </a>
+    ) : part === '{privacy}' ? (
+      <a key={i} href="/datenschutz" target="_blank" rel="noreferrer" className="inline-link">
+        {t('legal.privacyTitle')}
+      </a>
+    ) : (
+      part
+    ),
+  );
+}
+
 export function Register() {
   useDock({ mode: 'hidden' });
   useRedirectIfAuthed();
@@ -121,10 +139,11 @@ export function Register() {
   const navigate = useNavigate();
   const location = useLocation();
   const [role, setRole] = useState(null);
-  const [form, setForm] = useState({ name: '', email: '', password: '', adult: false });
+  const [form, setForm] = useState({ name: '', email: '', password: '', adult: false, terms: false });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: k === 'adult' ? e.target.checked : e.target.value }));
+  const set = (k) => (e) =>
+    setForm((f) => ({ ...f, [k]: k === 'adult' || k === 'terms' ? e.target.checked : e.target.value }));
 
   async function submit(e) {
     e.preventDefault();
@@ -225,6 +244,13 @@ export function Register() {
                 <input type="checkbox" checked={form.adult} onChange={set('adult')} required />
                 <span className="check-box">{form.adult && <CheckIcon />}</span>
                 <span>{t('auth.ageConfirm')}</span>
+              </label>
+              <label className="check">
+                <input type="checkbox" checked={form.terms} onChange={set('terms')} required />
+                <span className="check-box">{form.terms && <CheckIcon />}</span>
+                <span>
+                  <AcceptTerms t={t} />
+                </span>
               </label>
               <button className="white-btn auth-submit" disabled={busy}>
                 {busy ? <SpinnerIcon /> : t('auth.submitRegister')}
