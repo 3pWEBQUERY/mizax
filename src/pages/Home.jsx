@@ -150,6 +150,10 @@ export function CantonChips({ escorts }) {
             options={options}
             selected={new Set(canton ? [canton] : [])}
             onPick={(c) => setCanton(c)}
+            align="right"
+            width={300}
+            sheet
+            className="picker-canton"
           />
         </div>
       </div>

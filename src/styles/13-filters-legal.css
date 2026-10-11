@@ -29,13 +29,7 @@
   margin-right: 4px;
 }
 
-.chips .picker {
-  left: auto;
-  right: 0;
-  width: 300px;
-}
-
-.chips .picker .picker-prefix {
+.picker-canton .picker-prefix {
   font-size: 11px;
   font-weight: 700;
   width: 28px;
@@ -60,21 +54,17 @@
 }
 
 @media (max-width: 720px) {
-  .chips .picker {
-    position: fixed;
-    left: 14px;
-    right: 14px;
-    top: auto;
-    bottom: calc(150px + env(safe-area-inset-bottom));
-    width: auto;
-  }
   .chips-label {
     display: none;
   }
 }
 
-.place-field .picker {
-  width: 100%;
+/* Kanton-Auswahl auf schmalen Bildschirmen als Leiste über dem Dock */
+.picker.picker-sheet {
+  left: 14px;
+  right: 14px;
+  bottom: calc(150px + env(safe-area-inset-bottom));
+  max-height: calc(100dvh - 240px);
 }
 
 .place-zip {

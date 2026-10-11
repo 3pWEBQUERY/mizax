@@ -100,3 +100,16 @@ a.status-pill:hover {
     font-size: 14px;
   }
 }
+
+/* Auswahllisten liegen über Formularen – deckender, damit nichts durchscheint */
+.picker {
+  background: rgba(22, 28, 54, 0.9);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+}
+
+:root[data-theme='light'] .picker {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+}

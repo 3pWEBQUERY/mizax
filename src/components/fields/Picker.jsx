@@ -1,10 +1,23 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import Floating from './Floating.jsx';
 import { CheckIcon } from '../Icons.jsx';
 import { useT } from '../../lib/i18n.jsx';
 
 // Aufklappbare Liste mit Suchfeld; für Einfach- und Mehrfachauswahl
-export default function Picker({ open, onClose, options, selected, onPick, multi = false, anchorRef }) {
+export default function Picker({
+  open,
+  onClose,
+  options,
+  selected,
+  onPick,
+  multi = false,
+  anchorRef,
+  align,
+  width,
+  sheet,
+  className,
+}) {
   const t = useT();
   const [q, setQ] = useState('');
   const [active, setActive] = useState(0);
@@ -57,14 +70,7 @@ export default function Picker({ open, onClose, options, selected, onPick, multi
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
-          ref={panelRef}
-          className="picker"
-          initial={{ opacity: 0, y: -6, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -4, scale: 0.98 }}
-          transition={{ type: 'spring', stiffness: 420, damping: 32 }}
-        >
+        <Floating ref={panelRef} anchorRef={anchorRef} align={align} width={width} sheet={sheet} className={className}>
           <input
             className="picker-search"
             autoFocus
@@ -104,7 +110,7 @@ export default function Picker({ open, onClose, options, selected, onPick, multi
               <div className="picker-empty">{t('editor.noResults')}</div>
             )}
           </div>
-        </motion.div>
+        </Floating>
       )}
     </AnimatePresence>
   );

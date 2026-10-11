@@ -1,5 +1,6 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
+import Floating from './Floating.jsx';
 import { PinIcon, SpinnerIcon } from '../Icons.jsx';
 import { useToast } from '../Toast.jsx';
 import { api } from '../../lib/api.js';
@@ -17,10 +18,13 @@ export default function PlaceField({ city, zip, canton, onChange }) {
   const [active, setActive] = useState(0);
   const [locating, setLocating] = useState(false);
   const wrapRef = useRef(null);
+  const inputRef = useRef(null);
+  const panelRef = useRef(null);
   const timer = useRef();
 
   useEffect(() => {
-    const onDown = (e) => !wrapRef.current?.contains(e.target) && setOpen(false);
+    const onDown = (e) =>
+      !wrapRef.current?.contains(e.target) && !panelRef.current?.contains(e.target) && setOpen(false);
     document.addEventListener('pointerdown', onDown);
     return () => document.removeEventListener('pointerdown', onDown);
   }, []);
@@ -85,6 +89,7 @@ export default function PlaceField({ city, zip, canton, onChange }) {
     <div className="place-field" ref={wrapRef}>
       <div className="select-wrap">
         <input
+          ref={inputRef}
           className="input"
           value={text}
           placeholder={t('editor.placePlaceholder')}
@@ -105,13 +110,7 @@ export default function PlaceField({ city, zip, canton, onChange }) {
         />
         <AnimatePresence>
           {open && results.length > 0 && (
-            <motion.div
-              className="picker"
-              initial={{ opacity: 0, y: -6, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -4, scale: 0.98 }}
-              transition={{ type: 'spring', stiffness: 420, damping: 32 }}
-            >
+            <Floating ref={panelRef} anchorRef={inputRef} width="anchor">
               <div className="picker-list" role="listbox">
                 {results.map((p, idx) => (
                   <button
@@ -129,7 +128,7 @@ export default function PlaceField({ city, zip, canton, onChange }) {
                   </button>
                 ))}
               </div>
-            </motion.div>
+            </Floating>
           )}
         </AnimatePresence>
       </div>
