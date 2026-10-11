@@ -90,6 +90,7 @@ export function userOut(u) {
       isAdmin: Boolean(u.is_admin),
       showVisits: showsVisits(u),
       bio: u.bio || '',
+      avatar: u.avatar_key ? `/media/${u.avatar_key}_sm.webp` : null,
       createdAt: u.created_at,
     }
   );
@@ -103,7 +104,7 @@ export async function attachUser(req, res, next) {
   if (parts && parts[0] === 'u' && hasDb()) {
     try {
       const { rows } = await query(
-        'SELECT id, email, name, role, locale, is_admin, show_visits, bio, created_at FROM users WHERE id = $1',
+        'SELECT id, email, name, role, locale, is_admin, show_visits, bio, avatar_key, created_at FROM users WHERE id = $1',
         [Number(parts[1])],
       );
       req.user = rows[0] || null;
@@ -225,7 +226,7 @@ export async function register(body) {
   try {
     const { rows } = await query(
       `INSERT INTO users (email, password_hash, name, role, locale, last_login_at, terms_accepted_at)
-       VALUES ($1,$2,$3,$4,$5, now(), now()) RETURNING id, email, name, role, locale, is_admin, show_visits, bio, created_at`,
+       VALUES ($1,$2,$3,$4,$5, now(), now()) RETURNING id, email, name, role, locale, is_admin, show_visits, bio, avatar_key, created_at`,
       [email, hash, name, role, locale],
     );
     return rows[0];

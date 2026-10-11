@@ -70,3 +70,26 @@ export function serviceLabel(t, key) {
   const label = t(path);
   return label === path ? key : label;
 }
+
+// Interessen für Mitgliederprofile (gleiche Liste wie server/members.js)
+export const INTERESTS = [
+  'dining',
+  'wine',
+  'travel',
+  'culture',
+  'music',
+  'theatre',
+  'art',
+  'cinema',
+  'books',
+  'sports',
+  'wellness',
+  'nature',
+  'nightlife',
+  'fashion',
+  'cars',
+  'business',
+];
+export const MAX_INTERESTS = 10;
+
+export const interestLabel = (t, key) => t(`interests.${key}`);

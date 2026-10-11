@@ -101,6 +101,16 @@ export async function migrate() {
     ALTER TABLE users ADD COLUMN IF NOT EXISTS show_visits BOOLEAN;
     ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT NOT NULL DEFAULT '';
 
+    -- Mitgliederprofil (ohne Escort-Leistungen): Profilbild, Alter, Wohnort, Sprachen, Interessen
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_key TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS age INTEGER;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS tagline TEXT NOT NULL DEFAULT '';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS city TEXT NOT NULL DEFAULT '';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS zip TEXT NOT NULL DEFAULT '';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS canton TEXT NOT NULL DEFAULT '';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS languages TEXT[] NOT NULL DEFAULT '{}';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS interests TEXT[] NOT NULL DEFAULT '{}';
+
     -- Statistik: Aufrufe von Escort-Profilen
     CREATE TABLE IF NOT EXISTS profile_views (
       id         BIGSERIAL PRIMARY KEY,

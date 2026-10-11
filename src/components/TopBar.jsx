@@ -190,7 +190,11 @@ export default function TopBar({ onSearch, searchOpen }) {
             aria-expanded={menu}
             onClick={() => setMenu(!menu)}
           >
-            {initial || <UserIcon width={22} height={22} />}
+            {user?.avatar ? (
+              <img className="avatar-img" src={user.avatar} alt="" />
+            ) : (
+              initial || <UserIcon width={22} height={22} />
+            )}
             {unread > 0 && <span className="avatar-badge">{unread > 9 ? '9+' : unread}</span>}
           </button>
           <AnimatePresence>
@@ -199,7 +203,9 @@ export default function TopBar({ onSearch, searchOpen }) {
                 {user ? (
                   <>
                     <div className="menu-head">
-                      <div className="avatar">{initial}</div>
+                      <div className="avatar">
+                        {user.avatar ? <img className="avatar-img" src={user.avatar} alt="" /> : initial}
+                      </div>
                       <div className="who">
                         <b>{user.name}</b>
                         <span>{user.email}</span>
@@ -217,11 +223,9 @@ export default function TopBar({ onSearch, searchOpen }) {
                         <ShieldIcon /> {t('menu.admin')}
                       </button>
                     )}
-                    {user.role === 'escort' && (
-                      <button type="button" className="menu-item" onClick={() => navigate('/me')}>
-                        <EditIcon /> {t('menu.myProfile')}
-                      </button>
-                    )}
+                    <button type="button" className="menu-item" onClick={() => navigate('/me')}>
+                      <EditIcon /> {t('menu.myProfile')}
+                    </button>
                     <button type="button" className="menu-item" onClick={() => navigate('/messages')}>
                       <InboxIcon /> {t('msg.title')}
                       {unread > 0 && <span className="count-badge">{unread}</span>}

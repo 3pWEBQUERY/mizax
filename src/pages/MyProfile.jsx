@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Page from '../components/Page.jsx';
-import { Bubble, Rise } from '../components/Bubble.jsx';
+import { Rise } from '../components/Bubble.jsx';
 import { ChevronR } from '../components/Icons.jsx';
 import ProfileEditor from '../components/ProfileEditor.jsx';
+import MemberEditor from '../components/MemberEditor.jsx';
 import { useDock } from '../lib/dock.jsx';
 import { useAuth } from '../lib/auth.jsx';
 import { useT } from '../lib/i18n.jsx';
@@ -27,34 +28,18 @@ export default function MyProfile() {
 
   useEffect(() => {
     if (!user || user.role !== 'escort') return;
+    loadStorage(setStorage);
     api('/api/me/profile')
       .then((e) => {
         setEscort(e);
         setOwnEscort(user.id, e);
       })
       .catch(() => setEscort(null));
-    api('/api/health')
-      .then((h) => setStorage(h.storage))
-      .catch(() => {});
   }, [user]);
 
   if (ready && !user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
 
-  if (user && user.role !== 'escort') {
-    return (
-      <Page>
-        <div className="bubbles">
-          <Bubble i={0}>{t('me.title')}</Bubble>
-          <Bubble i={1}>{t('me.onlyEscorts')}</Bubble>
-          <Rise i={2}>
-            <Link to="/" className="white-btn">
-              {t('fav.discover')}
-            </Link>
-          </Rise>
-        </div>
-      </Page>
-    );
-  }
+  if (user && user.role !== 'escort') return <MyMemberProfile />;
 
   return (
     <Page>
@@ -101,6 +86,55 @@ export default function MyProfile() {
           />
         </Rise>
       )}
+    </Page>
+  );
+}
+
+function loadStorage(set) {
+  api('/api/health')
+    .then((h) => set(h.storage))
+    .catch(() => {});
+}
+
+// Mitglieder: eigenes Profil (anders aufgebaut als Escort-Profile – ohne Leistungen und Honorar)
+function MyMemberProfile() {
+  const t = useT();
+  const { user } = useAuth();
+  const [member, setMember] = useState(null);
+  const [storage, setStorage] = useState(true);
+
+  useEffect(() => {
+    api('/api/me/member')
+      .then(setMember)
+      .catch(() => {});
+    loadStorage(setStorage);
+  }, []);
+
+  return (
+    <Page>
+      <div className="me-head">
+        <div className="me-head-text">
+          <Rise i={0} as="h1" className="me-title">
+            {t('me.title')}
+          </Rise>
+          <Rise i={1} as="p" className="me-intro">
+            {t('me.introMember')}
+          </Rise>
+        </div>
+        <Rise i={2} className="me-status">
+          <Link to={`/member/${user.id}`} className="small-btn">
+            {t('me.view')}
+            <ChevronR width={14} height={14} />
+          </Link>
+        </Rise>
+      </div>
+      <Rise i={3} className="me-editor">
+        {member ? (
+          <MemberEditor member={member} storage={storage} onSaved={setMember} />
+        ) : (
+          <div className="skeleton" style={{ height: 320, aspectRatio: 'auto' }} />
+        )}
+      </Rise>
     </Page>
   );
 }

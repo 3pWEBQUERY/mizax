@@ -88,7 +88,7 @@ async function commentAuthors(userIds) {
   const ids = [...new Set(userIds)];
   if (!ids.length) return new Map();
   const { rows } = await query(
-    `SELECT u.id, u.name, u.role, e.slug, e.name AS escort_name, ${THUMB('e')} AS thumb_key
+    `SELECT u.id, u.name, u.role, u.avatar_key, e.slug, e.name AS escort_name, ${THUMB('e')} AS thumb_key
      FROM users u LEFT JOIN escorts e ON e.user_id = u.id AND e.published = true
      WHERE u.id = ANY($1)`,
     [ids],
@@ -109,7 +109,7 @@ function commentOut(c, authors, me, postOwnerId) {
           slug: a.slug,
           thumb: thumbUrl(a.thumb_key),
         }
-      : { kind: 'member', name: a?.name || '–', memberId: c.user_id },
+      : { kind: 'member', name: a?.name || '–', memberId: c.user_id, thumb: thumbUrl(a?.avatar_key) },
     mine: c.user_id === me.id,
     canDelete: c.user_id === me.id || postOwnerId === me.id || Boolean(me.is_admin),
   };

@@ -88,7 +88,7 @@ router.put(
     const user = await fullUser(req.user.id);
     const name = text(req.body?.name, 60);
     const email = text(req.body?.email, 200).toLowerCase();
-    const bio = text(req.body?.bio, 600);
+    const bio = req.body?.bio === undefined ? user.bio : text(req.body.bio, 2000);
     if (!name) throw httpError(400, 'name_required', 'Name fehlt');
     if (!EMAIL_RE.test(email)) throw httpError(400, 'invalid_email', 'Ungültige E-Mail');
     if (email !== user.email.toLowerCase()) {
@@ -149,7 +149,9 @@ router.delete(
       `SELECT ep.key FROM escort_photos ep JOIN escorts e ON e.id = ep.escort_id WHERE e.user_id = $1
        UNION ALL
        SELECT pp.key FROM post_photos pp JOIN posts p ON p.id = pp.post_id JOIN escorts e ON e.id = p.escort_id
-       WHERE e.user_id = $1`,
+       WHERE e.user_id = $1
+       UNION ALL
+       SELECT avatar_key FROM users WHERE id = $1 AND avatar_key IS NOT NULL`,
       [user.id],
     );
     // Profil, Fotos, Beiträge, Favoriten, Unterhaltungen usw. werden per ON DELETE CASCADE entfernt

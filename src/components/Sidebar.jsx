@@ -167,15 +167,13 @@ export default function Sidebar() {
                   </Card>
 
                   <Card i={i++} className="side-links">
-                    {escort && (
-                      <Link to="/me" className="settings-row">
-                        <span className="settings-icon">
-                          <EditIcon width={18} height={18} />
-                        </span>
-                        <span className="settings-label">{t('menu.myProfile')}</span>
-                        <ChevronR width={16} height={16} className="settings-chev" />
-                      </Link>
-                    )}
+                    <Link to="/me" className="settings-row">
+                      <span className="settings-icon">
+                        <EditIcon width={18} height={18} />
+                      </span>
+                      <span className="settings-label">{t('menu.myProfile')}</span>
+                      <ChevronR width={16} height={16} className="settings-chev" />
+                    </Link>
                     <Link to="/favorites" className="settings-row">
                       <span className="settings-icon">
                         <HeartIcon width={18} height={18} />

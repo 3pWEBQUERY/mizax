@@ -16,7 +16,6 @@ export function AccountSection({ done }) {
   const { user, updateUser } = useAuth();
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
-  const [bio, setBio] = useState(user.bio || '');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const emailChanged = email.trim().toLowerCase() !== user.email.toLowerCase();
@@ -25,7 +24,7 @@ export function AccountSection({ done }) {
     e.preventDefault();
     setBusy(true);
     try {
-      const r = await api('/api/me/account', { method: 'PUT', body: { name, email, bio, password } });
+      const r = await api('/api/me/account', { method: 'PUT', body: { name, email, password } });
       updateUser(r.user);
       toast(t('editor.saved'));
       done();
@@ -51,17 +50,6 @@ export function AccountSection({ done }) {
           required
         />
       </Field>
-      {user.role !== 'escort' && (
-        <Field label={t('settings.about')} hint={t('settings.aboutHint')}>
-          <textarea
-            className="input"
-            value={bio}
-            maxLength={600}
-            onChange={(e) => setBio(e.target.value)}
-            style={{ minHeight: 100 }}
-          />
-        </Field>
-      )}
       <AnimatePresence initial={false}>
         {emailChanged && (
           <motion.div

@@ -2,7 +2,7 @@ import express from 'express';
 import crypto from 'node:crypto';
 import { query } from '../db.js';
 import { SECRET, httpError, requireUser, rateLimit, showsVisits, clientIp } from '../auth.js';
-import { wrap, requireDb, noStore, toId } from '../http.js';
+import { wrap, requireDb, noStore } from '../http.js';
 import { THUMB, thumbUrl, ownEscort } from '../escorts.js';
 import { listConversations, unreadCount } from './messages.js';
 import { loadPosts } from './feed.js';
@@ -100,7 +100,7 @@ async function escortStats(user, escort, days) {
        SELECT DISTINCT ON (v.viewer_key)
          v.viewer_key, v.viewer_id, v.created_at,
          count(*) OVER (PARTITION BY v.viewer_key)::int AS visits,
-         u.name, u.role, u.show_visits, ve.slug, ve.name AS escort_name, ${THUMB('ve')} AS thumb_key
+         u.name, u.role, u.show_visits, u.avatar_key, ve.slug, ve.name AS escort_name, ${THUMB('ve')} AS thumb_key
        FROM profile_views v CROSS JOIN r
        LEFT JOIN users u ON u.id = v.viewer_id
        LEFT JOIN escorts ve ON ve.user_id = u.id AND ve.published = true
@@ -154,6 +154,7 @@ async function escortStats(user, escort, days) {
         visits: v.visits,
         name: v.name,
         memberId: v.viewer_id,
+        thumb: thumbUrl(v.avatar_key),
       };
     }),
   };
@@ -182,7 +183,7 @@ async function memberStats(user, days) {
      SELECT * FROM (
        SELECT DISTINCT ON (v.viewer_id)
          v.viewer_id, v.created_at, count(*) OVER (PARTITION BY v.viewer_id)::int AS visits,
-         u.name, u.role, u.show_visits, e.slug, e.name AS escort_name, ${THUMB('e')} AS thumb_key
+         u.name, u.role, u.show_visits, u.avatar_key, e.slug, e.name AS escort_name, ${THUMB('e')} AS thumb_key
        FROM member_views v CROSS JOIN r
        JOIN users u ON u.id = v.viewer_id
        LEFT JOIN escorts e ON e.user_id = u.id AND e.published = true
@@ -236,6 +237,7 @@ async function memberStats(user, days) {
         visits: v.visits,
         name: v.name,
         memberId: v.viewer_id,
+        thumb: thumbUrl(v.avatar_key),
       };
     }),
     viewed: viewed.map((v) => ({
@@ -268,68 +270,6 @@ router.post(
   rateLimit(60, 10 * 60 * 1000),
   wrap(async (req, res) => {
     await recordEscortView(req, req.params.slug);
-    res.json({ ok: true });
-  }),
-);
-
-// --- Mitgliederprofile (sichtbar für Escorts, die Verwaltung und das Mitglied selbst) ---
-
-router.get(
-  '/api/members/:id',
-  requireUser,
-  wrap(async (req, res) => {
-    const memberId = toId(req.params.id);
-    const self = memberId === req.user.id;
-    if (!self && req.user.role !== 'escort' && !req.user.is_admin)
-      throw httpError(403, 'forbidden', 'Keine Berechtigung');
-    const { rows } = await query(
-      `SELECT u.id, u.name, u.role, u.bio, u.created_at, e.slug
-       FROM users u LEFT JOIN escorts e ON e.user_id = u.id WHERE u.id = $1`,
-      [memberId],
-    );
-    const m = rows[0];
-    if (!m) throw httpError(404, 'not_found', 'Nicht gefunden');
-    let conversationId = null;
-    if (!self) {
-      const own = await ownEscort(req.user.id);
-      if (own) {
-        const { rows: c } = await query('SELECT id FROM conversations WHERE user_id = $1 AND escort_id = $2', [
-          memberId,
-          own.id,
-        ]);
-        conversationId = c[0]?.id || null;
-      }
-    }
-    noStore(res);
-    res.json({
-      id: m.id,
-      name: m.name,
-      role: m.role,
-      bio: m.bio,
-      createdAt: m.created_at,
-      escortSlug: m.slug || null,
-      conversationId,
-      self,
-    });
-  }),
-);
-
-router.post(
-  '/api/members/:id/view',
-  requireUser,
-  wrap(async (req, res) => {
-    const memberId = toId(req.params.id);
-    if (memberId !== req.user.id && req.user.role === 'escort') {
-      await query(
-        `INSERT INTO member_views (member_id, viewer_id)
-         SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM users WHERE id = $1 AND role = 'member')
-           AND NOT EXISTS (
-             SELECT 1 FROM member_views
-             WHERE member_id = $1 AND viewer_id = $2 AND created_at > now() - interval '30 minutes'
-           )`,
-        [memberId, req.user.id],
-      );
-    }
     res.json({ ok: true });
   }),
 );

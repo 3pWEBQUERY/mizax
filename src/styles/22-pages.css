@@ -8,15 +8,6 @@
   flex: 1 1 200px;
 }
 
-.member-bubbles {
-  max-width: 760px;
-  margin: 0 auto;
-}
-
-.member-nobio {
-  color: var(--muted);
-}
-
 .me-status .small-btn {
   gap: 6px;
 }

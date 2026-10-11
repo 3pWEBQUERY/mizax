@@ -13,6 +13,7 @@ import accountRoutes from './routes/account.js';
 import meRoutes from './routes/me.js';
 import adminRoutes from './routes/admin.js';
 import statsRoutes from './routes/stats.js';
+import memberRoutes from './routes/members.js';
 import messageRoutes from './routes/messages.js';
 import feedRoutes from './routes/feed.js';
 
@@ -35,6 +36,7 @@ app.use(accountRoutes);
 app.use(meRoutes);
 app.use(adminRoutes);
 app.use(statsRoutes);
+app.use(memberRoutes);
 app.use(messageRoutes);
 app.use(feedRoutes);
 app.use('/api', (req, res) => res.status(404).json({ error: 'Nicht gefunden', code: 'not_found' }));

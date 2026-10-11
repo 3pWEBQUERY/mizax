@@ -13,7 +13,7 @@ const router = express.Router();
 const CONV_SELECT = `
   SELECT c.id, c.user_id, c.escort_id, c.created_at, c.last_message_at,
     e.user_id AS escort_user_id, e.slug, e.name AS escort_name, e.accent, e.verified, ${THUMB('e')} AS thumb_key,
-    u.name AS user_name, u.role AS user_role
+    u.name AS user_name, u.role AS user_role, u.avatar_key AS user_avatar
   FROM conversations c
   JOIN escorts e ON e.id = c.escort_id
   JOIN users u ON u.id = c.user_id`;
@@ -32,7 +32,7 @@ function convOut(row, me) {
           accent: row.accent,
           verified: row.verified,
         }
-      : { kind: 'member', name: row.user_name, memberId: row.user_id },
+      : { kind: 'member', name: row.user_name, memberId: row.user_id, thumb: thumbUrl(row.user_avatar) },
     last: row.last_at ? { body: row.last_body, at: row.last_at, mine: row.last_sender === me } : null,
     unread: row.unread || 0,
     lastMessageAt: row.last_message_at,

@@ -7,6 +7,7 @@ import PhoneField from './fields/PhoneField.jsx';
 import PlaceField from './fields/PlaceField.jsx';
 import ServicesPage, { ServicesField } from './fields/ServicesPage.jsx';
 import PhotoManager, { MAX_PHOTOS } from './fields/PhotoManager.jsx';
+import { Section, Field } from './fields/Form.jsx';
 import { api } from '../lib/api.js';
 import { useT, errorText } from '../lib/i18n.jsx';
 
@@ -284,26 +285,5 @@ export default function ProfileEditor({
       </div>
       <ServicesPage open={servicesOpen} value={form.services} onSave={saveServices} onBack={closeServices} />
     </form>
-  );
-}
-
-function Section({ title, aside, children }) {
-  return (
-    <section className="editor-section">
-      <div className="panel-title">
-        <h2>{title}</h2>
-        {aside && <span>{aside}</span>}
-      </div>
-      {children}
-    </section>
-  );
-}
-
-function Field({ label, full, children }) {
-  return (
-    <div className={`field ${full ? 'full' : ''}`}>
-      <label>{label}</label>
-      {children}
-    </div>
   );
 }

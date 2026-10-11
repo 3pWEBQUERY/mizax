@@ -55,7 +55,6 @@ export default function Settings() {
   if (ready && !user) return <Navigate to="/login" replace state={{ from: '/settings' }} />;
   if (!user) return <Page />;
 
-  const escort = user.role === 'escort';
   const go = (s) => navigate(`/settings/${s}`);
   const back = () => (window.history.state?.idx > 0 ? navigate(-1) : navigate('/settings', { replace: true }));
   const titles = {
@@ -125,7 +124,7 @@ export default function Settings() {
           ) : (
             <>
               <div className="settings-profile">
-                <Avatar name={user.name} thumb={own?.photos?.[0]?.thumb} size={48} />
+                <Avatar name={user.name} thumb={own?.photos?.[0]?.thumb || user.avatar} size={48} />
                 <div className="who">
                   <b>{user.name}</b>
                   <span className="mail">{user.email}</span>
@@ -136,11 +135,7 @@ export default function Settings() {
               </div>
 
               <Group>
-                <Row
-                  icon={UserIcon}
-                  label={escort ? t('menu.myProfile') : t('settings.publicProfile')}
-                  onClick={() => navigate(escort ? '/me' : `/member/${user.id}`)}
-                />
+                <Row icon={UserIcon} label={t('menu.myProfile')} onClick={() => navigate('/me')} />
                 <Row icon={MailIcon} label={t('settings.account')} value={user.name} onClick={() => go('account')} />
                 <Row icon={KeyIcon} label={t('settings.password')} onClick={() => go('password')} />
               </Group>
