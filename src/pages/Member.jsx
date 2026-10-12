@@ -2,22 +2,22 @@ import { AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import Page from '../components/Page.jsx';
-import Avatar from '../components/Avatar.jsx';
+import { Photo } from '../components/Media.jsx';
 import Lightbox from '../components/Lightbox.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
-import { ChatIcon, EditIcon, ChevronR, PinIcon } from '../components/Icons.jsx';
+import { ChatIcon, EditIcon, PinIcon } from '../components/Icons.jsx';
 import { api } from '../lib/api.js';
 import { useAuth } from '../lib/auth.jsx';
 import { useDock } from '../lib/dock.jsx';
-import { useMedia } from '../lib/useMedia.js';
 import { useI18n, errorText } from '../lib/i18n.jsx';
 import { interestLabel, languageName, parseLanguage } from '../lib/catalog.js';
 import { cantonName } from '../lib/cantons.js';
 import ProfileTabs, { useProfileTab, postCountLabel } from '../components/ProfileTabs.jsx';
 import { Composer, PostList, usePosts } from '../components/feed/index.js';
 
-// Mitgliederprofil – sichtbar für alle angemeldeten Konten. Anders aufgebaut als ein Escort-Profil:
-// Profilbild, Steckbrief, Über mich, Interessen und ein eigener Feed (Tab „Neuigkeiten“).
+// Mitgliederprofil – sichtbar für alle angemeldeten Konten. Gleicher Aufbau wie ein Escort-Profil
+// (Bild links, Steckbrief rechts), aber mit Über mich, Details, Interessen und eigenem Feed statt
+// Leistungen, Honorar und Kontaktdaten.
 export default function Member() {
   useDock({ mode: 'hidden' });
   const { id } = useParams();
@@ -27,7 +27,6 @@ export default function Member() {
   const [member, setMember] = useState(null);
   const [error, setError] = useState(null);
   const [zoom, setZoom] = useState(false);
-  const size = useMedia('(max-width: 640px)') ? 76 : 104;
   const { tab, switched, select } = useProfileTab(id);
   const feed = usePosts(user ? `/api/members/${encodeURIComponent(id)}/posts` : null);
 
@@ -59,13 +58,9 @@ export default function Member() {
   if (!member) {
     return (
       <Page>
-        <div className="member-page">
-          <div className="member-hero">
-            <span className="person skeleton" style={{ width: size, height: size }} />
-            <div className="member-hero-text">
-              <div className="skeleton-line" style={{ width: 180, height: 22 }} />
-              <div className="skeleton-line" style={{ width: 240 }} />
-            </div>
+        <div className="profile">
+          <div className="profile-hero">
+            <div className="hero-media skeleton" />
           </div>
         </div>
       </Page>
@@ -90,120 +85,134 @@ export default function Member() {
         .join('\n'),
     ],
   ].filter(([, v]) => v);
-  let i = 2;
+  let i = 6;
   let j = 0;
 
   return (
     <Page>
-      <div className="member-page">
-        <Rise i={0} className="member-hero">
-          {member.avatar ? (
-            <button
-              type="button"
-              className="member-avatar"
-              onClick={() => setZoom(true)}
-              aria-label={t('profile.zoom')}
-            >
-              <Avatar name={member.name} thumb={member.avatar.thumb} size={size} />
-            </button>
-          ) : (
-            <Avatar name={member.name} size={size} className="member-avatar" />
-          )}
-          <div className="member-hero-text">
-            <h1 className="member-name">
-              {member.name}
-              {member.age && <span className="age">, {member.age}</span>}
-            </h1>
-            {member.tagline && <p className="member-tagline">{member.tagline}</p>}
-            <p className="member-meta">
+      <div className="profile member-profile">
+        <div className="profile-hero">
+          <div className="hero-media" style={{ borderRadius: 28 }}>
+            <div className="media-fill">
+              <Photo
+                src={member.avatar?.url}
+                lowSrc={member.avatar?.thumb}
+                escort={{ name: member.name }}
+                alt={member.name}
+                big
+                eager
+              />
+            </div>
+            {member.avatar && <button type="button" aria-label={t('profile.zoom')} onClick={() => setZoom(true)} />}
+          </div>
+        </div>
+
+        <div className="profile-body">
+          <div className="bubbles">
+            <Rise i={0} className="profile-sub">
+              <span className="role-badge member">{t('menu.member')}</span>
               {member.city && (
-                <span>
+                <span className="member-place">
                   <PinIcon width={14} height={14} />
                   {member.city}
                   {member.canton && ` · ${member.canton}`}
                 </span>
               )}
-              <span>{t('member.since', { date: since })}</span>
-            </p>
-          </div>
-          <div className="member-actions">
-            {member.self ? (
-              <Link to="/me" className="small-btn">
-                <EditIcon width={14} height={14} />
-                {t('member.edit')}
-              </Link>
-            ) : (
-              member.conversationId && (
-                <Link to={`/messages/${member.conversationId}`} className="small-btn">
-                  <ChatIcon width={14} height={14} />
-                  {t('member.openChat')}
-                  <ChevronR width={14} height={14} />
-                </Link>
-              )
-            )}
-          </div>
-        </Rise>
-
-        {member.self && (
-          <Rise i={1} as="p" className="member-note">
-            {t('member.selfHint')}
-          </Rise>
-        )}
-
-        <ProfileTabs active={tab} onSelect={select} postCount={postCountLabel(feed)} i={i++} />
-
-        <div key={tab} className="profile-panel" id="profile-panel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
-          {tab === 'posts' ? (
-            <Rise i={switched ? 0 : i++} className="profile-posts">
-              {member.self && <Composer onPosted={feed.prepend} />}
-              <PostList
-                feed={feed}
-                empty={member.self ? t('feed.emptySelf') : t('feed.emptyOwn', { name: member.name })}
-              />
             </Rise>
-          ) : (
-            <div className="member-cards">
-              <Rise i={switched ? j++ : i++} className="profile-card member-about">
-                <h2 className="profile-card-title">{t('settings.about')}</h2>
-                {paragraphs.length ? (
-                  paragraphs.map((p, idx) => (
-                    <p key={idx} className="profile-text">
-                      {p}
-                    </p>
-                  ))
+            <Rise i={1} as="h1" className="profile-title">
+              {member.name}
+              {member.age && (
+                <>
+                  , <span className="age">{member.age}</span>
+                </>
+              )}
+            </Rise>
+            {member.tagline && (
+              <Rise i={2} className="profile-tagline">
+                {member.tagline}
+              </Rise>
+            )}
+            <Rise i={3} as="p" className="member-since">
+              {t('member.since', { date: since })}
+            </Rise>
+
+            {(member.self || member.conversationId) && (
+              <Rise i={4} className="actions">
+                {member.self ? (
+                  <Link to="/me" className="white-btn">
+                    <EditIcon /> {t('member.edit')}
+                  </Link>
                 ) : (
-                  <p className="profile-text member-empty">{member.self ? t('member.noBioSelf') : t('member.noBio')}</p>
+                  <Link to={`/messages/${member.conversationId}`} className="white-btn">
+                    <ChatIcon /> {t('member.openChat')}
+                  </Link>
                 )}
               </Rise>
+            )}
+            {member.self && (
+              <Rise i={5} as="p" className="member-note">
+                {t('member.selfHint')}
+              </Rise>
+            )}
 
-              {facts.length > 0 && (
-                <Rise i={switched ? j++ : i++} className="profile-card">
-                  <h2 className="profile-card-title">{t('profile.details')}</h2>
-                  <dl className="facts" style={{ margin: 0 }}>
-                    {facts.map(([k, v]) => (
-                      <div className="fact" key={k}>
-                        <dt>{k}</dt>
-                        <dd>{v}</dd>
+            <ProfileTabs active={tab} onSelect={select} postCount={postCountLabel(feed)} i={i++} />
+
+            <div key={tab} className="profile-panel" id="profile-panel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
+              {tab === 'posts' ? (
+                <Rise i={switched ? 0 : i++} className="profile-posts">
+                  {member.self && <Composer onPosted={feed.prepend} />}
+                  <PostList
+                    feed={feed}
+                    empty={member.self ? t('feed.emptySelf') : t('feed.emptyOwn', { name: member.name })}
+                  />
+                </Rise>
+              ) : (
+                <div className="member-cards">
+                  <Rise i={switched ? j++ : i++} className="profile-card member-about">
+                    <h2 className="profile-card-title">{t('settings.about')}</h2>
+                    {paragraphs.length ? (
+                      paragraphs.map((p, idx) => (
+                        <p key={idx} className="profile-text">
+                          {p}
+                        </p>
+                      ))
+                    ) : (
+                      <p className="profile-text member-empty">
+                        {member.self ? t('member.noBioSelf') : t('member.noBio')}
+                      </p>
+                    )}
+                  </Rise>
+
+                  {facts.length > 0 && (
+                    <Rise i={switched ? j++ : i++} className="profile-card">
+                      <h2 className="profile-card-title">{t('profile.details')}</h2>
+                      <dl className="facts" style={{ margin: 0 }}>
+                        {facts.map(([k, v]) => (
+                          <div className="fact" key={k}>
+                            <dt>{k}</dt>
+                            <dd>{v}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </Rise>
+                  )}
+
+                  {member.interests.length > 0 && (
+                    <Rise i={switched ? j++ : i++} className="profile-card">
+                      <h2 className="profile-card-title">{t('mp.interests')}</h2>
+                      <div className="tags">
+                        {member.interests.map((k) => (
+                          <span className="tag" key={k}>
+                            {interestLabel(t, k)}
+                          </span>
+                        ))}
                       </div>
-                    ))}
-                  </dl>
-                </Rise>
-              )}
-
-              {member.interests.length > 0 && (
-                <Rise i={switched ? j++ : i++} className="profile-card">
-                  <h2 className="profile-card-title">{t('mp.interests')}</h2>
-                  <div className="tags">
-                    {member.interests.map((k) => (
-                      <span className="tag" key={k}>
-                        {interestLabel(t, k)}
-                      </span>
-                    ))}
-                  </div>
-                </Rise>
+                    </Rise>
+                  )}
+                </div>
               )}
             </div>
-          )}
+          </div>
         </div>
       </div>
 

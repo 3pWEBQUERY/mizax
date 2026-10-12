@@ -212,6 +212,7 @@ export async function migrate() {
     -- Vorschläge: Ereignisse auf Escort-Profilen (wieder aktiv, Standort geändert)
     ALTER TABLE escorts ADD COLUMN IF NOT EXISTS returned_at TIMESTAMPTZ;
     ALTER TABLE escorts ADD COLUMN IF NOT EXISTS moved_at TIMESTAMPTZ;
+    ALTER TABLE escorts ADD COLUMN IF NOT EXISTS unpublished_at TIMESTAMPTZ;
 
     -- Präferenzen der Mitglieder für Vorschläge (nur aktiv, wenn enabled)
     CREATE TABLE IF NOT EXISTS member_prefs (

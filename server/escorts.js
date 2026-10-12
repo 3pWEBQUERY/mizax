@@ -216,19 +216,32 @@ export async function insertEscort(data, extra = {}) {
   return rows[0].id;
 }
 
-// Für Vorschläge merken: Standort geändert (moved_at) bzw. wieder aktiv nach einer Pause (returned_at)
+// Für Vorschläge merken:
+// - Standort geändert (moved_at)
+// - wieder da (returned_at): von „nicht verfügbar“ auf „verfügbar“ gewechselt, oder das Profil wird
+//   wieder veröffentlicht, nachdem es mindestens 7 Tage offline war (unpublished_at)
+const PAUSE_MS = 7 * 24 * 3600 * 1000;
+
 function events(old, data, fields) {
   const sets = [];
-  const changed = (k) => fields.includes(k) && data[k] !== old[k];
-  if (changed('zip') || changed('city')) sets.push('moved_at = now()');
-  const back = (k) => fields.includes(k) && old[k] === false && data[k] === true;
-  const established = Date.now() - new Date(old.created_at) > 7 * 24 * 3600 * 1000;
-  if (back('available') || (back('published') && established)) sets.push('returned_at = now()');
+  const has = (k) => fields.includes(k);
+  if ((has('zip') && data.zip !== old.zip) || (has('city') && data.city !== old.city)) sets.push('moved_at = now()');
+  if (has('published') && old.published && !data.published) sets.push('unpublished_at = now()');
+  const available = has('available') && old.available === false && data.available === true;
+  const republished =
+    has('published') &&
+    !old.published &&
+    data.published &&
+    old.unpublished_at &&
+    Date.now() - new Date(old.unpublished_at) >= PAUSE_MS;
+  if (available || republished) sets.push('returned_at = now()');
   return sets;
 }
 
 export async function updateEscort(id, data, fields) {
-  const { rows } = await query('SELECT zip, city, available, published, created_at FROM escorts WHERE id = $1', [id]);
+  const { rows } = await query('SELECT zip, city, available, published, unpublished_at FROM escorts WHERE id = $1', [
+    id,
+  ]);
   if (!rows[0]) return false;
   const sets = [...fields.map((f, i) => `${f} = $${i + 2}`), ...events(rows[0], data, fields)].join(', ');
   const { rowCount } = await query(`UPDATE escorts SET ${sets}, updated_at = now() WHERE id = $1`, [

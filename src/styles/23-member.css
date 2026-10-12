@@ -1,99 +1,20 @@
-/* ---------- Mitgliederprofil (anders aufgebaut als Escort-Profile) ---------- */
+/* ---------- Mitgliederprofil (Aufbau wie das Escort-Profil) ---------- */
 
-.member-page {
-  max-width: 760px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.member-hero {
-  display: flex;
+.member-place {
+  display: inline-flex;
   align-items: center;
-  gap: 20px;
-  padding: 20px;
-  border-radius: var(--radius);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
-.member-avatar {
-  flex: none;
-  border-radius: 50%;
-}
-
-button.member-avatar {
-  padding: 0;
-  transition: transform 0.3s var(--ease);
-}
-
-button.member-avatar:hover {
-  transform: scale(1.03);
-}
-
-button.member-avatar:focus-visible {
-  outline: 2px solid var(--text);
-  outline-offset: 3px;
-}
-
-.member-hero-text {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.member-name {
-  margin: 0;
-  font-size: clamp(24px, 2.4vw, 30px);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  overflow-wrap: anywhere;
-}
-
-.member-name .age {
+  gap: 5px;
   color: var(--muted);
-  font-weight: 400;
 }
 
-.member-tagline {
-  margin: 4px 0 0;
-  font-size: 15px;
-  color: var(--text-2);
-}
-
-.member-meta {
-  margin: 8px 0 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 14px;
+.member-since {
+  margin: -6px 0 2px;
   font-size: 13px;
   color: var(--muted);
 }
 
-.member-meta span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.member-actions {
-  flex: none;
-  align-self: flex-start;
-}
-
-.member-actions:empty {
-  display: none;
-}
-
-.member-actions .small-btn {
-  gap: 6px;
-}
-
 .member-note {
   margin: 0;
-  padding: 0 6px;
   font-size: 13px;
   color: var(--muted);
 }
@@ -106,20 +27,6 @@ button.member-avatar:focus-visible {
 
 .member-empty {
   color: var(--muted);
-}
-
-@media (max-width: 640px) {
-  .member-hero {
-    flex-wrap: wrap;
-    gap: 14px 16px;
-    padding: 16px;
-  }
-  .member-hero-text {
-    flex-basis: calc(100% - 100px);
-  }
-  .member-actions {
-    flex-basis: 100%;
-  }
 }
 
 /* Editor: Profilbild */

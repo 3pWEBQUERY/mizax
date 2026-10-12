@@ -229,7 +229,8 @@ function PrefsForm({ form, setForm, busy, enabled, onSubmit, onCancel }) {
         <label>{t('sug.radius')}</label>
         <div className="range-switch sug-radius" role="radiogroup" aria-label={t('sug.radius')}>
           {RADII.map((r) => {
-            const on = (form.radius ?? null) === r;
+            // ohne Standort gibt es keinen Umkreis: dann gilt die ganze Schweiz
+            const on = (hasPlace ? (form.radius ?? null) : null) === r;
             const disabled = r !== null && !hasPlace;
             return (
               <button
@@ -308,9 +309,7 @@ function PrefsForm({ form, setForm, busy, enabled, onSubmit, onCancel }) {
 function PrefsSummary({ prefs }) {
   const { t } = useI18n();
   const parts = [
-    prefs.city
-      ? `${prefs.city}${prefs.radius ? ` · ${t('sug.km', { n: prefs.radius })}` : ''}`
-      : t('sug.allSwitzerland'),
+    prefs.city && prefs.radius ? `${prefs.city} · ${t('sug.km', { n: prefs.radius })}` : t('sug.allSwitzerland'),
     prefs.ageMin || prefs.ageMax
       ? t('sug.ageRange', { min: prefs.ageMin || 18, max: prefs.ageMax || 99 })
       : t('sug.anyAge'),
