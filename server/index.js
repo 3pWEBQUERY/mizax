@@ -7,9 +7,10 @@ import { migrate, hasDb } from './db.js';
 import { hasStorage } from './storage.js';
 import { seedIfEmpty, normalizeLegacy } from './seed.js';
 import { attachUser, ensureAdmin } from './auth.js';
-import { isUploadError } from './http.js';
+import { isUploadError, wrap } from './http.js';
 import { hasMail } from './mail/index.js';
 import { startNotifier } from './notify.js';
+import { renderIndex, robots, sitemap, seoEnabled } from './seo.js';
 import publicRoutes from './routes/public.js';
 import accountRoutes from './routes/account.js';
 import meRoutes from './routes/me.js';
@@ -57,6 +58,9 @@ app.use('/api', (req, res) => res.status(404).json({ error: 'Nicht gefunden', co
 
 // ---------- Frontend ----------
 
+app.get('/robots.txt', robots);
+app.get('/sitemap.xml', wrap(sitemap));
+
 if (fs.existsSync(dist)) {
   app.use(
     '/assets',
@@ -67,10 +71,13 @@ if (fs.existsSync(dist)) {
     }),
   );
   app.use(express.static(dist, { index: false, maxAge: '1h' }));
-  app.get('*', (req, res) => {
-    res.set('Cache-Control', 'no-cache');
-    res.sendFile(path.join(dist, 'index.html'));
-  });
+  app.get(
+    '*',
+    wrap(async (req, res) => {
+      res.set('Cache-Control', 'no-cache');
+      res.type('html').send(await renderIndex(req, dist));
+    }),
+  );
 }
 
 app.use((err, req, res, next) => {
@@ -114,6 +121,7 @@ async function start() {
       '[mail] RESEND_API_KEY bzw. SMTP_HOST fehlt – E-Mails (Passwort vergessen, Benachrichtigungen) deaktiviert',
     );
   if (hasDb()) startNotifier();
+  console.log(`[seo] Suchmaschinen ${seoEnabled() ? 'erlaubt (SEO_INDEX=true)' : 'gesperrt (noindex)'}`);
   app.listen(PORT, '0.0.0.0', () => console.log(`Mizax läuft auf Port ${PORT}`));
 }
 
