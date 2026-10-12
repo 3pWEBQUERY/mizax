@@ -123,7 +123,7 @@ export default function Profile() {
         .join('\n'),
     ],
   ].filter(([, v]) => v);
-  // Tabs für angemeldete Besucher: Profil | Neuigkeiten (Bewertungen und Beiträge)
+  // Tabs für angemeldete Besucher: Profil | Neuigkeiten | Bewertungen
   const showTabs = Boolean(!locked && user);
   const activeTab = showTabs ? tab : 'profile';
   const score = rating || escort.rating;
@@ -193,7 +193,7 @@ export default function Profile() {
                 <button
                   type="button"
                   className="profile-rating"
-                  onClick={() => showTabs && selectTab('posts')}
+                  onClick={() => showTabs && selectTab('reviews')}
                   disabled={!showTabs}
                 >
                   <Stars value={score.average} size={15} />
@@ -267,7 +267,16 @@ export default function Profile() {
             )}
 
             {showTabs && (
-              <ProfileTabs active={activeTab} onSelect={selectTab} postCount={postCountLabel(feed)} i={i++} />
+              <ProfileTabs
+                tabs={[
+                  { key: 'profile', label: t('profile.tabProfile') },
+                  { key: 'posts', label: t('feed.profileTitle'), count: postCountLabel(feed) },
+                  { key: 'reviews', label: t('reviews.title'), count: score?.count || null },
+                ]}
+                active={activeTab}
+                onSelect={selectTab}
+                i={i++}
+              />
             )}
 
             <div
@@ -277,9 +286,12 @@ export default function Profile() {
               role={showTabs ? 'tabpanel' : undefined}
               aria-labelledby={showTabs ? `tab-${activeTab}` : undefined}
             >
-              {activeTab === 'posts' ? (
+              {activeTab === 'reviews' ? (
                 <Rise i={switched ? 0 : i++} className="profile-posts">
                   <Reviews slug={escort.slug} onSummary={setRating} />
+                </Rise>
+              ) : activeTab === 'posts' ? (
+                <Rise i={switched ? 0 : i++} className="profile-posts">
                   {own && <Composer onPosted={feed.prepend} />}
                   <PostList feed={feed} empty={t('feed.emptyOwn', { name: escort.name })} />
                 </Rise>

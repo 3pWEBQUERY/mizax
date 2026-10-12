@@ -1,78 +1,68 @@
-/* ---------- Vorschläge für Mitglieder ---------- */
+/* ---------- Vorschläge für Mitglieder (aufgebaut wie die Startseite) ---------- */
 
-.sug-page {
-  max-width: var(--content);
-  margin: 0 auto;
-}
-
-.sug-prefs {
-  padding: 16px 18px;
+.sug-page .chips {
+  justify-content: flex-start;
   margin-bottom: 14px;
 }
 
-/* Formular: Standort | Umkreis, darunter Alter | Vorlieben */
-.sug-form {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+.sug-page .radius-chips {
+  margin-bottom: 22px;
 }
 
-.sug-form > * {
-  min-width: 0;
+.chip .chip-chev {
+  margin-left: 4px;
+  vertical-align: -2px;
+  opacity: 0.6;
 }
 
-.sug-place,
-.sug-radius-field,
-.sug-likes {
-  grid-column: span 2;
-}
-
-.sug-actions {
-  grid-column: 1 / -1;
-  margin-top: 0;
-}
-
-.sug-radius {
-  max-width: 100%;
-  width: max-content;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.sug-radius::-webkit-scrollbar {
-  display: none;
-}
-
-.sug-radius button {
-  flex: none;
-  height: 34px;
-  padding: 0 14px;
-  font-size: 13.5px;
-  white-space: nowrap;
-}
-
-.sug-radius button:disabled {
+.chip:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.sug-radius-field .field-hint {
-  margin-top: 8px;
+.sug-hint {
+  align-self: center;
+  font-size: 12.5px;
+  color: var(--muted);
 }
 
-.sug-summary {
+/* Aufklappfenster an den Chips (Standort, Alter) */
+.sug-pop {
+  overflow: visible;
+}
+
+.sug-pop-body {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 10px;
-  font-size: 14px;
-  color: var(--text-2);
+  flex-direction: column;
+  gap: 10px;
+  padding: 6px;
 }
 
-.sug-summary span + span::before {
-  content: '·';
-  margin-right: 10px;
-  color: var(--faint);
+.sug-pop-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.sug-pop-clear {
+  align-self: flex-start;
+}
+
+.sug-age {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.sug-age .field span {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.sug-pop-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 /* Erklärung, solange Vorschläge aus sind: Kacheln wie in der Statistik */
@@ -91,32 +81,21 @@
   margin-top: 22px;
 }
 
+.sug-section:first-of-type {
+  margin-top: 0;
+}
+
 .sug-section-head {
   margin: 0 4px 12px;
 }
 
-@media (max-width: 860px) {
-  .sug-form {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .sug-place,
-  .sug-radius-field,
-  .sug-likes {
-    grid-column: 1 / -1;
-  }
-}
-
 @media (max-width: 640px) {
-  .sug-prefs {
-    padding: 14px;
-  }
-  .sug-radius button {
-    padding: 0 7px;
-    font-size: 13px;
-  }
   .sug-section-head {
     flex-direction: column;
     align-items: flex-start;
     gap: 2px;
+  }
+  .sug-hint {
+    white-space: nowrap;
   }
 }

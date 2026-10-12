@@ -27,7 +27,8 @@ export default function Member() {
   const [member, setMember] = useState(null);
   const [error, setError] = useState(null);
   const [zoom, setZoom] = useState(false);
-  const { tab, switched, select } = useProfileTab(id);
+  const { tab: urlTab, switched, select } = useProfileTab(id);
+  const tab = urlTab === 'posts' ? 'posts' : 'profile';
   const feed = usePosts(user ? `/api/members/${encodeURIComponent(id)}/posts` : null);
 
   useEffect(() => {
@@ -155,7 +156,15 @@ export default function Member() {
               </Rise>
             )}
 
-            <ProfileTabs active={tab} onSelect={select} postCount={postCountLabel(feed)} i={i++} />
+            <ProfileTabs
+              tabs={[
+                { key: 'profile', label: t('profile.tabProfile') },
+                { key: 'posts', label: t('feed.profileTitle'), count: postCountLabel(feed) },
+              ]}
+              active={tab}
+              onSelect={select}
+              i={i++}
+            />
 
             <div key={tab} className="profile-panel" id="profile-panel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
               {tab === 'posts' ? (

@@ -5,6 +5,7 @@ import EscortCard, { GridSkeleton } from '../components/EscortCard.jsx';
 import Picker from '../components/fields/Picker.jsx';
 import { PinIcon, ChevronDown, SpinnerIcon, SearchIcon } from '../components/Icons.jsx';
 import PageHead from '../components/PageHead.jsx';
+import Chip from '../components/Chip.jsx';
 import { useToast } from '../components/Toast.jsx';
 import { useEscorts } from '../lib/store.js';
 import { useDock, useDockState } from '../lib/dock.jsx';
@@ -14,7 +15,6 @@ import { LegalLinks } from './Legal.jsx';
 
 let introPlayed = false;
 const RADII = [10, 25, 50, 100];
-const pillSpring = { type: 'spring', stiffness: 420, damping: 36 };
 
 const fold = (s) =>
   String(s || '')
@@ -43,15 +43,6 @@ export function filterEscorts(list, { query = '', canton = '', geo = null, radiu
       .sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
   }
   return out;
-}
-
-function Chip({ active, onClick, children, layoutId, className = '', ...rest }) {
-  return (
-    <button type="button" className={`chip ${active ? 'active' : ''} ${className}`} onClick={onClick} {...rest}>
-      {active && <motion.span layoutId={layoutId} className="chip-bg" transition={pillSpring} />}
-      <span>{children}</span>
-    </button>
-  );
 }
 
 export function CantonChips({ escorts }) {
