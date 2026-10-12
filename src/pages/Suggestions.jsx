@@ -9,7 +9,6 @@ import { useToast } from '../components/Toast.jsx';
 import { PinIcon, SpinnerIcon, ChevronR } from '../components/Icons.jsx';
 import PlaceField from '../components/fields/PlaceField.jsx';
 import ServicesPage, { ServicesField } from '../components/fields/ServicesPage.jsx';
-import { Switch } from './settings/ui.jsx';
 import { api } from '../lib/api.js';
 import { useAuth } from '../lib/auth.jsx';
 import { useDock } from '../lib/dock.jsx';
@@ -104,10 +103,25 @@ export default function Suggestions() {
   const head = (
     <PageHead wide title={t('sug.title')} text={t('sug.intro')}>
       {saved && (
-        <span className="status-pill sug-switch">
-          {enabled ? t('sug.active') : t('sug.inactive')}
-          <Switch on={enabled} onChange={toggle} label={t('sug.enable')} />
-        </span>
+        <div className="range-switch" role="radiogroup" aria-label={t('sug.enable')}>
+          {[
+            [false, t('sug.inactive')],
+            [true, t('sug.active')],
+          ].map(([on, label]) => (
+            <button
+              key={label}
+              type="button"
+              role="radio"
+              aria-checked={enabled === on}
+              className={enabled === on ? 'active' : ''}
+              disabled={busy}
+              onClick={() => enabled !== on && toggle(on)}
+            >
+              {enabled === on && <motion.span layoutId="sug-enabled" className="chip-bg" transition={spring} />}
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
       )}
     </PageHead>
   );
@@ -176,14 +190,14 @@ export default function Suggestions() {
         )}
 
         {saved && !enabled && (
-          <Rise i={4} className="panel sug-explain">
-            <ul>
-              <li>{t('sug.explainNew')}</li>
-              <li>{t('sug.explainReturning')}</li>
-              <li>{t('sug.explainMoved')}</li>
-              <li>{t('sug.explainMatch')}</li>
-            </ul>
-          </Rise>
+          <div className="stat-tiles sug-explain">
+            {['new', 'returning', 'moved', 'matches'].map((k, idx) => (
+              <Rise key={k} i={4 + idx} className="stat-tile">
+                <span className="stat-label">{t(`sug.section_${k}`)}</span>
+                <span className="sug-explain-text">{t(`sug.explain_${k}`)}</span>
+              </Rise>
+            ))}
+          </div>
         )}
 
         {enabled && <Results data={data} />}
@@ -199,8 +213,8 @@ function PrefsForm({ form, setForm, busy, enabled, onSubmit, onCancel }) {
   const hasPlace = Boolean(form.zip || form.city);
 
   return (
-    <form className="form sug-form" onSubmit={onSubmit}>
-      <div className="field full">
+    <form className="sug-form" onSubmit={onSubmit}>
+      <div className="field sug-place">
         <label>{t('sug.place')}</label>
         <PlaceField
           city={form.city}
@@ -211,7 +225,7 @@ function PrefsForm({ form, setForm, busy, enabled, onSubmit, onCancel }) {
         />
       </div>
 
-      <div className="field full">
+      <div className="field sug-radius-field">
         <label>{t('sug.radius')}</label>
         <div className="range-switch sug-radius" role="radiogroup" aria-label={t('sug.radius')}>
           {RADII.map((r) => {
@@ -259,13 +273,13 @@ function PrefsForm({ form, setForm, busy, enabled, onSubmit, onCancel }) {
         />
       </div>
 
-      <div className="field full">
+      <div className="field sug-likes">
         <label>{t('sug.likes')}</label>
         <ServicesField value={form.services} onOpen={() => setSvcOpen(true)} />
         <p className="field-hint">{t('sug.likesHint')}</p>
       </div>
 
-      <div className="form-actions full">
+      <div className="form-actions sug-actions">
         {onCancel && (
           <button type="button" className="ghost-btn" onClick={onCancel}>
             {t('feed.cancel')}
@@ -348,7 +362,7 @@ function Results({ data }) {
   let i = 0;
   return SECTIONS.filter((k) => data.sections[k].length).map((k) => (
     <section key={k} className="sug-section">
-      <Rise i={4} className="sug-section-head">
+      <Rise i={4} className="panel-title sug-section-head">
         <h2>{t(`sug.section_${k}`)}</h2>
         <span>{t(`sug.sectionText_${k}`)}</span>
       </Rise>
