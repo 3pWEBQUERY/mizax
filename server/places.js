@@ -62,7 +62,7 @@ export function findPlace(zip, name) {
   return null;
 }
 
-function distanceKm(aLat, aLng, bLat, bLng) {
+export function distanceKm(aLat, aLng, bLat, bLng) {
   const r = Math.PI / 180;
   const dLat = (bLat - aLat) * r;
   const dLng = (bLng - aLng) * r;

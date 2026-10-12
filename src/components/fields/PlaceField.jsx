@@ -9,7 +9,7 @@ import { cantonName, locate } from '../../lib/cantons.js';
 
 // Ort aus dem Schweizer Ortsverzeichnis wählen (PLZ oder Name) oder per Standort bestimmen.
 // Gespeichert wird nur der Ort (Ortszentrum), nie der genaue Standort.
-export default function PlaceField({ city, zip, canton, onChange }) {
+export default function PlaceField({ city, zip, canton, onChange, hint }) {
   const { t, locale } = useI18n();
   const toast = useToast();
   const [text, setText] = useState(() => [zip, city].filter(Boolean).join(' '));
@@ -142,7 +142,7 @@ export default function PlaceField({ city, zip, canton, onChange }) {
           </span>
         )}
       </div>
-      <div className="field-hint">{t('editor.placeHint')}</div>
+      <div className="field-hint">{hint ?? t('editor.placeHint')}</div>
     </div>
   );
 }

@@ -1,16 +1,20 @@
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Photo } from './Media.jsx';
-import { HeartIcon, CheckIcon, PinIcon } from './Icons.jsx';
+import { HeartIcon, CheckIcon, PinIcon, StarIcon } from './Icons.jsx';
 import { toggleFavorite, useFavorites, prefetchEscort, preloadImage } from '../lib/store.js';
 import { layoutTransition, ease } from '../lib/motion.js';
-import { useT } from '../lib/i18n.jsx';
+import { useI18n } from '../lib/i18n.jsx';
 import { useAuth } from '../lib/auth.jsx';
 import { useToast } from './Toast.jsx';
 
-export default function EscortCard({ escort, index = 0, instant = false }) {
+const ratingFormat = (n, locale) =>
+  new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(n);
+
+export default function EscortCard({ escort, index = 0, instant = false, note }) {
   const favs = useFavorites();
-  const t = useT();
+  const { t, locale } = useI18n();
+  const rating = escort.rating?.count > 0 ? escort.rating : null;
   const { user } = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
@@ -34,7 +38,13 @@ export default function EscortCard({ escort, index = 0, instant = false }) {
         onMouseEnter={warm}
         onTouchStart={warm}
         onFocus={warm}
-        aria-label={`${escort.name}, ${escort.age}, ${escort.city}`}
+        aria-label={[
+          `${escort.name}, ${escort.age}, ${escort.city}`,
+          rating && `${ratingFormat(rating.average, locale)} ★`,
+          note,
+        ]
+          .filter(Boolean)
+          .join(' · ')}
       >
         <motion.div
           layoutId={`media-${escort.slug}`}
@@ -86,6 +96,15 @@ export default function EscortCard({ escort, index = 0, instant = false }) {
           <div className="card-name">
             <span className="name">{escort.name}</span>
             <span className="age">{escort.age}</span>
+            {rating && (
+              <span
+                className="card-rating"
+                title={t(rating.count === 1 ? 'reviews.countOne' : 'reviews.count', { n: rating.count })}
+              >
+                <StarIcon filled width={12} height={12} />
+                {ratingFormat(rating.average, locale)}
+              </span>
+            )}
           </div>
           <div className="card-city">
             <span className={`dot ${escort.available ? '' : 'off'}`} />
@@ -97,6 +116,7 @@ export default function EscortCard({ escort, index = 0, instant = false }) {
               </span>
             )}
           </div>
+          {note && <div className="card-note">{note}</div>}
         </div>
       </Link>
     </motion.div>

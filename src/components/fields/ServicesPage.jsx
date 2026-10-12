@@ -36,8 +36,9 @@ export function ServicesField({ value, onOpen }) {
 }
 
 // Eigene, animierte Seite zur Auswahl der Leistungen
-export default function ServicesPage({ open, value, onSave, onBack }) {
+export default function ServicesPage({ open, value, onSave, onBack, title, text }) {
   const t = useT();
+  const heading = title || t('services.title').replace(/\.$/, '');
   const [draft, setDraft] = useState(() => new Set(value));
   const [busy, setBusy] = useState(false);
 
@@ -87,7 +88,7 @@ export default function ServicesPage({ open, value, onSave, onBack }) {
           exit={{ opacity: 0, transition: { duration: 0.3, ease } }}
           role="dialog"
           aria-modal="true"
-          aria-label={t('services.title')}
+          aria-label={heading}
         >
           <div className="svc-inner">
             <motion.div
@@ -98,9 +99,9 @@ export default function ServicesPage({ open, value, onSave, onBack }) {
               <button type="button" className="icon-btn" onClick={onBack} aria-label={t('services.back')}>
                 <BackIcon width={20} height={20} />
               </button>
-              <h1 className="me-title">{t('services.title').replace(/\.$/, '')}</h1>
+              <h1 className="me-title">{heading}</h1>
             </motion.div>
-            <p className="me-intro svc-intro">{t('services.text')}</p>
+            <p className="me-intro svc-intro">{text || t('services.text')}</p>
 
             {SERVICE_GROUPS.map((g, gi) => (
               <motion.section

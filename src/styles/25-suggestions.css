@@ -1,0 +1,120 @@
+/* ---------- Vorschläge für Mitglieder ---------- */
+
+.sug-page {
+  max-width: var(--content);
+  margin: 0 auto;
+}
+
+.sug-switch {
+  gap: 10px;
+  padding-right: 6px;
+}
+
+.sug-prefs,
+.sug-explain {
+  max-width: 760px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+
+.sug-prefs .panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sug-form {
+  padding-top: 4px;
+}
+
+.sug-form .full {
+  grid-column: 1 / -1;
+}
+
+.sug-form .form-actions {
+  margin-top: 4px;
+}
+
+.sug-radius {
+  align-self: flex-start;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sug-radius button {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 13.5px;
+  white-space: nowrap;
+}
+
+.sug-radius button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sug-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.sug-summary span + span::before {
+  content: '·';
+  margin-right: 10px;
+  color: var(--faint);
+}
+
+.sug-explain ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.sug-explain li {
+  padding: 10px 0;
+  border-top: 1px solid var(--row-sep);
+}
+
+.sug-explain li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.sug-explain li:last-child {
+  padding-bottom: 0;
+}
+
+.sug-section {
+  margin-top: 26px;
+}
+
+.sug-section-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0 4px 12px;
+}
+
+.sug-section-head h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.sug-section-head span {
+  font-size: 13px;
+  color: var(--muted);
+}

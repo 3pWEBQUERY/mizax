@@ -3,6 +3,7 @@ import { query } from '../db.js';
 import { httpError, requireUser, rateLimit } from '../auth.js';
 import { wrap, requireDb, noStore, text, toId } from '../http.js';
 import { THUMB, thumbUrl } from '../escorts.js';
+import { unseenCount } from '../suggestions.js';
 
 // Nachrichten zwischen Mitgliedern und Escort-Profilen
 
@@ -119,7 +120,12 @@ router.get(
   requireUser,
   wrap(async (req, res) => {
     noStore(res);
-    res.json({ count: await unreadCount(req.user.id) });
+    // neue Vorschläge für Mitglieder laufen über dieselbe regelmäßige Abfrage (Abzeichen im Menü)
+    const [count, suggestions] = await Promise.all([
+      unreadCount(req.user.id),
+      req.user.role === 'escort' ? 0 : unseenCount(req.user.id),
+    ]);
+    res.json({ count, suggestions });
   }),
 );
 

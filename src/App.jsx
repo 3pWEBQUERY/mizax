@@ -26,6 +26,7 @@ import { Messages, Chat } from './pages/Messages.jsx';
 import Stats from './pages/Stats.jsx';
 import Settings from './pages/settings/Settings.jsx';
 import Member from './pages/Member.jsx';
+import Suggestions from './pages/Suggestions.jsx';
 
 // Unterseiten, die beim Wechsel innerhalb desselben Bereichs nicht neu eingeblendet werden
 function routeKey(pathname) {
@@ -82,6 +83,7 @@ function Shell() {
               <Route path="/messages" element={<Messages />} />
               <Route path="/messages/:id" element={<Chat />} />
               <Route path="/stats" element={<Stats />} />
+              <Route path="/suggestions" element={<Suggestions />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/settings/:section" element={<Settings />} />
               <Route path="/member/:id" element={<Member />} />

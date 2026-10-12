@@ -208,5 +208,26 @@ export async function migrate() {
       UNIQUE (escort_id, user_id)
     );
     CREATE INDEX IF NOT EXISTS escort_reviews_escort_idx ON escort_reviews (escort_id, updated_at DESC);
+
+    -- Vorschläge: Ereignisse auf Escort-Profilen (wieder aktiv, Standort geändert)
+    ALTER TABLE escorts ADD COLUMN IF NOT EXISTS returned_at TIMESTAMPTZ;
+    ALTER TABLE escorts ADD COLUMN IF NOT EXISTS moved_at TIMESTAMPTZ;
+
+    -- Präferenzen der Mitglieder für Vorschläge (nur aktiv, wenn enabled)
+    CREATE TABLE IF NOT EXISTS member_prefs (
+      user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+      enabled    BOOLEAN NOT NULL DEFAULT false,
+      city       TEXT NOT NULL DEFAULT '',
+      zip        TEXT NOT NULL DEFAULT '',
+      canton     TEXT NOT NULL DEFAULT '',
+      lat        DOUBLE PRECISION,
+      lng        DOUBLE PRECISION,
+      radius     INTEGER,
+      services   TEXT[] NOT NULL DEFAULT '{}',
+      age_min    INTEGER,
+      age_max    INTEGER,
+      seen_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
   `);
 }

@@ -17,8 +17,9 @@ import {
   InboxIcon,
   ChartIcon,
   FeedIcon,
+  SparkIcon,
 } from './Icons.jsx';
-import { useUnread } from '../lib/inbox.js';
+import { useUnread, useSuggestionCount } from '../lib/inbox.js';
 import { useDockState } from '../lib/dock.jsx';
 import { LegalLinks } from '../pages/Legal.jsx';
 import { useI18n, LOCALES, dictionaries } from '../lib/i18n.jsx';
@@ -98,6 +99,8 @@ export default function TopBar({ onSearch, searchOpen }) {
   const toast = useToast();
   const { query, canton, geo, sidebarOpen, setSidebarOpen } = useDockState();
   const unread = useUnread();
+  const fresh = useSuggestionCount();
+  const badge = unread + fresh;
   const filtered = Boolean(query.trim() || canton || geo);
   const [menu, setMenu] = useState(false);
   const accRef = useRef(null);
@@ -138,7 +141,7 @@ export default function TopBar({ onSearch, searchOpen }) {
             else navigate(fallback);
           }}
         >
-          {!isSub && !sidebarOpen && unread > 0 && <span className="search-dot" />}
+          {!isSub && !sidebarOpen && badge > 0 && <span className="search-dot" />}
           <AnimatePresence mode="wait" initial={false}>
             <motion.span
               key={isSub ? 'back' : 'home'}
@@ -195,7 +198,7 @@ export default function TopBar({ onSearch, searchOpen }) {
             ) : (
               initial || <UserIcon width={22} height={22} />
             )}
-            {unread > 0 && <span className="avatar-badge">{unread > 9 ? '9+' : unread}</span>}
+            {badge > 0 && <span className="avatar-badge">{badge > 9 ? '9+' : badge}</span>}
           </button>
           <AnimatePresence>
             {menu && (
@@ -230,6 +233,12 @@ export default function TopBar({ onSearch, searchOpen }) {
                       <InboxIcon /> {t('msg.title')}
                       {unread > 0 && <span className="count-badge">{unread}</span>}
                     </button>
+                    {user.role !== 'escort' && (
+                      <button type="button" className="menu-item" onClick={() => navigate('/suggestions')}>
+                        <SparkIcon /> {t('sug.title')}
+                        {fresh > 0 && <span className="count-badge">{fresh}</span>}
+                      </button>
+                    )}
                     <button type="button" className="menu-item" onClick={() => navigate('/feed')}>
                       <FeedIcon /> {t('feed.title')}
                     </button>

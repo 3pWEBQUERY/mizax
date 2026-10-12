@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { GearIcon, HeartIcon, EditIcon, ChevronR, CloseIcon } from './Icons.jsx';
+import { GearIcon, HeartIcon, EditIcon, ChevronR, CloseIcon, SparkIcon } from './Icons.jsx';
 import { ConversationRow } from './ConversationRow.jsx';
 import { Card, StatsCard, QuickPost, MiniPost, cardVariants } from './sidebar/cards.jsx';
 import { useMedia } from '../lib/useMedia.js';
@@ -9,7 +9,7 @@ import { api } from '../lib/api.js';
 import { useAuth } from '../lib/auth.jsx';
 import { useDockState } from '../lib/dock.jsx';
 import { useI18n } from '../lib/i18n.jsx';
-import { useUnread } from '../lib/inbox.js';
+import { useUnread, useSuggestionCount } from '../lib/inbox.js';
 import { useFavorites } from '../lib/store.js';
 
 const KEY = 'mizax.sidebar';
@@ -22,6 +22,7 @@ export default function Sidebar() {
   const { pathname } = useLocation();
   const mobile = useMedia(MOBILE);
   const unread = useUnread();
+  const fresh = useSuggestionCount();
   const favs = useFavorites();
   const [data, setData] = useState(null);
   const userId = user?.id;
@@ -170,6 +171,16 @@ export default function Sidebar() {
                       <span className="settings-label">{t('menu.myProfile')}</span>
                       <ChevronR width={16} height={16} className="settings-chev" />
                     </Link>
+                    {!escort && (
+                      <Link to="/suggestions" className="settings-row">
+                        <span className="settings-icon">
+                          <SparkIcon width={18} height={18} />
+                        </span>
+                        <span className="settings-label">{t('sug.title')}</span>
+                        {fresh > 0 && <span className="count-badge">{fresh}</span>}
+                        <ChevronR width={16} height={16} className="settings-chev" />
+                      </Link>
+                    )}
                     <Link to="/favorites" className="settings-row">
                       <span className="settings-icon">
                         <HeartIcon width={18} height={18} />

@@ -216,8 +216,21 @@ export async function insertEscort(data, extra = {}) {
   return rows[0].id;
 }
 
+// Für Vorschläge merken: Standort geändert (moved_at) bzw. wieder aktiv nach einer Pause (returned_at)
+function events(old, data, fields) {
+  const sets = [];
+  const changed = (k) => fields.includes(k) && data[k] !== old[k];
+  if (changed('zip') || changed('city')) sets.push('moved_at = now()');
+  const back = (k) => fields.includes(k) && old[k] === false && data[k] === true;
+  const established = Date.now() - new Date(old.created_at) > 7 * 24 * 3600 * 1000;
+  if (back('available') || (back('published') && established)) sets.push('returned_at = now()');
+  return sets;
+}
+
 export async function updateEscort(id, data, fields) {
-  const sets = fields.map((f, i) => `${f} = $${i + 2}`).join(', ');
+  const { rows } = await query('SELECT zip, city, available, published, created_at FROM escorts WHERE id = $1', [id]);
+  if (!rows[0]) return false;
+  const sets = [...fields.map((f, i) => `${f} = $${i + 2}`), ...events(rows[0], data, fields)].join(', ');
   const { rowCount } = await query(`UPDATE escorts SET ${sets}, updated_at = now() WHERE id = $1`, [
     id,
     ...fields.map((f) => data[f]),
