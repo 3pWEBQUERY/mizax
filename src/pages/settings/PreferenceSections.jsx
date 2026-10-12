@@ -6,8 +6,12 @@ import { api } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth.jsx';
 import { useI18n, LOCALES, dictionaries, errorText } from '../../lib/i18n.jsx';
 import { useTheme } from '../../lib/theme.jsx';
+import { Link } from 'react-router-dom';
+import Avatar from '../../components/Avatar.jsx';
+import { useBlocks, unblock } from '../../lib/blocks.js';
+import { profilePath } from '../../lib/links.js';
 
-// Unterseiten: Sprache, Design, Privatsphäre, Benachrichtigungen
+// Unterseiten: Sprache, Design, Privatsphäre, Benachrichtigungen, blockierte Personen
 
 export function LanguageSection() {
   const { locale, setLocale } = useI18n();
@@ -124,6 +128,48 @@ export function NotificationsSection() {
       </Group>
       <div className="settings-info">
         <p>{t('settings.notifyInfo')}</p>
+      </div>
+    </>
+  );
+}
+
+// Blockierte Personen: Liste mit „Aufheben“
+export function BlockedSection() {
+  const { t } = useI18n();
+  const toast = useToast();
+  const { user } = useAuth();
+  const { list, loaded } = useBlocks();
+
+  async function remove(b) {
+    try {
+      await unblock(b.id, user.id);
+      toast(t('block.removed', { name: b.name }));
+    } catch (err) {
+      toast(errorText(t, err));
+    }
+  }
+
+  return (
+    <>
+      {loaded && list.length > 0 ? (
+        <Group>
+          {list.map((b) => (
+            <div key={b.id} className="settings-row static blocked-row">
+              <Link to={profilePath(b)} className="blocked-who">
+                <Avatar name={b.name} thumb={b.thumb} size={36} />
+                <span className="settings-label">{b.name}</span>
+              </Link>
+              <button type="button" className="status-pill" onClick={() => remove(b)}>
+                {t('block.unblock')}
+              </button>
+            </div>
+          ))}
+        </Group>
+      ) : (
+        loaded && <div className="settings-info">{t('block.empty')}</div>
+      )}
+      <div className="settings-info">
+        <p>{t('block.info')}</p>
       </div>
     </>
   );

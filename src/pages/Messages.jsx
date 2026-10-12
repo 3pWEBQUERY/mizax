@@ -7,7 +7,17 @@ import Avatar from '../components/Avatar.jsx';
 import { ConversationRow, otherLink } from '../components/ConversationRow.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
 import { useToast } from '../components/Toast.jsx';
-import { SendIcon, InboxIcon, ChevronR, DoubleCheckIcon, CheckIcon, StarIcon } from '../components/Icons.jsx';
+import {
+  SendIcon,
+  InboxIcon,
+  ChevronR,
+  DoubleCheckIcon,
+  CheckIcon,
+  StarIcon,
+  BlockIcon,
+} from '../components/Icons.jsx';
+import ProfileMenu from '../components/ProfileMenu.jsx';
+import { unblock } from '../lib/blocks.js';
 import { api } from '../lib/api.js';
 import { useAuth } from '../lib/auth.jsx';
 import { useDock } from '../lib/dock.jsx';
@@ -228,6 +238,16 @@ export function Chat() {
               </Rise>
             )}
           </div>
+          <Rise i={1} className="chat-head-menu">
+            <ProfileMenu
+              kind={conv.other.kind}
+              targetId={conv.other.kind === 'escort' ? conv.other.escortId : conv.other.memberId}
+              userId={conv.other.userId}
+              name={conv.other.name}
+              className="icon-btn"
+              onBlockChange={(on) => setConv((c) => ({ ...c, blocked: on ? 'me' : null }))}
+            />
+          </Rise>
         </div>
       )}
 
@@ -267,35 +287,64 @@ export function Chat() {
         })}
       </div>
 
-      <div className="dock-wrap chat-dock">
-        <form className="dock" onSubmit={send}>
-          <div className="dock-bar">
-            <div className="dock-input-wrap">
-              <textarea
-                ref={inputRef}
-                className="dock-input chat-input"
-                rows={1}
-                value={body}
-                maxLength={2000}
-                placeholder={conv ? t('dock.messageTo', { name: conv.other.name }) : ''}
-                onChange={(e) => setBody(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey && !window.matchMedia('(hover: none)').matches) send(e);
+      {conv?.blocked ? (
+        <div className="dock-wrap chat-dock">
+          <div className="chat-blocked">
+            <BlockIcon width={16} height={16} />
+            <span>
+              {conv.blocked === 'me'
+                ? t('block.chatMine', { name: conv.other.name })
+                : t('block.chatTheirs', { name: conv.other.name })}
+            </span>
+            {conv.blocked === 'me' && (
+              <button
+                type="button"
+                className="status-pill"
+                onClick={async () => {
+                  try {
+                    await unblock(conv.other.userId, user.id);
+                    setConv((c) => ({ ...c, blocked: null }));
+                  } catch (err) {
+                    toast(errorText(t, err));
+                  }
                 }}
-                aria-label={t('msg.write')}
-              />
-            </div>
-            <button
-              type="submit"
-              className="dock-btn send"
-              disabled={!body.trim() || sending}
-              aria-label={t('dock.send')}
-            >
-              <SendIcon width={20} height={20} />
-            </button>
+              >
+                {t('block.unblock')}
+              </button>
+            )}
           </div>
-        </form>
-      </div>
+        </div>
+      ) : (
+        <div className="dock-wrap chat-dock">
+          <form className="dock" onSubmit={send}>
+            <div className="dock-bar">
+              <div className="dock-input-wrap">
+                <textarea
+                  ref={inputRef}
+                  className="dock-input chat-input"
+                  rows={1}
+                  value={body}
+                  maxLength={2000}
+                  placeholder={conv ? t('dock.messageTo', { name: conv.other.name }) : ''}
+                  onChange={(e) => setBody(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey && !window.matchMedia('(hover: none)').matches) send(e);
+                  }}
+                  aria-label={t('msg.write')}
+                />
+              </div>
+              <button
+                type="submit"
+                className="dock-btn send"
+                disabled={!body.trim() || sending}
+                aria-label={t('dock.send')}
+              >
+                <SendIcon width={20} height={20} />
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </Page>
   );
 }

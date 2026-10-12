@@ -8,6 +8,7 @@ import { api } from '../../lib/api.js';
 import { useI18n, errorText } from '../../lib/i18n.jsx';
 import { profilePath } from '../../lib/links.js';
 import { timeAgo } from '../../lib/time.js';
+import { useReport } from '../Report.jsx';
 
 export const formatRating = (n, locale) =>
   new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(n);
@@ -146,8 +147,9 @@ function ReviewForm({ base, delBase, texts, mine, onSaved }) {
   );
 }
 
-function ReviewItem({ r, onDelete }) {
+function ReviewItem({ r, onDelete, reportKind }) {
   const { t, locale } = useI18n();
+  const report = useReport();
   const to = profilePath(r.author);
   return (
     <motion.div
@@ -168,6 +170,15 @@ function ReviewItem({ r, onDelete }) {
           {r.canDelete && !r.mine && (
             <button type="button" className="review-delete" onClick={() => onDelete(r)}>
               {t('feed.delete')}
+            </button>
+          )}
+          {!r.mine && (
+            <button
+              type="button"
+              className="review-delete"
+              onClick={() => report({ kind: reportKind, targetId: r.id, name: r.author.name })}
+            >
+              {t('report.action')}
             </button>
           )}
         </div>
@@ -279,7 +290,7 @@ export default function Reviews({ target = 'escort', refId, name, onSummary }) {
         <div className="review-list">
           <AnimatePresence initial={false}>
             {data.items.map((r) => (
-              <ReviewItem key={r.id} r={r} onDelete={removeOther} />
+              <ReviewItem key={r.id} r={r} onDelete={removeOther} reportKind={member ? 'member_review' : 'review'} />
             ))}
           </AnimatePresence>
           {!data.done && (

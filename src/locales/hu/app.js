@@ -282,5 +282,10 @@ export default {
     members_only: 'Csak tagoknak.',
     review_escorts_only: 'Csak escortok értékelhetnek tagokat.',
     reset_invalid: 'A link érvénytelen vagy lejárt. Kérj újat.',
+    report_invalid: 'A jelentés érvénytelen.',
+    report_own: 'A saját tartalmadat nem jelentheted.',
+    block_self: 'Saját magadat nem tilthatod le.',
+    block_admin: 'A csapatot nem lehet letiltani.',
+    blocked: 'Nem írhattok egymásnak.',
   },
 };

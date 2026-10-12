@@ -1,0 +1,431 @@
+/* ---------- Melden & Blockieren ---------- */
+
+/* Dialog: gleiche Abdunkelung wie die Bildansicht, Karte wie die Menüs */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: grid;
+  place-items: center;
+  padding: 20px 16px;
+}
+
+.modal-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--overlay);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.modal-card {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  padding: 20px;
+  border-radius: 26px;
+  background: var(--menu-bg);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 30px 70px -20px var(--shadow);
+  scrollbar-width: none;
+}
+
+.modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modal-head h2 {
+  margin: 4px 0 0;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.modal-text {
+  margin: 6px 0 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.modal-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.modal-bar .white-btn,
+.modal-bar .ghost-btn {
+  height: 42px;
+  padding: 0 18px;
+}
+
+.modal-bar .white-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Gründe als Liste wie die Einstellungszeilen */
+.report-reasons {
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  background: var(--tint);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.report-reason {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 46px;
+  padding: 10px 14px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s var(--ease);
+}
+
+.report-reason:hover {
+  background: var(--tint);
+}
+
+.report-reason + .report-reason::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 44px;
+  right: 14px;
+  height: 1px;
+  background: var(--row-sep);
+}
+
+.report-reason input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.report-dot {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--tint-3);
+  display: grid;
+  place-items: center;
+  transition: border-color 0.2s var(--ease);
+}
+
+.report-dot::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text);
+  scale: 0;
+  transition: scale 0.2s var(--ease);
+}
+
+.report-reason.on .report-dot {
+  border-color: var(--text);
+}
+
+.report-reason.on .report-dot::after {
+  scale: 1;
+}
+
+.report-reason input:focus-visible + .report-dot {
+  outline: 2px solid var(--tint-3);
+  outline-offset: 2px;
+}
+
+textarea.input.report-details {
+  margin-top: 12px;
+  min-height: 84px;
+  resize: vertical;
+}
+
+/* Aktionsmenü am „⋯“ (schwebend, siehe PopMenu) */
+.picker.pop-menu {
+  padding: 6px;
+  border-radius: 18px;
+}
+
+.pop-menu .menu-item svg {
+  flex: none;
+}
+
+/* Chat: Menü rechts im Kopfbereich */
+.chat-page .chat-head {
+  align-items: center;
+}
+
+.chat-head-menu {
+  margin-left: auto;
+  align-self: flex-start;
+}
+
+/* Chat: Hinweis statt Eingabefeld, wenn blockiert */
+.chat-blocked {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 600px;
+  min-height: 56px;
+  margin: 0 auto;
+  padding: 8px 8px 8px 18px;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.chat-blocked > svg {
+  flex: none;
+  color: var(--muted);
+}
+
+.chat-blocked > span {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.chat-blocked .status-pill {
+  flex: none;
+  cursor: pointer;
+}
+
+/* Einstellungen: blockierte Personen */
+.blocked-row {
+  gap: 12px;
+}
+
+.blocked-who {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.blocked-who .settings-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.blocked-row + .blocked-row::before {
+  left: 64px;
+}
+
+.blocked-row .status-pill {
+  cursor: pointer;
+  flex: none;
+}
+
+/* ---------- Verwaltung: Meldungen ---------- */
+
+.admin-tabs .tab-count {
+  position: relative;
+  min-width: 20px;
+  height: 20px;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  font-size: 11.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  background: var(--danger);
+  color: #fff;
+}
+
+.report-filter {
+  display: inline-flex;
+  margin-bottom: 14px;
+}
+
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.report-card {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.report-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  min-width: 0;
+}
+
+.report-top b {
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.report-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.report-top small {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.report-excerpt {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--tint);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.report-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.report-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  padding: 8px 0;
+}
+
+.report-item + .report-item {
+  border-top: 1px solid var(--row-sep);
+}
+
+.report-item .tag {
+  margin: 0;
+}
+
+.report-by {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.report-item p {
+  flex-basis: 100%;
+  margin: 2px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+.report-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.report-actions .status-pill {
+  cursor: pointer;
+  transition:
+    color 0.2s var(--ease),
+    border-color 0.2s var(--ease);
+}
+
+.report-actions .status-pill:hover {
+  color: var(--text);
+}
+
+.report-spacer {
+  flex: 1;
+}
+
+.status-pill.danger {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+}
+
+.report-actions .status-pill.danger:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.report-actions .small-btn {
+  height: 34px;
+}
+
+@media (max-width: 720px) {
+  .modal {
+    align-items: end;
+    padding: 12px 10px calc(10px + env(safe-area-inset-bottom));
+  }
+  .modal-card {
+    width: 100%;
+    padding: 18px 16px;
+  }
+  .report-spacer {
+    display: none;
+  }
+  .report-card {
+    padding: 14px;
+  }
+  .chat-blocked {
+    border-radius: 22px;
+    padding: 8px 8px 8px 14px;
+  }
+}
+
+.pop-menu .menu-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+:root[data-theme='light'] .pop-menu .menu-item:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+@media (max-width: 720px) {
+  .chat-blocked {
+    flex-wrap: wrap;
+    padding: 12px 12px 12px 16px;
+    row-gap: 8px;
+  }
+  .chat-blocked > span {
+    flex-basis: calc(100% - 26px);
+  }
+  .chat-blocked .status-pill {
+    margin-left: 26px;
+  }
+}

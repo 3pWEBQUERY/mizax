@@ -19,6 +19,7 @@ import {
   DocIcon,
   LogoutIcon,
   BellIcon,
+  BlockIcon,
   TrashIcon,
   HeartIcon,
 } from '../../components/Icons.jsx';
@@ -29,7 +30,7 @@ import { api } from '../../lib/api.js';
 import { useTheme } from '../../lib/theme.jsx';
 import { useUnread } from '../../lib/inbox.js';
 
-const SECTIONS = ['account', 'password', 'language', 'theme', 'privacy', 'notifications', 'delete'];
+const SECTIONS = ['account', 'password', 'language', 'theme', 'privacy', 'notifications', 'blocked', 'delete'];
 
 const slide = {
   enter: (dir) => ({ opacity: 0, x: dir * 40, filter: 'blur(4px)' }),
@@ -38,7 +39,14 @@ const slide = {
 };
 import { Group, Row } from './ui.jsx';
 import { AccountSection, PasswordSection, DeleteSection } from './AccountSections.jsx';
-import { LanguageSection, ThemeSection, PrivacySection, NotificationsSection } from './PreferenceSections.jsx';
+import {
+  LanguageSection,
+  ThemeSection,
+  PrivacySection,
+  NotificationsSection,
+  BlockedSection,
+} from './PreferenceSections.jsx';
+import { useBlocks } from '../../lib/blocks.js';
 
 // ---------- Seite ----------
 
@@ -53,6 +61,7 @@ export default function Settings() {
   const { user, ready, logout } = useAuth();
   const own = useOwnEscort();
   const unread = useUnread();
+  const blocks = useBlocks();
 
   if (ready && !user) return <Navigate to="/login" replace state={{ from: '/settings' }} />;
   if (!user) return <Page />;
@@ -66,6 +75,7 @@ export default function Settings() {
     theme: t('menu.theme'),
     privacy: t('settings.privacy'),
     notifications: t('settings.notifications'),
+    blocked: t('block.title'),
     delete: t('settings.deleteAccount'),
   };
 
@@ -76,6 +86,7 @@ export default function Settings() {
     theme: <ThemeSection />,
     privacy: <PrivacySection />,
     notifications: <NotificationsSection />,
+    blocked: <BlockedSection />,
     delete: <DeleteSection />,
   };
 
@@ -181,6 +192,12 @@ export default function Settings() {
                     Object.values(user.notify || {}).some(Boolean) ? t('settings.notifyOn') : t('settings.notifyOff')
                   }
                   onClick={() => go('notifications')}
+                />
+                <Row
+                  icon={BlockIcon}
+                  label={t('block.title')}
+                  value={blocks.list.length ? String(blocks.list.length) : null}
+                  onClick={() => go('blocked')}
                 />
               </Group>
 

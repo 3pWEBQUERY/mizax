@@ -8,6 +8,7 @@ import AgeGate from './components/AgeGate.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import { useMedia } from './lib/useMedia.js';
 import { ToastProvider } from './components/Toast.jsx';
+import { ReportProvider } from './components/Report.jsx';
 import { DockProvider, useDockState } from './lib/dock.jsx';
 import { I18nProvider } from './lib/i18n.jsx';
 import { ThemeProvider } from './lib/theme.jsx';
@@ -110,7 +111,9 @@ export default function App() {
           <ToastProvider>
             <AuthProvider>
               <DockProvider>
-                <Shell />
+                <ReportProvider>
+                  <Shell />
+                </ReportProvider>
               </DockProvider>
             </AuthProvider>
           </ToastProvider>

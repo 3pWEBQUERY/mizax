@@ -237,6 +237,31 @@ export async function migrate() {
     );
     CREATE INDEX IF NOT EXISTS notify_log_lookup_idx ON notify_log (user_id, kind, ref, sent_at DESC);
 
+    -- Meldungen an die Verwaltung (Profile, Beiträge, Kommentare, Bewertungen)
+    CREATE TABLE IF NOT EXISTS reports (
+      id          SERIAL PRIMARY KEY,
+      reporter_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+      kind        TEXT NOT NULL,
+      target_id   INTEGER NOT NULL,
+      reason      TEXT NOT NULL,
+      details     TEXT NOT NULL DEFAULT '',
+      status      TEXT NOT NULL DEFAULT 'open',
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+      resolved_at TIMESTAMPTZ,
+      resolved_by INTEGER REFERENCES users(id) ON DELETE SET NULL
+    );
+    CREATE INDEX IF NOT EXISTS reports_status_idx ON reports (status, created_at DESC);
+    CREATE UNIQUE INDEX IF NOT EXISTS reports_once_idx ON reports (reporter_id, kind, target_id) WHERE status = 'open';
+
+    -- Blockieren: keine Nachrichten, Beiträge, Kommentare oder Bewertungen mehr zwischen beiden
+    CREATE TABLE IF NOT EXISTS blocks (
+      user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      blocked_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (user_id, blocked_id)
+    );
+    CREATE INDEX IF NOT EXISTS blocks_blocked_idx ON blocks (blocked_id);
+
     -- Bewertungen von Mitgliedern durch Escorts (eine pro Escort-Konto und Mitglied)
     CREATE TABLE IF NOT EXISTS member_reviews (
       id         SERIAL PRIMARY KEY,

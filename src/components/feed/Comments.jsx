@@ -8,12 +8,14 @@ import { api } from '../../lib/api.js';
 import { useI18n, errorText } from '../../lib/i18n.jsx';
 import { timeAgo } from '../../lib/time.js';
 import { profilePath } from '../../lib/links.js';
+import { useReport } from '../Report.jsx';
 
 // ---------- Kommentare ----------
 
 function Comment({ c, onDelete }) {
   const { t, locale } = useI18n();
   const to = profilePath(c.author);
+  const report = useReport();
   return (
     <motion.div
       className="comment"
@@ -39,6 +41,11 @@ function Comment({ c, onDelete }) {
           {c.canDelete && (
             <button type="button" onClick={() => onDelete(c)}>
               {t('feed.delete')}
+            </button>
+          )}
+          {!c.mine && (
+            <button type="button" onClick={() => report({ kind: 'comment', targetId: c.id, name: c.author.name })}>
+              {t('report.action')}
             </button>
           )}
         </div>

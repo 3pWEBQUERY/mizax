@@ -281,5 +281,10 @@ export default {
     members_only: 'Doar pentru membri.',
     review_escorts_only: 'Doar escortele pot evalua membrii.',
     reset_invalid: 'Linkul este invalid sau a expirat. Cere unul nou.',
+    report_invalid: 'Raportul nu este valid.',
+    report_own: 'Nu îți poți raporta propriul conținut.',
+    block_self: 'Nu te poți bloca pe tine.',
+    block_admin: 'Echipa nu poate fi blocată.',
+    blocked: 'Nu vă puteți scrie.',
   },
 };

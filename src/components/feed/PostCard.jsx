@@ -1,18 +1,18 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Avatar from '../Avatar.jsx';
 import Lightbox from '../Lightbox.jsx';
 import { useToast } from '../Toast.jsx';
-import { HeartIcon, CommentIcon, MoreIcon, CheckIcon, TrashIcon, EditIcon } from '../Icons.jsx';
+import { HeartIcon, CommentIcon, MoreIcon, CheckIcon, TrashIcon, EditIcon, FlagIcon } from '../Icons.jsx';
+import { useReport } from '../Report.jsx';
+import PopMenu from '../PopMenu.jsx';
 import Comments from './Comments.jsx';
 import useAutosize from './useAutosize.js';
 import { api } from '../../lib/api.js';
 import { useI18n, errorText } from '../../lib/i18n.jsx';
 import { timeAgo } from '../../lib/time.js';
 import { profilePath } from '../../lib/links.js';
-
-const spring = { type: 'spring', stiffness: 380, damping: 30 };
 
 // ---------- Fotos im Beitrag ----------
 
@@ -36,6 +36,7 @@ function PhotoGrid({ photos, onOpen }) {
 export default function PostCard({ post: initial, onDeleted, i = 0 }) {
   const { t, locale } = useI18n();
   const toast = useToast();
+  const report = useReport();
   const [post, setPost] = useState(initial);
   const [showComments, setShowComments] = useState(initial.comments.length > 0);
   const [focusComment, setFocusComment] = useState(0);
@@ -46,15 +47,9 @@ export default function PostCard({ post: initial, onDeleted, i = 0 }) {
   const [lightbox, setLightbox] = useState(null);
   const [pop, setPop] = useState(0);
   const menuRef = useRef(null);
+  const closeMenu = useCallback(() => setMenu(false), []);
   const editRef = useRef(null);
   useAutosize(editRef, editing ? draft : '');
-
-  useEffect(() => {
-    if (!menu) return;
-    const close = (e) => !menuRef.current?.contains(e.target) && setMenu(false);
-    document.addEventListener('pointerdown', close);
-    return () => document.removeEventListener('pointerdown', close);
-  }, [menu]);
 
   async function like() {
     const liked = !post.liked;
@@ -121,7 +116,7 @@ export default function PostCard({ post: initial, onDeleted, i = 0 }) {
             </small>
           </span>
         </Link>
-        {post.canDelete && (
+        {(post.canDelete || !post.mine) && (
           <div className="post-menu-anchor" ref={menuRef}>
             <button
               type="button"
@@ -131,34 +126,38 @@ export default function PostCard({ post: initial, onDeleted, i = 0 }) {
             >
               <MoreIcon />
             </button>
-            <AnimatePresence>
-              {menu && (
-                <motion.div
-                  className="menu post-menu"
-                  initial={{ opacity: 0, scale: 0.94, y: -4 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.96 }}
-                  transition={spring}
+            <PopMenu open={menu} onClose={closeMenu} anchorRef={menuRef}>
+              {post.mine && (
+                <button
+                  type="button"
+                  className="menu-item"
+                  onClick={() => {
+                    setMenu(false);
+                    setDraft(post.body);
+                    setEditing(true);
+                  }}
                 >
-                  {post.mine && (
-                    <button
-                      type="button"
-                      className="menu-item"
-                      onClick={() => {
-                        setMenu(false);
-                        setDraft(post.body);
-                        setEditing(true);
-                      }}
-                    >
-                      <EditIcon /> {t('feed.edit')}
-                    </button>
-                  )}
-                  <button type="button" className="menu-item danger" onClick={remove}>
-                    <TrashIcon /> {t('feed.delete')}
-                  </button>
-                </motion.div>
+                  <EditIcon /> {t('feed.edit')}
+                </button>
               )}
-            </AnimatePresence>
+              {!post.mine && (
+                <button
+                  type="button"
+                  className="menu-item"
+                  onClick={() => {
+                    setMenu(false);
+                    report({ kind: 'post', targetId: post.id, name: a.name });
+                  }}
+                >
+                  <FlagIcon /> {t('report.action')}
+                </button>
+              )}
+              {post.canDelete && (
+                <button type="button" className="menu-item danger" onClick={remove}>
+                  <TrashIcon /> {t('feed.delete')}
+                </button>
+              )}
+            </PopMenu>
           </div>
         )}
       </header>

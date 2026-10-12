@@ -7,6 +7,7 @@ import { storeImage, removeImages, isImage } from '../media.js';
 import { ownEscort } from '../escorts.js';
 import { memberInput, memberOut, getMember, updateMember } from '../members.js';
 import { ratingSummary } from './reviews.js';
+import { blockState } from '../safety.js';
 
 // Mitgliederprofile: eigenes Profil bearbeiten und Profile ansehen (für alle angemeldeten Konten)
 
@@ -101,6 +102,7 @@ router.get(
       self,
       rating: { average: rating.average, count: rating.count },
       givenCount: given[0].n,
+      blocked: await blockState(req.user.id, m.id),
     });
   }),
 );

@@ -4,6 +4,7 @@ import { httpError, requireUser, rateLimit } from '../auth.js';
 import { wrap, requireDb, noStore, text, toId } from '../http.js';
 import { THUMB, thumbUrl } from '../escorts.js';
 import { unseenCount } from '../suggestions.js';
+import { blockState } from '../safety.js';
 
 // Nachrichten zwischen Mitgliedern und Escort-Profilen
 
@@ -32,8 +33,16 @@ function convOut(row, me) {
           thumb: thumbUrl(row.thumb_key),
           accent: row.accent,
           verified: row.verified,
+          userId: row.escort_user_id,
+          escortId: row.escort_id,
         }
-      : { kind: 'member', name: row.user_name, memberId: row.user_id, thumb: thumbUrl(row.user_avatar) },
+      : {
+          kind: 'member',
+          name: row.user_name,
+          memberId: row.user_id,
+          userId: row.user_id,
+          thumb: thumbUrl(row.user_avatar),
+        },
     last: row.last_at ? { body: row.last_body, at: row.last_at, mine: row.last_sender === me } : null,
     unread: row.unread || 0,
     lastMessageAt: row.last_message_at,
@@ -156,8 +165,9 @@ router.get(
       [c.id, me],
     );
     noStore(res);
+    const other = c.user_id === me ? c.escort_user_id : c.user_id;
     res.json({
-      conversation: convOut(c, me),
+      conversation: { ...convOut(c, me), blocked: await blockState(me, other) },
       messages: rows.map((m) => messageOut(m, me)),
       readUpTo: Number(seen[0].id) || 0,
     });
@@ -179,6 +189,7 @@ router.post(
     if (!escort) throw httpError(404, 'not_found', 'Profil nicht gefunden');
     if (!escort.user_id) throw httpError(400, 'inbox_unavailable', 'Dieses Profil empfängt keine Nachrichten');
     if (escort.user_id === me) throw httpError(400, 'own_profile', 'Eigenes Profil');
+    if (await blockState(me, escort.user_id)) throw httpError(403, 'blocked', 'Blockiert');
     const { rows: conv } = await query(
       `INSERT INTO conversations (user_id, escort_id) VALUES ($1, $2)
        ON CONFLICT (user_id, escort_id) DO UPDATE SET last_message_at = now() RETURNING id`,
@@ -195,6 +206,8 @@ router.post(
   rateLimit(300, 10 * 60 * 1000),
   wrap(async (req, res) => {
     const c = await loadConversation(toId(req.params.id), req.user.id);
+    const other = c.user_id === req.user.id ? c.escort_user_id : c.user_id;
+    if (await blockState(req.user.id, other)) throw httpError(403, 'blocked', 'Blockiert');
     res.status(201).json(await addMessage(c.id, req.user.id, messageBody(req.body?.body)));
   }),
 );

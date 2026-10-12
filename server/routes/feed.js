@@ -6,6 +6,7 @@ import { wrap, requireDb, noStore, text, toId, uploadImages } from '../http.js';
 import { storeImage, removeImages, photoOut, isImage } from '../media.js';
 import { THUMB, thumbUrl, ownEscort } from '../escorts.js';
 import { notifyComment } from '../notify.js';
+import { notBlocked, blockState } from '../safety.js';
 
 // Feed: Beiträge von Escorts und Mitgliedern, Fotos, Likes und Kommentare
 
@@ -17,7 +18,11 @@ const router = express.Router();
 
 export async function loadPosts(me, { where = [], params = [], before = null, limit = 10 } = {}) {
   const args = [me.id, ...params];
-  const conds = ['(p.escort_id IS NULL OR e.published = true OR e.user_id = $1)', ...where];
+  const conds = [
+    '(p.escort_id IS NULL OR e.published = true OR e.user_id = $1)',
+    notBlocked('$1', 'COALESCE(e.user_id, p.user_id)'),
+    ...where,
+  ];
   if (before) {
     args.push(before);
     conds.push(`p.id < $${args.length}`);
@@ -28,7 +33,7 @@ export async function loadPosts(me, { where = [], params = [], before = null, li
        e.slug, e.name, e.verified, e.accent, COALESCE(e.user_id, p.user_id) AS owner_id, ${THUMB('e')} AS thumb_key,
        u.name AS member_name, u.avatar_key,
        (SELECT count(*) FROM post_likes WHERE post_id = p.id)::int AS likes,
-       (SELECT count(*) FROM post_comments WHERE post_id = p.id)::int AS comments,
+       (SELECT count(*) FROM post_comments k WHERE k.post_id = p.id AND ${notBlocked('$1', 'k.user_id')})::int AS comments,
        EXISTS (SELECT 1 FROM post_likes WHERE post_id = p.id AND user_id = $1) AS liked
      FROM posts p
      LEFT JOIN escorts e ON e.id = p.escort_id
@@ -44,9 +49,9 @@ export async function loadPosts(me, { where = [], params = [], before = null, li
     query(
       `SELECT * FROM (
          SELECT k.*, row_number() OVER (PARTITION BY k.post_id ORDER BY k.id DESC) AS rn
-         FROM post_comments k WHERE k.post_id = ANY($1)
+         FROM post_comments k WHERE k.post_id = ANY($1) AND ${notBlocked('$2', 'k.user_id')}
        ) k WHERE rn <= 2`,
-      [ids],
+      [ids, me.id],
     ),
   ]);
   const authors = await commentAuthors(comments.map((c) => c.user_id));
@@ -130,6 +135,8 @@ async function visiblePost(postId, me) {
   );
   const p = rows[0];
   if (!p || (!p.published && p.owner_id !== me.id && !me.is_admin)) throw httpError(404, 'not_found', 'Nicht gefunden');
+  // Beiträge blockierter Personen sind nicht erreichbar (auch nicht für Kommentare oder Likes)
+  if (await blockState(me.id, p.owner_id)) throw httpError(404, 'not_found', 'Nicht gefunden');
   return p;
 }
 
@@ -293,7 +300,10 @@ router.get(
   requireUser,
   wrap(async (req, res) => {
     const post = await visiblePost(toId(req.params.id), req.user);
-    const { rows } = await query('SELECT * FROM post_comments WHERE post_id = $1 ORDER BY id LIMIT 500', [post.id]);
+    const { rows } = await query(
+      `SELECT * FROM post_comments k WHERE post_id = $1 AND ${notBlocked('$2', 'k.user_id')} ORDER BY id LIMIT 500`,
+      [post.id, req.user.id],
+    );
     const authors = await commentAuthors(rows.map((c) => c.user_id));
     noStore(res);
     res.json(rows.map((c) => commentOut(c, authors, req.user, post.owner_id)));

@@ -4,6 +4,7 @@ import { httpError, requireUser, rateLimit } from '../auth.js';
 import { wrap, requireDb, noStore, text, toId } from '../http.js';
 import { THUMB, thumbUrl, ownEscort } from '../escorts.js';
 import { notifyReview } from '../notify.js';
+import { notBlocked, blockState } from '../safety.js';
 
 // Bewertungen in beide Richtungen, je 1–5 Sterne und optional ein kurzer Text:
 // - Mitglieder bewerten Escorts (escort_reviews)
@@ -34,7 +35,7 @@ const TARGETS = {
       }
       return e;
     },
-    canRate: async (e, me) => me.role === 'member' && e.user_id !== me.id,
+    canRate: async (e, me) => me.role === 'member' && e.user_id !== me.id && !(await blockState(me.id, e.user_id)),
     denied: () => httpError(403, 'review_members_only', 'Nur Mitglieder können Escorts bewerten'),
     notify: (e, me, rating) => notifyReview(e.user_id, me.name, rating, `/escort/${e.slug}?tab=reviews`),
   },
@@ -51,7 +52,8 @@ const TARGETS = {
       return rows[0];
     },
     // nur Escorts mit eigenem Profil
-    canRate: async (m, me) => me.role === 'escort' && m.id !== me.id && Boolean(await ownEscort(me.id)),
+    canRate: async (m, me) =>
+      me.role === 'escort' && m.id !== me.id && Boolean(await ownEscort(me.id)) && !(await blockState(me.id, m.id)),
     denied: () => httpError(403, 'review_escorts_only', 'Nur Escorts können Mitglieder bewerten'),
     notify: async (m, me, rating) =>
       notifyReview(m.id, (await ownEscort(me.id))?.name || me.name, rating, `/member/${m.id}?tab=reviews`),
@@ -99,11 +101,11 @@ async function summary(T, target, me) {
 }
 
 async function page(T, target, me, before) {
-  const args = [target.id];
-  let cond = '';
+  const args = [target.id, me.id];
+  let cond = `AND ${notBlocked('$2', 'r.user_id')}`;
   if (before) {
     args.push(before);
-    cond = 'AND r.id < $2';
+    cond += ' AND r.id < $3';
   }
   const { rows } = await query(
     `${T.select} WHERE r.${T.key} = $1 AND r.body <> '' ${cond} ORDER BY r.id DESC LIMIT ${PAGE}`,

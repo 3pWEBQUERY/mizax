@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import Page from '../components/Page.jsx';
 import { Photo } from '../components/Media.jsx';
+import ProfileMenu from '../components/ProfileMenu.jsx';
 import Lightbox from '../components/Lightbox.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
 import { ChatIcon, EditIcon, PinIcon } from '../components/Icons.jsx';
@@ -149,19 +150,29 @@ export default function Member() {
               {t('member.since', { date: since })}
             </Rise>
 
-            {(member.self || member.conversationId) && (
-              <Rise i={4} className="actions">
-                {member.self ? (
-                  <Link to="/me" className="white-btn">
-                    <EditIcon /> {t('member.edit')}
-                  </Link>
-                ) : (
+            <Rise i={4} className="actions">
+              {member.self ? (
+                <Link to="/me" className="white-btn">
+                  <EditIcon /> {t('member.edit')}
+                </Link>
+              ) : (
+                member.conversationId && (
                   <Link to={`/messages/${member.conversationId}`} className="white-btn">
                     <ChatIcon /> {t('member.openChat')}
                   </Link>
-                )}
-              </Rise>
-            )}
+                )
+              )}
+              {!member.self && (
+                <ProfileMenu
+                  kind="member"
+                  targetId={member.id}
+                  userId={member.id}
+                  name={member.name}
+                  className="ghost-btn save-btn"
+                  align="left"
+                />
+              )}
+            </Rise>
             {member.self && (
               <Rise i={5} as="p" className="member-note">
                 {t('member.selfHint')}

@@ -6,6 +6,7 @@ import { Bubble, Rise } from '../components/Bubble.jsx';
 import { Photo } from '../components/Media.jsx';
 import { CheckIcon, ChatIcon, PhoneIcon, MailIcon, HeartIcon, LockIcon, WhatsAppIcon } from '../components/Icons.jsx';
 import Lightbox from '../components/Lightbox.jsx';
+import ProfileMenu from '../components/ProfileMenu.jsx';
 import { Composer, PostList, usePosts } from '../components/feed/index.js';
 import Reviews, { Stars, formatRating } from '../components/feed/Reviews.jsx';
 import ProfileTabs, { useProfileTab, postCountLabel } from '../components/ProfileTabs.jsx';
@@ -263,6 +264,16 @@ export default function Profile() {
                 >
                   <HeartIcon filled={isFav} width={20} height={20} />
                 </button>
+                {user && !own && (
+                  <ProfileMenu
+                    kind="escort"
+                    targetId={escort.id}
+                    userId={escort.userId}
+                    name={escort.name}
+                    className="ghost-btn save-btn"
+                    align="left"
+                  />
+                )}
               </Rise>
             )}
 

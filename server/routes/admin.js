@@ -1,4 +1,5 @@
 import express from 'express';
+import { hasMail } from '../mail/index.js';
 import { query, hasDb } from '../db.js';
 import { hasStorage } from '../storage.js';
 import { requireAdmin, httpError } from '../auth.js';
@@ -23,7 +24,7 @@ const router = express.Router();
 // ---------- Admin API ----------
 
 router.get('/api/admin/status', requireAdmin, (req, res) => {
-  res.json({ ok: true, db: hasDb(), storage: hasStorage() });
+  res.json({ ok: true, db: hasDb(), storage: hasStorage(), mail: hasMail() });
 });
 
 router.get(

@@ -284,5 +284,10 @@ export default {
     members_only: 'Réservé aux membres.',
     review_escorts_only: 'Seules les escorts peuvent évaluer les membres.',
     reset_invalid: 'Le lien est invalide ou a expiré. Demandez-en un nouveau.',
+    report_invalid: 'Le signalement est invalide.',
+    report_own: 'Vous ne pouvez pas signaler votre propre contenu.',
+    block_self: 'Vous ne pouvez pas vous bloquer vous-même.',
+    block_admin: 'L’équipe ne peut pas être bloquée.',
+    blocked: 'Vous ne pouvez pas vous écrire.',
   },
 };

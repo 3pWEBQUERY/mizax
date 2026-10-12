@@ -282,5 +282,10 @@ export default {
     members_only: 'Tylko dla członków.',
     review_escorts_only: 'Tylko escortki mogą oceniać członków.',
     reset_invalid: 'Link jest nieprawidłowy lub wygasł. Poproś o nowy.',
+    report_invalid: 'Zgłoszenie jest nieprawidłowe.',
+    report_own: 'Nie możesz zgłosić własnej treści.',
+    block_self: 'Nie możesz zablokować siebie.',
+    block_admin: 'Nie można zablokować zespołu.',
+    blocked: 'Nie możecie do siebie pisać.',
   },
 };

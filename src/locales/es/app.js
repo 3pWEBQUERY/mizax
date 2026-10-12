@@ -283,5 +283,10 @@ export default {
     members_only: 'Solo para miembros.',
     review_escorts_only: 'Solo las escorts pueden valorar a los miembros.',
     reset_invalid: 'El enlace no es válido o ha caducado. Solicita uno nuevo.',
+    report_invalid: 'La denuncia no es válida.',
+    report_own: 'No puedes denunciar tu propio contenido.',
+    block_self: 'No puedes bloquearte a ti mismo.',
+    block_admin: 'No se puede bloquear al equipo.',
+    blocked: 'No podéis escribiros.',
   },
 };

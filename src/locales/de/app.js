@@ -283,5 +283,10 @@ export default {
     members_only: 'Nur für Mitglieder.',
     review_escorts_only: 'Nur Escorts können Mitglieder bewerten.',
     reset_invalid: 'Der Link ist ungültig oder abgelaufen. Fordere einen neuen an.',
+    report_invalid: 'Die Meldung ist ungültig.',
+    report_own: 'Eigene Inhalte kannst du nicht melden.',
+    block_self: 'Du kannst dich nicht selbst blockieren.',
+    block_admin: 'Die Verwaltung kann nicht blockiert werden.',
+    blocked: 'Ihr könnt euch keine Nachrichten schreiben.',
   },
 };

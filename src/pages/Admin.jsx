@@ -6,6 +6,7 @@ import PageHead from '../components/PageHead.jsx';
 import { Placeholder } from '../components/Media.jsx';
 import { useToast } from '../components/Toast.jsx';
 import ProfileEditor from '../components/ProfileEditor.jsx';
+import Reports from './admin/Reports.jsx';
 import { PlusIcon } from '../components/Icons.jsx';
 import { api } from '../lib/api.js';
 import { useAuth } from '../lib/auth.jsx';
@@ -55,6 +56,13 @@ export default function Admin() {
 function Dashboard({ status }) {
   const { t } = useI18n();
   const [tab, setTab] = useState('profiles');
+  const [reports, setReports] = useState(0);
+  const loadReports = useCallback(() => {
+    api('/api/admin/reports/count')
+      .then((r) => setReports(r.count))
+      .catch(() => {});
+  }, []);
+  useEffect(loadReports, [loadReports]);
 
   return (
     <>
@@ -69,6 +77,10 @@ function Dashboard({ status }) {
               <span className={`dot ${status.storage ? '' : 'off'}`} />
               {status.storage ? t('admin.bucketOk') : t('admin.bucketNo')}
             </span>
+            <span className="status-pill" title={status.mail ? '' : t('admin.mailHint')}>
+              <span className={`dot ${status.mail ? '' : 'off'}`} />
+              {status.mail ? t('admin.mailOk') : t('admin.mailNo')}
+            </span>
           </>
         )}
       </PageHead>
@@ -77,7 +89,8 @@ function Dashboard({ status }) {
         {[
           ['profiles', t('admin.tabProfiles')],
           ['users', t('admin.tabUsers')],
-        ].map(([k, label]) => (
+          ['reports', t('reportAdmin.title'), reports],
+        ].map(([k, label, count]) => (
           <button
             key={k}
             type="button"
@@ -94,13 +107,20 @@ function Dashboard({ status }) {
               />
             )}
             <span>{label}</span>
+            {count > 0 && <span className="tab-count">{count}</span>}
           </button>
         ))}
       </div>
 
       <AnimatePresence mode="wait" initial={false}>
         <motion.div key={tab} {...fade} transition={{ duration: 0.2 }}>
-          {tab === 'profiles' ? <Profiles status={status} /> : <Users />}
+          {tab === 'profiles' ? (
+            <Profiles status={status} />
+          ) : tab === 'users' ? (
+            <Users />
+          ) : (
+            <Reports onCount={loadReports} />
+          )}
         </motion.div>
       </AnimatePresence>
     </>

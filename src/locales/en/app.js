@@ -280,5 +280,10 @@ export default {
     members_only: 'Members only.',
     review_escorts_only: 'Only escorts can review members.',
     reset_invalid: 'The link is invalid or has expired. Request a new one.',
+    report_invalid: 'The report is invalid.',
+    report_own: 'You can’t report your own content.',
+    block_self: 'You can’t block yourself.',
+    block_admin: 'The team can’t be blocked.',
+    blocked: 'You can’t message each other.',
   },
 };
