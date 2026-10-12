@@ -256,6 +256,12 @@ export const DownloadIcon = (p) => (
     <path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14" />
   </svg>
 );
+export const CardIcon = (p) => (
+  <svg {...base} {...p}>
+    <rect x="3.5" y="5.5" width="17" height="13" rx="2" />
+    <path d="M3.5 10h17M7 15h4" />
+  </svg>
+);
 export const InfoIcon = (p) => (
   <svg {...base} {...p}>
     <circle cx="12" cy="12" r="8.5" />

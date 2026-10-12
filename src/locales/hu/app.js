@@ -295,5 +295,7 @@ export default {
     blocked: 'Nem írhattok egymásnak.',
     verify_needs_photos: 'Előbb tölts fel legalább egy profilfotót.',
     already_verified: 'A profilod már ellenőrzött.',
+    plan_invalid: 'Ez a csomag nem elérhető.',
+    billing_unconfigured: 'A számlázási adatok még nincsenek beállítva.',
   },
 };

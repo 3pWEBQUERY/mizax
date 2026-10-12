@@ -296,5 +296,7 @@ export default {
     blocked: 'Ihr könnt euch keine Nachrichten schreiben.',
     verify_needs_photos: 'Bitte lade zuerst mindestens ein Profilfoto hoch.',
     already_verified: 'Dein Profil ist bereits verifiziert.',
+    plan_invalid: 'Dieses Paket ist nicht verfügbar.',
+    billing_unconfigured: 'Die Rechnungsdaten sind noch nicht eingerichtet.',
   },
 };

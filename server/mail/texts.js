@@ -59,6 +59,41 @@ const T = {
       lines: ['Hallo {name},', '{from} hat auf deine Bewertung geantwortet.'],
       button: 'Antwort lesen',
     },
+    invoice: {
+      subject: 'Deine Rechnung {number} – {plan}',
+      title: 'Rechnung für dein Abo',
+      lines: [
+        'Hallo {name},',
+        'danke für deine Bestellung. Dein Paket „{plan}“ kostet {amount} für einen Monat.',
+        'Bitte bezahle bis {due} mit der QR-Rechnung in deinem Konto. Sobald die Zahlung eingegangen ist, schalten wir dein Paket frei.',
+      ],
+      button: 'Rechnung ansehen',
+    },
+    invoiceRenew: {
+      subject: 'Dein Abo „{plan}“ läuft bald ab',
+      title: 'Rechnung für den nächsten Monat',
+      lines: [
+        'Hallo {name},',
+        'dein Paket „{plan}“ läuft bald ab. Die Rechnung {number} über {amount} für den nächsten Monat ist bereit.',
+        'Bitte bezahle bis {due}, damit dein Profil ohne Unterbruch weiterläuft.',
+      ],
+      button: 'Rechnung ansehen',
+    },
+    planActive: {
+      subject: 'Zahlung erhalten – „{plan}“ ist aktiv',
+      title: 'Dein Paket ist aktiv',
+      lines: ['Hallo {name},', 'wir haben deine Zahlung erhalten. Dein Paket „{plan}“ ist aktiv bis {until}.'],
+      button: 'Abo ansehen',
+    },
+    planExpired: {
+      subject: 'Dein Abo „{plan}“ ist abgelaufen',
+      title: 'Abo abgelaufen',
+      lines: [
+        'Hallo {name},',
+        'dein Paket „{plan}“ ist abgelaufen. Du kannst es jederzeit in deinem Konto wieder buchen.',
+      ],
+      button: 'Paket wählen',
+    },
     footer: 'Diese E-Mail wurde automatisch von Mizax verschickt.',
     reset: {
       subject: 'Passwort zurücksetzen',
@@ -128,6 +163,38 @@ const T = {
       title: 'New reply to your review',
       lines: ['Hi {name},', '{from} replied to your review.'],
       button: 'Read reply',
+    },
+    invoice: {
+      subject: 'Your invoice {number} – {plan}',
+      title: 'Invoice for your subscription',
+      lines: [
+        'Hi {name},',
+        'thank you for your order. Your “{plan}” plan costs {amount} for one month.',
+        'Please pay by {due} using the QR bill in your account. As soon as the payment arrives, we activate your plan.',
+      ],
+      button: 'View invoice',
+    },
+    invoiceRenew: {
+      subject: 'Your “{plan}” subscription ends soon',
+      title: 'Invoice for next month',
+      lines: [
+        'Hi {name},',
+        'your “{plan}” plan ends soon. Invoice {number} for {amount} for the next month is ready.',
+        'Please pay by {due} so your profile continues without interruption.',
+      ],
+      button: 'View invoice',
+    },
+    planActive: {
+      subject: 'Payment received – “{plan}” is active',
+      title: 'Your plan is active',
+      lines: ['Hi {name},', 'we have received your payment. Your “{plan}” plan is active until {until}.'],
+      button: 'View subscription',
+    },
+    planExpired: {
+      subject: 'Your “{plan}” subscription has expired',
+      title: 'Subscription expired',
+      lines: ['Hi {name},', 'your “{plan}” plan has expired. You can book it again at any time in your account.'],
+      button: 'Choose a plan',
     },
     footer: 'This email was sent automatically by Mizax.',
     reset: {
@@ -199,6 +266,44 @@ const T = {
       lines: ['Bonjour {name},', '{from} a répondu à votre avis.'],
       button: 'Lire la réponse',
     },
+    invoice: {
+      subject: 'Votre facture {number} – {plan}',
+      title: 'Facture de votre abonnement',
+      lines: [
+        'Bonjour {name},',
+        'merci pour votre commande. Votre forfait « {plan} » coûte {amount} pour un mois.',
+        'Veuillez payer d’ici le {due} avec la facture QR dans votre compte. Dès réception du paiement, nous activons votre forfait.',
+      ],
+      button: 'Voir la facture',
+    },
+    invoiceRenew: {
+      subject: 'Votre abonnement « {plan} » arrive à échéance',
+      title: 'Facture du mois suivant',
+      lines: [
+        'Bonjour {name},',
+        'votre forfait « {plan} » arrive bientôt à échéance. La facture {number} de {amount} pour le mois suivant est prête.',
+        'Veuillez payer d’ici le {due} pour que votre profil continue sans interruption.',
+      ],
+      button: 'Voir la facture',
+    },
+    planActive: {
+      subject: 'Paiement reçu – « {plan} » est actif',
+      title: 'Votre forfait est actif',
+      lines: [
+        'Bonjour {name},',
+        'nous avons reçu votre paiement. Votre forfait « {plan} » est actif jusqu’au {until}.',
+      ],
+      button: 'Voir l’abonnement',
+    },
+    planExpired: {
+      subject: 'Votre abonnement « {plan} » a expiré',
+      title: 'Abonnement expiré',
+      lines: [
+        'Bonjour {name},',
+        'votre forfait « {plan} » a expiré. Vous pouvez le réserver à nouveau à tout moment dans votre compte.',
+      ],
+      button: 'Choisir un forfait',
+    },
     footer: 'Cet e-mail a été envoyé automatiquement par Mizax.',
     reset: {
       subject: 'Réinitialiser votre mot de passe',
@@ -268,6 +373,41 @@ const T = {
       title: 'Nueva respuesta a tu valoración',
       lines: ['Hola {name}:', '{from} ha respondido a tu valoración.'],
       button: 'Leer respuesta',
+    },
+    invoice: {
+      subject: 'Tu factura {number} – {plan}',
+      title: 'Factura de tu suscripción',
+      lines: [
+        'Hola {name}:',
+        'gracias por tu pedido. Tu plan «{plan}» cuesta {amount} por un mes.',
+        'Paga antes del {due} con la factura QR de tu cuenta. En cuanto recibamos el pago, activaremos tu plan.',
+      ],
+      button: 'Ver factura',
+    },
+    invoiceRenew: {
+      subject: 'Tu suscripción «{plan}» termina pronto',
+      title: 'Factura del próximo mes',
+      lines: [
+        'Hola {name}:',
+        'tu plan «{plan}» termina pronto. La factura {number} de {amount} para el próximo mes está lista.',
+        'Paga antes del {due} para que tu perfil siga sin interrupción.',
+      ],
+      button: 'Ver factura',
+    },
+    planActive: {
+      subject: 'Pago recibido: «{plan}» está activo',
+      title: 'Tu plan está activo',
+      lines: ['Hola {name}:', 'hemos recibido tu pago. Tu plan «{plan}» está activo hasta el {until}.'],
+      button: 'Ver suscripción',
+    },
+    planExpired: {
+      subject: 'Tu suscripción «{plan}» ha caducado',
+      title: 'Suscripción caducada',
+      lines: [
+        'Hola {name}:',
+        'tu plan «{plan}» ha caducado. Puedes contratarlo de nuevo en cualquier momento desde tu cuenta.',
+      ],
+      button: 'Elegir plan',
     },
     footer: 'Este correo fue enviado automáticamente por Mizax.',
     reset: {
@@ -339,6 +479,38 @@ const T = {
       lines: ['Szia {name}!', '{from} válaszolt az értékelésedre.'],
       button: 'Válasz elolvasása',
     },
+    invoice: {
+      subject: '{number} számú számlád – {plan}',
+      title: 'Számla az előfizetésedhez',
+      lines: [
+        'Szia {name}!',
+        'Köszönjük a rendelést. A(z) „{plan}” csomag ára {amount} egy hónapra.',
+        'Kérjük, fizess {due}-ig a fiókodban található QR-számlával. Amint megérkezik a befizetés, aktiváljuk a csomagot.',
+      ],
+      button: 'Számla megtekintése',
+    },
+    invoiceRenew: {
+      subject: 'A(z) „{plan}” előfizetésed hamarosan lejár',
+      title: 'Számla a következő hónapra',
+      lines: [
+        'Szia {name}!',
+        'A(z) „{plan}” csomagod hamarosan lejár. A következő hónapra szóló {number} számú, {amount} összegű számla elkészült.',
+        'Kérjük, fizess {due}-ig, hogy a profilod megszakítás nélkül fusson tovább.',
+      ],
+      button: 'Számla megtekintése',
+    },
+    planActive: {
+      subject: 'Befizetés megérkezett – a(z) „{plan}” aktív',
+      title: 'A csomagod aktív',
+      lines: ['Szia {name}!', 'Megkaptuk a befizetésedet. A(z) „{plan}” csomagod {until}-ig aktív.'],
+      button: 'Előfizetés megtekintése',
+    },
+    planExpired: {
+      subject: 'A(z) „{plan}” előfizetésed lejárt',
+      title: 'Az előfizetés lejárt',
+      lines: ['Szia {name}!', 'A(z) „{plan}” csomagod lejárt. Bármikor újra megrendelheted a fiókodban.'],
+      button: 'Csomag választása',
+    },
     footer: 'Ezt az e-mailt a Mizax automatikusan küldte.',
     reset: {
       subject: 'Jelszó visszaállítása',
@@ -408,6 +580,41 @@ const T = {
       title: 'Nowa odpowiedź na Twoją opinię',
       lines: ['Cześć {name},', '{from} odpowiedział(a) na Twoją opinię.'],
       button: 'Przeczytaj odpowiedź',
+    },
+    invoice: {
+      subject: 'Twoja faktura {number} – {plan}',
+      title: 'Faktura za subskrypcję',
+      lines: [
+        'Cześć {name},',
+        'dziękujemy za zamówienie. Pakiet „{plan}” kosztuje {amount} za miesiąc.',
+        'Zapłać do {due}, korzystając z faktury QR w swoim koncie. Gdy tylko płatność wpłynie, aktywujemy pakiet.',
+      ],
+      button: 'Zobacz fakturę',
+    },
+    invoiceRenew: {
+      subject: 'Twoja subskrypcja „{plan}” wkrótce wygasa',
+      title: 'Faktura na następny miesiąc',
+      lines: [
+        'Cześć {name},',
+        'Twój pakiet „{plan}” wkrótce wygasa. Faktura {number} na kwotę {amount} za następny miesiąc jest gotowa.',
+        'Zapłać do {due}, aby Twój profil działał bez przerwy.',
+      ],
+      button: 'Zobacz fakturę',
+    },
+    planActive: {
+      subject: 'Płatność otrzymana – „{plan}” jest aktywny',
+      title: 'Twój pakiet jest aktywny',
+      lines: ['Cześć {name},', 'otrzymaliśmy Twoją płatność. Pakiet „{plan}” jest aktywny do {until}.'],
+      button: 'Zobacz subskrypcję',
+    },
+    planExpired: {
+      subject: 'Twoja subskrypcja „{plan}” wygasła',
+      title: 'Subskrypcja wygasła',
+      lines: [
+        'Cześć {name},',
+        'Twój pakiet „{plan}” wygasł. W każdej chwili możesz go ponownie wykupić w swoim koncie.',
+      ],
+      button: 'Wybierz pakiet',
     },
     footer: 'Ta wiadomość została wysłana automatycznie przez Mizax.',
     reset: {
@@ -479,6 +686,38 @@ const T = {
       lines: ['Bună {name},', '{from} a răspuns la recenzia ta.'],
       button: 'Citește răspunsul',
     },
+    invoice: {
+      subject: 'Factura ta {number} – {plan}',
+      title: 'Factură pentru abonament',
+      lines: [
+        'Bună {name},',
+        'îți mulțumim pentru comandă. Pachetul „{plan}” costă {amount} pentru o lună.',
+        'Te rugăm să plătești până la {due} folosind factura QR din contul tău. Imediat ce primim plata, activăm pachetul.',
+      ],
+      button: 'Vezi factura',
+    },
+    invoiceRenew: {
+      subject: 'Abonamentul „{plan}” expiră în curând',
+      title: 'Factură pentru luna următoare',
+      lines: [
+        'Bună {name},',
+        'pachetul tău „{plan}” expiră în curând. Factura {number} de {amount} pentru luna următoare este pregătită.',
+        'Te rugăm să plătești până la {due}, ca profilul tău să continue fără întrerupere.',
+      ],
+      button: 'Vezi factura',
+    },
+    planActive: {
+      subject: 'Plată primită – „{plan}” este activ',
+      title: 'Pachetul tău este activ',
+      lines: ['Bună {name},', 'am primit plata ta. Pachetul „{plan}” este activ până la {until}.'],
+      button: 'Vezi abonamentul',
+    },
+    planExpired: {
+      subject: 'Abonamentul „{plan}” a expirat',
+      title: 'Abonament expirat',
+      lines: ['Bună {name},', 'pachetul tău „{plan}” a expirat. Îl poți rezerva din nou oricând din contul tău.'],
+      button: 'Alege un pachet',
+    },
     footer: 'Acest e-mail a fost trimis automat de Mizax.',
     reset: {
       subject: 'Resetarea parolei',
@@ -494,7 +733,15 @@ const T = {
 };
 
 // Pflicht-E-Mails ohne Abschalt-Hinweis
-const TRANSACTIONAL = new Set(['reset', 'verifyOk', 'verifyNo']);
+const TRANSACTIONAL = new Set([
+  'reset',
+  'verifyOk',
+  'verifyNo',
+  'invoice',
+  'invoiceRenew',
+  'planActive',
+  'planExpired',
+]);
 
 const fill = (s, vars) => String(s).replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? `{${k}}`);
 

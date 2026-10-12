@@ -4,7 +4,8 @@ import { hasStorage, getObject } from '../storage.js';
 import { httpError } from '../auth.js';
 import { searchPlaces, nearestPlace } from '../places.js';
 import { wrap, requireDb } from '../http.js';
-import { listEscorts, loadPhotos, escortOut, cardOut, RATING_COLS } from '../escorts.js';
+import { listEscorts, loadPhotos, escortOut, cardOut, RATING_COLS, PLAN_COLS, PLAN_JOIN } from '../escorts.js';
+import { getSettings } from '../billing.js';
 
 // Öffentliche API: Profile, Medien aus dem Bucket, Schweizer Orte
 
@@ -18,7 +19,8 @@ router.get(
   '/api/escorts',
   requireDb,
   wrap(async (req, res) => {
-    const escorts = await listEscorts({ coversOnly: true });
+    const { requirePlan } = await getSettings();
+    const escorts = await listEscorts({ coversOnly: true, requirePlan });
     res.set('Cache-Control', 'private, max-age=0');
     res.json(escorts.map((e) => cardOut(e, { member: Boolean(req.user) })));
   }),
@@ -28,10 +30,17 @@ router.get(
   '/api/escorts/:slug',
   requireDb,
   wrap(async (req, res) => {
-    const { rows } = await query(`SELECT *, ${RATING_COLS} FROM escorts WHERE slug = $1 AND published = true`, [
-      req.params.slug,
-    ]);
+    const { rows } = await query(
+      `SELECT escorts.*, ${RATING_COLS}, ${PLAN_COLS} FROM escorts ${PLAN_JOIN}
+       WHERE escorts.slug = $1 AND escorts.published = true`,
+      [req.params.slug],
+    );
     if (!rows[0]) throw httpError(404, 'not_found', 'Profil nicht gefunden');
+    // „nur mit Abo sichtbar“: ohne aktives Paket sieht das Profil nur die Escort selbst und die Verwaltung
+    const hidden = rows[0].user_id && !rows[0].plan_id && (await getSettings()).requirePlan;
+    if (hidden && req.user?.id !== rows[0].user_id && !req.user?.is_admin) {
+      throw httpError(404, 'not_found', 'Profil nicht gefunden');
+    }
     const photos = await loadPhotos([rows[0].id]);
     const escort = escortOut(rows[0], photos.get(rows[0].id) || []);
     res.set('Cache-Control', 'private, max-age=0');

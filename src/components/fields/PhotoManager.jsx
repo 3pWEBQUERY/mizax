@@ -16,7 +16,8 @@ export default function PhotoManager({ escort, storage, ep, onChange }) {
   const [progress, setProgress] = useState(null); // { done, total } während des Uploads
   const [over, setOver] = useState(false);
   const busy = Boolean(progress);
-  const free = MAX_PHOTOS - escort.photos.length;
+  const limit = escort.photoLimit ?? MAX_PHOTOS;
+  const free = limit - escort.photos.length;
 
   async function upload(files) {
     let imgs = [...files].filter((f) => f.type.startsWith('image/'));

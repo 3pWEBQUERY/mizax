@@ -37,7 +37,18 @@ test('E-Mail-Texte gibt es in allen Sprachen', () => {
   ];
   for (const l of LOCALES) {
     for (const k of keys) {
-      const m = mailText(l, k, { name: 'A', from: 'B', n: 2, stars: '★', reason: 'x' });
+      const m = mailText(l, k, {
+        name: 'A',
+        from: 'B',
+        n: 2,
+        stars: '★',
+        reason: 'x',
+        plan: 'P',
+        amount: 'CHF 1',
+        due: 'd',
+        number: 'N',
+        until: 'u',
+      });
       assert.ok(m.subject && m.title && m.lines.length && m.button, `${l}/${k}`);
       assert.ok(!/\{\w+\}/.test([m.subject, m.title, ...m.lines].join(' ')), `${l}/${k}: offener Platzhalter`);
     }

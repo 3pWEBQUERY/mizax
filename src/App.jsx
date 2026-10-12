@@ -34,6 +34,7 @@ const chunks = {
   member: () => import('./pages/Member.jsx'),
   suggestions: () => import('./pages/Suggestions.jsx'),
   password: () => import('./pages/PasswordReset.jsx'),
+  billing: () => import('./pages/Billing.jsx'),
 };
 
 function lazyPage(chunk, name = 'default') {
@@ -60,9 +61,11 @@ const Member = lazyPage(chunks.member);
 const Suggestions = lazyPage(chunks.suggestions);
 const Forgot = lazyPage(chunks.password, 'Forgot');
 const Reset = lazyPage(chunks.password, 'Reset');
+const Billing = lazyPage(chunks.billing);
 
 // Unterseiten, die beim Wechsel innerhalb desselben Bereichs nicht neu eingeblendet werden
 function routeKey(pathname) {
+  if (pathname.startsWith('/me/abo')) return '/me/abo';
   if (pathname.startsWith('/me')) return '/me';
   if (pathname.startsWith('/settings')) return '/settings';
   return pathname;
@@ -115,6 +118,7 @@ function Shell() {
               <Route path="/reset" element={<Reset />} />
               <Route path="/me" element={<MyProfile />} />
               <Route path="/me/services" element={<MyProfile />} />
+              <Route path="/me/abo" element={<Billing />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/datenschutz" element={<Privacy />} />
               <Route path="/agb" element={<Terms />} />

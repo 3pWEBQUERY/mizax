@@ -13,6 +13,7 @@ import {
   deletePhoto,
   SELF_FIELDS,
 } from '../escorts.js';
+import { photoLimit } from '../billing.js';
 
 // Favoriten und das eigene Escort-Profil
 
@@ -66,6 +67,9 @@ async function ownEscortId(userId) {
   return rows[0]?.id || null;
 }
 
+// eigenes Profil mit Fotolimit des Abos (bzw. ohne Abo)
+const withLimit = async (e) => (e ? { ...e, photoLimit: await photoLimit(e.id) } : e);
+
 async function requireOwnEscort(req) {
   const id = await ownEscortId(req.user.id);
   if (!id) throw httpError(404, 'profile_missing', 'Bitte speichere zuerst dein Profil');
@@ -78,7 +82,7 @@ router.get(
   wrap(async (req, res) => {
     const id = await ownEscortId(req.user.id);
     res.set('Cache-Control', 'private, no-store');
-    res.json(id ? await getEscortById(id) : null);
+    res.json(id ? await withLimit(await getEscortById(id)) : null);
   }),
 );
 
@@ -94,7 +98,7 @@ router.put(
       const own = Object.fromEntries(SELF_FIELDS.map((f) => [f, data[f]]));
       id = await insertEscort(own, { user_id: req.user.id, sort: 100 });
     }
-    res.json(await getEscortById(id));
+    res.json(await withLimit(await getEscortById(id)));
   }),
 );
 
@@ -104,8 +108,8 @@ router.post(
   uploadImages(MAX_UPLOAD_FILES),
   wrap(async (req, res) => {
     const id = await requireOwnEscort(req);
-    await savePhotos(id, req.files);
-    res.json(await getEscortById(id));
+    await savePhotos(id, req.files, await photoLimit(id));
+    res.json(await withLimit(await getEscortById(id)));
   }),
 );
 
@@ -115,7 +119,7 @@ router.put(
   wrap(async (req, res) => {
     const id = await requireOwnEscort(req);
     await reorderPhotos(id, Array.isArray(req.body?.ids) ? req.body.ids : []);
-    res.json(await getEscortById(id));
+    res.json(await withLimit(await getEscortById(id)));
   }),
 );
 
@@ -125,7 +129,7 @@ router.delete(
   wrap(async (req, res) => {
     const id = await requireOwnEscort(req);
     await deletePhoto(Number(req.params.id), id);
-    res.json(await getEscortById(id));
+    res.json(await withLimit(await getEscortById(id)));
   }),
 );
 

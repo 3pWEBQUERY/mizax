@@ -293,5 +293,7 @@ export default {
     blocked: 'You can’t message each other.',
     verify_needs_photos: 'Please upload at least one profile photo first.',
     already_verified: 'Your profile is already verified.',
+    plan_invalid: 'This plan is not available.',
+    billing_unconfigured: 'The billing details are not set up yet.',
   },
 };

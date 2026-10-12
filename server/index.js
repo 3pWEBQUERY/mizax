@@ -23,6 +23,8 @@ import passwordRoutes from './routes/password.js';
 import safetyRoutes from './routes/safety.js';
 import verifyRoutes from './routes/verify.js';
 import exportRoutes from './routes/export.js';
+import billingRoutes from './routes/billing.js';
+import { seedPlans, startBilling } from './billing.js';
 import messageRoutes from './routes/messages.js';
 import feedRoutes from './routes/feed.js';
 
@@ -52,6 +54,7 @@ app.use(passwordRoutes);
 app.use(safetyRoutes);
 app.use(verifyRoutes);
 app.use(exportRoutes);
+app.use(billingRoutes);
 app.use(messageRoutes);
 app.use(feedRoutes);
 app.use('/api', (req, res) => res.status(404).json({ error: 'Nicht gefunden', code: 'not_found' }));
@@ -102,6 +105,7 @@ async function start() {
         await migrate();
         await seedIfEmpty();
         await normalizeLegacy();
+        await seedPlans();
         const adminEmail = await ensureAdmin();
         if (!adminEmail) console.warn('[admin] ADMIN_EMAIL/ADMIN_PASSWORD fehlen – kein Admin-Konto angelegt');
         break;
@@ -120,7 +124,10 @@ async function start() {
     console.warn(
       '[mail] RESEND_API_KEY bzw. SMTP_HOST fehlt – E-Mails (Passwort vergessen, Benachrichtigungen) deaktiviert',
     );
-  if (hasDb()) startNotifier();
+  if (hasDb()) {
+    startNotifier();
+    startBilling();
+  }
   console.log(`[seo] Suchmaschinen ${seoEnabled() ? 'erlaubt (SEO_INDEX=true)' : 'gesperrt (noindex)'}`);
   app.listen(PORT, '0.0.0.0', () => console.log(`Mizax läuft auf Port ${PORT}`));
 }

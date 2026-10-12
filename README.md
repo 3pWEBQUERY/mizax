@@ -57,6 +57,7 @@ Bei der Registrierung müssen AGB und Datenschutzerklärung akzeptiert werden (Z
 | `MAIL_FROM` | Absender, z. B. `Mizax <no-reply@deine-domain.ch>` |
 | `APP_URL` | Öffentliche Adresse für Links in E-Mails und in der Sitemap (optional) |
 | `SEO_INDEX` | `true` = Suchmaschinen erlauben (Sitemap, robots.txt); sonst gesperrt |
+| `BILLING_IBAN`, `BILLING_NAME`, `BILLING_STREET`, `BILLING_HOUSE`, `BILLING_ZIP`, `BILLING_CITY` | Rechnungssteller für die QR-Rechnungen der Abos (IBAN oder QR-IBAN) |
 
 ## Lokal starten
 

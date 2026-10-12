@@ -296,5 +296,7 @@ export default {
     blocked: 'No podéis escribiros.',
     verify_needs_photos: 'Sube primero al menos una foto de perfil.',
     already_verified: 'Tu perfil ya está verificado.',
+    plan_invalid: 'Este plan no está disponible.',
+    billing_unconfigured: 'Los datos de facturación aún no están configurados.',
   },
 };

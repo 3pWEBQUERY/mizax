@@ -8,6 +8,7 @@ import { useToast } from '../components/Toast.jsx';
 import ProfileEditor from '../components/ProfileEditor.jsx';
 import Reports from './admin/Reports.jsx';
 import Verifications from './admin/Verifications.jsx';
+import BillingAdmin from './admin/Billing.jsx';
 import { PlusIcon } from '../components/Icons.jsx';
 import { api } from '../lib/api.js';
 import { useAuth } from '../lib/auth.jsx';
@@ -59,6 +60,13 @@ function Dashboard({ status }) {
   const [tab, setTab] = useState('profiles');
   const [reports, setReports] = useState(0);
   const [verifications, setVerifications] = useState(0);
+  const [invoices, setInvoices] = useState(0);
+  const loadInvoices = useCallback(() => {
+    api('/api/admin/billing/count')
+      .then((r) => setInvoices(r.count))
+      .catch(() => {});
+  }, []);
+  useEffect(loadInvoices, [loadInvoices]);
   const loadReports = useCallback(() => {
     api('/api/admin/reports/count')
       .then((r) => setReports(r.count))
@@ -99,6 +107,7 @@ function Dashboard({ status }) {
           ['users', t('admin.tabUsers')],
           ['reports', t('reportAdmin.title'), reports],
           ['verify', t('verifyAdmin.title'), verifications],
+          ['billing', t('billingAdmin.title'), invoices],
         ].map(([k, label, count]) => (
           <button
             key={k}
@@ -129,8 +138,10 @@ function Dashboard({ status }) {
             <Users />
           ) : tab === 'reports' ? (
             <Reports onCount={loadReports} />
-          ) : (
+          ) : tab === 'verify' ? (
             <Verifications onCount={loadVerifications} />
+          ) : (
+            <BillingAdmin onCount={loadInvoices} />
           )}
         </motion.div>
       </AnimatePresence>

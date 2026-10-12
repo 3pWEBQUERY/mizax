@@ -295,5 +295,7 @@ export default {
     blocked: 'Nie możecie do siebie pisać.',
     verify_needs_photos: 'Najpierw prześlij co najmniej jedno zdjęcie profilowe.',
     already_verified: 'Twój profil jest już zweryfikowany.',
+    plan_invalid: 'Ten pakiet jest niedostępny.',
+    billing_unconfigured: 'Dane rozliczeniowe nie są jeszcze skonfigurowane.',
   },
 };

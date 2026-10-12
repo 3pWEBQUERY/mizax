@@ -266,7 +266,9 @@ export default function ProfileEditor({
 
       <Section
         title={t('editor.photos')}
-        aside={escort ? t('editor.photoCount', { n: escort.photos.length, max: MAX_PHOTOS }) : null}
+        aside={
+          escort ? t('editor.photoCount', { n: escort.photos.length, max: escort.photoLimit ?? MAX_PHOTOS }) : null
+        }
       >
         {escort ? (
           <PhotoManager escort={escort} storage={storage} ep={ep} onChange={onSaved} />

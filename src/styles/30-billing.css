@@ -1,0 +1,379 @@
+/* ---------- Abo ---------- */
+
+.billing-note {
+  margin-bottom: 14px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: var(--tint);
+  border: 1px solid var(--border-strong);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.plan-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+}
+
+.plan-card.current {
+  border-color: var(--tint-3);
+}
+
+.plan-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 34px;
+}
+
+.plan-head h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.plan-price b {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.plan-price span {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.plan-features {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.plan-features li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plan-features svg {
+  flex: none;
+  color: var(--muted);
+}
+
+.plan-card .white-btn,
+.plan-card .ghost-btn {
+  justify-content: center;
+  height: 44px;
+}
+
+.plan-card button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* offene Rechnung */
+.invoice-panel {
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.invoice-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.invoice-facts {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.invoice-facts div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.invoice-facts div + div {
+  border-top: 1px solid var(--row-sep);
+}
+
+.invoice-facts dt {
+  color: var(--muted);
+}
+
+.invoice-facts dd {
+  margin: 0;
+  text-align: right;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* QR-Rechnung: immer auf Weiss, damit Banking-Apps den Code sicher lesen */
+.invoice-qr {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.invoice-qr img {
+  width: 100%;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.invoice-qr figcaption {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.invoice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.invoice-actions .status-pill {
+  cursor: pointer;
+}
+
+.billing-renew {
+  margin-bottom: 14px;
+}
+
+/* Rechnungsliste */
+.invoice-history {
+  padding: 18px;
+}
+
+.invoice-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.invoice-row + .invoice-row {
+  border-top: 1px solid var(--row-sep);
+}
+
+.invoice-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.invoice-main b {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.invoice-main a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.invoice-main small {
+  font-size: 12.5px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.invoice-amount {
+  font-variant-numeric: tabular-nums;
+  font-size: 14.5px;
+}
+
+.invoice-status {
+  min-width: 72px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.invoice-status.paid {
+  color: var(--ok);
+}
+
+.invoice-row .invoice-actions {
+  margin-top: 0;
+}
+
+/* Karten mit Paket „hervorgehoben“ */
+.card.highlighted {
+  border-color: var(--tint-3);
+}
+
+.card-badges-left {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Verwaltung */
+.admin-billing {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-billing .panel {
+  padding: 16px 18px;
+}
+
+.plan-editor {
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) 130px 120px auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+}
+
+.plan-row + .plan-row {
+  border-top: 1px solid var(--row-sep);
+}
+
+.plan-row.inactive {
+  opacity: 0.6;
+}
+
+.plan-row .input {
+  padding: 9px 12px;
+  font-size: 14.5px;
+}
+
+.plan-price-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.plan-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.plan-toggles .toggle {
+  padding: 7px 11px;
+  font-size: 13px;
+}
+
+.plan-row .small-btn {
+  gap: 6px;
+}
+
+.plan-row .small-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.billing-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 0;
+  font-size: 15px;
+}
+
+.billing-setting + .billing-setting {
+  border-top: 1px solid var(--row-sep);
+}
+
+.billing-setting > span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.billing-setting small {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.billing-select {
+  width: 84px;
+  padding: 8px 12px;
+}
+
+@media (max-width: 960px) {
+  .plan-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .plan-row .input:first-child {
+    grid-column: 1 / -1;
+  }
+  .plan-toggles {
+    grid-column: 1 / -1;
+  }
+  .plan-row .small-btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 720px) {
+  .invoice-body {
+    grid-template-columns: 1fr;
+  }
+  .invoice-row {
+    flex-wrap: wrap;
+  }
+  .invoice-row .invoice-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+.plan-price-field .input {
+  color: var(--text);
+}

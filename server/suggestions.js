@@ -1,6 +1,7 @@
 import { query } from './db.js';
 import { findPlace, distanceKm } from './places.js';
-import { escortOut, loadPhotos, RATING_COLS } from './escorts.js';
+import { escortOut, loadPhotos, RATING_COLS, PLAN_COLS, PLAN_JOIN } from './escorts.js';
+import { getSettings } from './billing.js';
 
 // Vorschläge für Mitglieder: neue Escorts, wiederkehrende Escorts und Escorts, die ihren Standort
 // in den gewählten Umkreis verlegt haben – sortiert nach Übereinstimmung mit den Vorlieben.
@@ -69,7 +70,12 @@ export async function savePrefs(userId, d) {
 
 // Kandidaten im Umkreis und Altersbereich, mit Übereinstimmung der Vorlieben
 async function candidates(prefs) {
-  const { rows } = await query(`SELECT *, ${RATING_COLS} FROM escorts WHERE published = true`);
+  // gleiche Sichtbarkeit wie die Startseite (bei „nur mit Abo“ nur Profile mit aktivem Paket)
+  const { requirePlan } = await getSettings();
+  const { rows } = await query(
+    `SELECT escorts.*, ${RATING_COLS}, ${PLAN_COLS} FROM escorts ${PLAN_JOIN}
+     WHERE escorts.published = true ${requirePlan ? 'AND (p.id IS NOT NULL OR escorts.user_id IS NULL)' : ''}`,
+  );
   const wanted = new Set(prefs.services);
   const out = [];
   for (const r of rows) {

@@ -20,6 +20,11 @@ export const RATING_COLS = `
   (SELECT round(avg(rating)::numeric, 1) FROM escort_reviews WHERE escort_id = escorts.id)::float AS rating_avg,
   (SELECT count(*) FROM escort_reviews WHERE escort_id = escorts.id)::int AS rating_count`;
 
+// aktives Abo-Paket als zusätzliche Spalten (für SELECT escorts.* … FROM escorts ${PLAN_JOIN})
+export const PLAN_COLS = 'p.id AS plan_id, p.name AS plan_name, p.highlight AS plan_highlight, p.top AS plan_top';
+export const PLAN_JOIN = `LEFT JOIN subscriptions sub ON sub.escort_id = escorts.id AND sub.period_end > now()
+  LEFT JOIN plans p ON p.id = sub.plan_id`;
+
 export async function ownEscort(userId) {
   const { rows } = await query('SELECT id, slug, name, published FROM escorts WHERE user_id = $1', [userId]);
   return rows[0] || null;
@@ -60,6 +65,7 @@ export function escortOut(row, photos = []) {
     userId: row.user_id,
     inbox: Boolean(row.user_id),
     rating: { average: row.rating_avg ?? null, count: row.rating_count ?? 0 },
+    plan: row.plan_id ? { name: row.plan_name, highlight: row.plan_highlight, top: row.plan_top } : null,
     photos: photos.map(photoOut),
     full: true,
   };
@@ -86,6 +92,7 @@ export function cardOut(e, { member = false, allPhotos = false } = {}) {
     featured: e.featured,
     photos: allPhotos ? e.photos : e.photos.slice(0, 1),
     rating: e.rating,
+    plan: e.plan,
     tagline: member ? e.tagline : '',
     services: member ? e.services : [],
     full: false,
@@ -113,17 +120,27 @@ export async function loadPhotos(ids) {
   return map;
 }
 
-export async function listEscorts({ includeUnpublished = false, coversOnly = false } = {}) {
+// Öffentliche Liste: Top-Pakete zuerst. requirePlan: nur Profile mit aktivem Abo
+// (von der Verwaltung angelegte Profile ohne Konto sind ausgenommen).
+export async function listEscorts({ includeUnpublished = false, coversOnly = false, requirePlan = false } = {}) {
+  const where = [
+    includeUnpublished ? null : 'escorts.published = true',
+    requirePlan ? '(p.id IS NOT NULL OR escorts.user_id IS NULL)' : null,
+  ].filter(Boolean);
   const { rows } = await query(
-    `SELECT *, ${RATING_COLS} FROM escorts ${includeUnpublished ? '' : 'WHERE published = true'}
-     ORDER BY created_at DESC, id DESC`,
+    `SELECT escorts.*, ${RATING_COLS}, ${PLAN_COLS} FROM escorts ${PLAN_JOIN}
+     ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+     ORDER BY (p.top IS TRUE) DESC, escorts.created_at DESC, escorts.id DESC`,
   );
   const photos = coversOnly ? await loadCovers(rows.map((r) => r.id)) : await loadPhotos(rows.map((r) => r.id));
   return rows.map((r) => escortOut(r, photos.get(r.id) || []));
 }
 
 export async function getEscortById(id) {
-  const { rows } = await query(`SELECT *, ${RATING_COLS} FROM escorts WHERE id = $1`, [id]);
+  const { rows } = await query(
+    `SELECT escorts.*, ${RATING_COLS}, ${PLAN_COLS} FROM escorts ${PLAN_JOIN} WHERE escorts.id = $1`,
+    [id],
+  );
   if (!rows[0]) return null;
   const photos = await loadPhotos([id]);
   return escortOut(rows[0], photos.get(id) || []);
@@ -273,15 +290,15 @@ export async function updateEscort(id, data, fields) {
 
 // ---------- Fotos ----------
 
-export async function savePhotos(escortId, files = []) {
+export async function savePhotos(escortId, files = [], limit = MAX_PHOTOS) {
   if (!hasStorage()) throw httpError(503, 'storage_unavailable', 'Bucket nicht verbunden');
   const { rows: maxRows } = await query(
     'SELECT COALESCE(MAX(position), -1)::int AS m, count(*)::int AS n FROM escort_photos WHERE escort_id = $1',
     [escortId],
   );
   const images = files.filter(isImage);
-  if (maxRows[0].n + images.length > MAX_PHOTOS) {
-    throw httpError(400, 'too_many_photos', `Maximal ${MAX_PHOTOS} Fotos pro Profil`);
+  if (maxRows[0].n + images.length > limit) {
+    throw httpError(400, 'too_many_photos', `Maximal ${limit} Fotos pro Profil`);
   }
   let position = maxRows[0].m + 1;
   for (const file of images) {

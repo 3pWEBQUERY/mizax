@@ -162,3 +162,53 @@ test('Datenauskunft enthält eigene Daten, aber kein Passwort', { skip }, async 
   assert.ok(!JSON.stringify(r.data).includes('password'));
   assert.equal((await client(server.base).get('/api/me/export')).status, 401);
 });
+
+test('Abo: Paket bestellen, Zahlung bestätigen, Vorteile aktiv', { skip }, async () => {
+  const start = await escort.c.get('/api/me/billing');
+  assert.equal(start.status, 200);
+  assert.equal(start.data.subscription, null);
+  const premium = start.data.plans.find((p) => p.highlight && !p.top);
+  assert.ok(premium, 'Startpakete angelegt');
+
+  const ordered = await escort.c.post('/api/me/billing/order', { planId: premium.id });
+  const invoice = ordered.data.invoices.find((i) => i.status === 'open');
+  assert.equal(invoice.amount, premium.price);
+  assert.match(invoice.number, /^MZ-\d{4}-\d{6}$/);
+  assert.match(invoice.reference, /^RF\d{2}MZ\d{8}$/);
+  // ohne Bankverbindung (Variablen) gibt es keine QR-Rechnung
+  assert.equal((await escort.c.get(`/api/billing/invoices/${invoice.id}/qr.svg`)).status, 404);
+  // nur Escorts haben Abos, nur Admins bestätigen
+  assert.equal((await member.c.get('/api/me/billing')).status, 403);
+  assert.equal((await escort.c.post(`/api/admin/invoices/${invoice.id}`, { action: 'paid' })).status, 403);
+
+  const admin = client(server.base);
+  await admin.post('/api/auth/login', ADMIN);
+  const paid = await admin.post(`/api/admin/invoices/${invoice.id}`, { action: 'paid' });
+  assert.equal(paid.data.status, 'paid');
+
+  const after = await escort.c.get('/api/me/billing');
+  assert.equal(after.data.subscription.active, true);
+  assert.equal(after.data.subscription.name, premium.name);
+  assert.equal(after.data.photoLimit, premium.maxPhotos);
+  const card = (await client(server.base).get('/api/escorts')).data.find((e) => e.slug === slug);
+  assert.equal(card.plan.highlight, true);
+});
+
+test('Abo: „nur mit Abo sichtbar“ blendet Profile ohne Paket aus', { skip }, async () => {
+  const other = await register(server.base, { email: 'nina@test.local', name: 'Nina', role: 'escort' });
+  const saved = await other.c.put('/api/me/profile', { name: 'Nina', age: 30, zip: '3011', city: 'Bern' });
+  const admin = client(server.base);
+  await admin.post('/api/auth/login', ADMIN);
+  await admin.put('/api/admin/billing/settings', { requirePlan: true, freePhotos: 3 });
+  const list = (await client(server.base).get('/api/escorts')).data.map((e) => e.slug);
+  assert.ok(list.includes(slug), 'mit Paket sichtbar');
+  assert.ok(!list.includes(saved.data.slug), 'ohne Paket ausgeblendet');
+  assert.equal((await member.c.get(`/api/escorts/${saved.data.slug}`)).status, 404);
+  assert.equal(
+    (await other.c.get(`/api/escorts/${saved.data.slug}`)).status,
+    200,
+    'die Escort selbst sieht ihr Profil',
+  );
+  assert.equal((await other.c.get('/api/me/profile')).data.photoLimit, 3);
+  await admin.put('/api/admin/billing/settings', { requirePlan: false, freePhotos: 20 });
+});

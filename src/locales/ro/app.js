@@ -294,5 +294,7 @@ export default {
     blocked: 'Nu vă puteți scrie.',
     verify_needs_photos: 'Încarcă mai întâi cel puțin o fotografie de profil.',
     already_verified: 'Profilul tău este deja verificat.',
+    plan_invalid: 'Acest pachet nu este disponibil.',
+    billing_unconfigured: 'Datele de facturare nu sunt încă configurate.',
   },
 };

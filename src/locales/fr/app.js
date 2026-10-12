@@ -297,5 +297,7 @@ export default {
     blocked: 'Vous ne pouvez pas vous écrire.',
     verify_needs_photos: 'Veuillez d’abord téléverser au moins une photo de profil.',
     already_verified: 'Votre profil est déjà vérifié.',
+    plan_invalid: 'Ce forfait n’est pas disponible.',
+    billing_unconfigured: 'Les données de facturation ne sont pas encore configurées.',
   },
 };

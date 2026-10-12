@@ -58,6 +58,10 @@ export default function MyProfile() {
               <span className={`dot ${escort.published ? '' : 'off'}`} />
               {escort.published ? t('me.published') : t('me.draft')}
             </span>
+            <Link to="/me/abo" className="status-pill">
+              {escort.plan ? escort.plan.name : t('billing.none')}
+              <ChevronR width={12} height={12} />
+            </Link>
             {escort.published && (
               <Link to={`/escort/${escort.slug}`} className="small-btn">
                 {t('me.view')}

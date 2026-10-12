@@ -23,6 +23,7 @@ import {
   TrashIcon,
   HeartIcon,
   DownloadIcon,
+  CardIcon,
 } from '../../components/Icons.jsx';
 import { useAuth } from '../../lib/auth.jsx';
 import { useDock } from '../../lib/dock.jsx';
@@ -154,6 +155,9 @@ export default function Settings() {
                 <Row icon={UserIcon} label={t('menu.myProfile')} onClick={() => navigate('/me')} />
                 <Row icon={MailIcon} label={t('settings.account')} value={user.name} onClick={() => go('account')} />
                 <Row icon={KeyIcon} label={t('settings.password')} onClick={() => go('password')} />
+                {user.role === 'escort' && (
+                  <Row icon={CardIcon} label={t('billing.menu')} onClick={() => navigate('/me/abo')} />
+                )}
               </Group>
 
               <Group>

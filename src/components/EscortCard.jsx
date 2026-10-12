@@ -35,7 +35,7 @@ export default function EscortCard({ escort, index = 0, instant = false, note })
     >
       <Link
         to={`/escort/${escort.slug}`}
-        className="card"
+        className={`card ${escort.plan?.highlight ? 'highlighted' : ''}`}
         onMouseEnter={warm}
         onTouchStart={warm}
         onFocus={warm}
@@ -59,13 +59,14 @@ export default function EscortCard({ escort, index = 0, instant = false, note })
         </motion.div>
 
         <div className="card-badges">
-          {escort.verified ? (
-            <span className="badge light" title={t('card.verified')}>
-              <CheckIcon /> <span className="badge-text">{t('card.verified')}</span>
-            </span>
-          ) : (
-            <span />
-          )}
+          <span className="card-badges-left">
+            {escort.plan?.highlight && <span className="badge plan-badge">{escort.plan.name}</span>}
+            {escort.verified && (
+              <span className="badge light" title={t('card.verified')}>
+                <CheckIcon /> <span className="badge-text">{t('card.verified')}</span>
+              </span>
+            )}
+          </span>
           <button
             type="button"
             className={`fav-btn ${isFav ? 'on' : ''}`}

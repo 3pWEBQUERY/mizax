@@ -275,6 +275,44 @@ export async function migrate() {
     );
     CREATE INDEX IF NOT EXISTS member_reviews_member_idx ON member_reviews (member_id, id DESC);
 
+    -- Abos: Pakete mit Monatspreis, ein Abo je Escort-Profil, Rechnungen (QR-Rechnung)
+    CREATE TABLE IF NOT EXISTS plans (
+      id         SERIAL PRIMARY KEY,
+      name       TEXT NOT NULL,
+      price      NUMERIC(10,2) NOT NULL,
+      max_photos INTEGER NOT NULL DEFAULT 20,
+      highlight  BOOLEAN NOT NULL DEFAULT false,
+      top        BOOLEAN NOT NULL DEFAULT false,
+      active     BOOLEAN NOT NULL DEFAULT true,
+      sort       INTEGER NOT NULL DEFAULT 0,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE TABLE IF NOT EXISTS subscriptions (
+      escort_id  INTEGER PRIMARY KEY REFERENCES escorts(id) ON DELETE CASCADE,
+      plan_id    INTEGER REFERENCES plans(id) ON DELETE SET NULL,
+      period_end TIMESTAMPTZ NOT NULL,
+      renew      BOOLEAN NOT NULL DEFAULT true,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE TABLE IF NOT EXISTS invoices (
+      id         SERIAL PRIMARY KEY,
+      number     TEXT UNIQUE,
+      escort_id  INTEGER REFERENCES escorts(id) ON DELETE SET NULL,
+      user_id    INTEGER REFERENCES users(id) ON DELETE SET NULL,
+      plan_id    INTEGER REFERENCES plans(id) ON DELETE SET NULL,
+      plan_name  TEXT NOT NULL,
+      amount     NUMERIC(10,2) NOT NULL,
+      currency   TEXT NOT NULL DEFAULT 'CHF',
+      reference  TEXT NOT NULL DEFAULT '',
+      kind       TEXT NOT NULL DEFAULT 'new',
+      status     TEXT NOT NULL DEFAULT 'open',
+      due_at     TIMESTAMPTZ NOT NULL,
+      paid_at    TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE INDEX IF NOT EXISTS invoices_status_idx ON invoices (status, created_at DESC);
+    CREATE INDEX IF NOT EXISTS invoices_escort_idx ON invoices (escort_id, created_at DESC);
+
     -- Fotos im Chat (privat, nur für die beiden Beteiligten abrufbar)
     ALTER TABLE messages ADD COLUMN IF NOT EXISTS photo_key TEXT;
     ALTER TABLE messages ADD COLUMN IF NOT EXISTS photo_w INTEGER;
