@@ -275,6 +275,11 @@ export async function migrate() {
     );
     CREATE INDEX IF NOT EXISTS member_reviews_member_idx ON member_reviews (member_id, id DESC);
 
+    -- Fotos im Chat (privat, nur für die beiden Beteiligten abrufbar)
+    ALTER TABLE messages ADD COLUMN IF NOT EXISTS photo_key TEXT;
+    ALTER TABLE messages ADD COLUMN IF NOT EXISTS photo_w INTEGER;
+    ALTER TABLE messages ADD COLUMN IF NOT EXISTS photo_h INTEGER;
+
     -- Verfügbarkeitszeiten (7 Tage, siehe src/lib/schedule.js); NULL = nur der Schalter „verfügbar“ zählt
     ALTER TABLE escorts ADD COLUMN IF NOT EXISTS schedule JSONB;
 

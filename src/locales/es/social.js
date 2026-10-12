@@ -18,6 +18,9 @@ export default {
     delivered: 'Entregado',
     write: 'Escribir mensaje',
     sent: 'Mensaje enviado',
+    photo: 'Foto',
+    sendPhoto: 'Enviar foto',
+    typing: '{name} está escribiendo …',
   },
   feed: {
     title: 'Feed',

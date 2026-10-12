@@ -1,7 +1,10 @@
 import express from 'express';
 import { query } from '../db.js';
 import { httpError, requireUser, rateLimit } from '../auth.js';
-import { wrap, requireDb, noStore, text, toId } from '../http.js';
+import { wrap, requireDb, noStore, text, toId, uploadImages } from '../http.js';
+import { storeImage, isImage } from '../media.js';
+import { getObject } from '../storage.js';
+import { subscribe, publish } from '../live.js';
 import { THUMB, thumbUrl } from '../escorts.js';
 import { unseenCount } from '../suggestions.js';
 import { blockState } from '../safety.js';
@@ -43,7 +46,9 @@ function convOut(row, me) {
           userId: row.user_id,
           thumb: thumbUrl(row.user_avatar),
         },
-    last: row.last_at ? { body: row.last_body, at: row.last_at, mine: row.last_sender === me } : null,
+    last: row.last_at
+      ? { body: row.last_body, photo: Boolean(row.last_photo), at: row.last_at, mine: row.last_sender === me }
+      : null,
     unread: row.unread || 0,
     lastMessageAt: row.last_message_at,
   };
@@ -51,12 +56,12 @@ function convOut(row, me) {
 
 export async function listConversations(me, limit = 100) {
   const { rows } = await query(
-    `SELECT x.*, lm.body AS last_body, lm.sender_id AS last_sender, lm.created_at AS last_at,
+    `SELECT x.*, lm.body AS last_body, lm.photo_key AS last_photo, lm.sender_id AS last_sender, lm.created_at AS last_at,
        (SELECT count(*) FROM messages m
          WHERE m.conversation_id = x.id AND m.read_at IS NULL AND m.sender_id IS DISTINCT FROM $1)::int AS unread
      FROM (${CONV_SELECT} WHERE c.user_id = $1 OR e.user_id = $1) x
      LEFT JOIN LATERAL (
-       SELECT body, sender_id, created_at FROM messages WHERE conversation_id = x.id ORDER BY id DESC LIMIT 1
+       SELECT body, photo_key, sender_id, created_at FROM messages WHERE conversation_id = x.id ORDER BY id DESC LIMIT 1
      ) lm ON true
      ORDER BY x.last_message_at DESC LIMIT $2`,
     [me, limit],
@@ -88,20 +93,35 @@ const messageOut = (m, me) => ({
   at: m.created_at,
   mine: m.sender_id === me,
   read: Boolean(m.read_at),
+  photo: m.photo_key
+    ? {
+        id: Number(m.id),
+        url: `/api/messages/photo/${m.id}`,
+        thumb: `/api/messages/photo/${m.id}?size=sm`,
+        width: m.photo_w,
+        height: m.photo_h,
+      }
+    : null,
 });
 
-async function addMessage(convId, me, body) {
+const otherOf = (c, me) => (c.user_id === me ? c.escort_user_id : c.user_id);
+
+async function addMessage(c, me, body, photo = null) {
   const { rows } = await query(
-    'INSERT INTO messages (conversation_id, sender_id, body) VALUES ($1, $2, $3) RETURNING *',
-    [convId, me, body],
+    `INSERT INTO messages (conversation_id, sender_id, body, photo_key, photo_w, photo_h)
+     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+    [c.id, me, body, photo?.key || null, photo?.width || null, photo?.height || null],
   );
-  await query('UPDATE conversations SET last_message_at = now() WHERE id = $1', [convId]);
+  await query('UPDATE conversations SET last_message_at = now() WHERE id = $1', [c.id]);
   // wer antwortet, hat die bisherigen Nachrichten gelesen
-  await query(
+  const read = await query(
     `UPDATE messages SET read_at = now()
      WHERE conversation_id = $1 AND read_at IS NULL AND sender_id IS DISTINCT FROM $2 AND id < $3`,
-    [convId, me, rows[0].id],
+    [c.id, me, rows[0].id],
   );
+  const other = otherOf(c, me);
+  publish([other, me], 'message', { conversationId: c.id, id: Number(rows[0].id) });
+  if (read.rowCount) publish([other], 'read', { conversationId: c.id });
   return messageOut(rows[0], me);
 }
 
@@ -144,11 +164,12 @@ router.get(
   wrap(async (req, res) => {
     const me = req.user.id;
     const c = await loadConversation(toId(req.params.id), me);
-    await query(
+    const read = await query(
       `UPDATE messages SET read_at = now()
        WHERE conversation_id = $1 AND read_at IS NULL AND sender_id IS DISTINCT FROM $2`,
       [c.id, me],
     );
+    if (read.rowCount) publish([otherOf(c, me)], 'read', { conversationId: c.id });
     const after = Number(req.query.after) || 0;
     const { rows } = after
       ? await query('SELECT * FROM messages WHERE conversation_id = $1 AND id > $2 ORDER BY id LIMIT 200', [
@@ -195,7 +216,8 @@ router.post(
        ON CONFLICT (user_id, escort_id) DO UPDATE SET last_message_at = now() RETURNING id`,
       [me, escort.id],
     );
-    const message = await addMessage(conv[0].id, me, body);
+    const c = await loadConversation(conv[0].id, me);
+    const message = await addMessage(c, me, body);
     res.status(201).json({ conversationId: conv[0].id, message });
   }),
 );
@@ -206,10 +228,81 @@ router.post(
   rateLimit(300, 10 * 60 * 1000),
   wrap(async (req, res) => {
     const c = await loadConversation(toId(req.params.id), req.user.id);
-    const other = c.user_id === req.user.id ? c.escort_user_id : c.user_id;
-    if (await blockState(req.user.id, other)) throw httpError(403, 'blocked', 'Blockiert');
-    res.status(201).json(await addMessage(c.id, req.user.id, messageBody(req.body?.body)));
+    if (await blockState(req.user.id, otherOf(c, req.user.id))) throw httpError(403, 'blocked', 'Blockiert');
+    res.status(201).json(await addMessage(c, req.user.id, messageBody(req.body?.body)));
   }),
 );
+
+// Foto senden (optional mit Text); liegt privat im Bucket
+router.post(
+  '/api/messages/:id/photo',
+  requireUser,
+  requireDb,
+  rateLimit(60, 10 * 60 * 1000),
+  uploadImages(1),
+  wrap(async (req, res) => {
+    const c = await loadConversation(toId(req.params.id), req.user.id);
+    if (await blockState(req.user.id, otherOf(c, req.user.id))) throw httpError(403, 'blocked', 'Blockiert');
+    const file = (req.files || [])[0];
+    if (!file || !isImage(file)) throw httpError(400, 'upload_invalid', 'Bitte ein Foto wählen');
+    const img = await storeImage(file, `private/chat/${c.id}`);
+    res.status(201).json(await addMessage(c, req.user.id, text(req.body?.body, 2000), img));
+  }),
+);
+
+// Foto aus dem Chat – nur für die beiden Beteiligten
+router.get(
+  '/api/messages/photo/:messageId',
+  requireUser,
+  requireDb,
+  wrap(async (req, res) => {
+    const { rows } = await query(
+      `SELECT m.photo_key, c.user_id, e.user_id AS escort_user_id FROM messages m
+       JOIN conversations c ON c.id = m.conversation_id JOIN escorts e ON e.id = c.escort_id
+       WHERE m.id = $1`,
+      [toId(req.params.messageId)],
+    );
+    const m = rows[0];
+    if (!m?.photo_key || (m.user_id !== req.user.id && m.escort_user_id !== req.user.id)) {
+      throw httpError(404, 'not_found', 'Nicht gefunden');
+    }
+    const obj = await getObject(`${m.photo_key}${req.query.size === 'sm' ? '_sm' : ''}.webp`);
+    res.set('Content-Type', 'image/webp');
+    res.set('Cache-Control', 'private, max-age=86400');
+    obj.Body.pipe(res);
+  }),
+);
+
+// „schreibt gerade …“ an die andere Person weitergeben
+router.post(
+  '/api/messages/:id/typing',
+  requireUser,
+  rateLimit(240, 10 * 60 * 1000),
+  wrap(async (req, res) => {
+    const c = await loadConversation(toId(req.params.id), req.user.id);
+    const other = otherOf(c, req.user.id);
+    if (!(await blockState(req.user.id, other))) publish([other], 'typing', { conversationId: c.id });
+    res.json({ ok: true });
+  }),
+);
+
+// Echtzeit-Verbindung (Server-Sent Events)
+router.get('/api/live', requireUser, (req, res) => {
+  res.set({
+    'Content-Type': 'text/event-stream',
+    // no-transform: keine Komprimierung, damit Ereignisse sofort ankommen
+    'Cache-Control': 'no-cache, no-transform',
+    Connection: 'keep-alive',
+    'X-Accel-Buffering': 'no',
+  });
+  res.flushHeaders();
+  res.write('retry: 5000\n\n');
+  const unsubscribe = subscribe(req.user.id, res);
+  const ping = setInterval(() => res.write(': ping\n\n'), 25000);
+  req.on('close', () => {
+    clearInterval(ping);
+    unsubscribe();
+  });
+});
 
 export default router;

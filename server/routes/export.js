@@ -69,7 +69,7 @@ router.get(
       rows(
         `SELECT c.id, c.created_at,
            CASE WHEN c.user_id = $1 THEN e.name ELSE u.name END AS with_name,
-           (SELECT json_agg(json_build_object('from_me', m.sender_id = $1, 'body', m.body, 'sent_at', m.created_at,
+           (SELECT json_agg(json_build_object('from_me', m.sender_id = $1, 'body', m.body, 'photo', m.photo_key IS NOT NULL, 'sent_at', m.created_at,
                     'read_at', m.read_at) ORDER BY m.id)
             FROM messages m WHERE m.conversation_id = c.id) AS messages
          FROM conversations c JOIN escorts e ON e.id = c.escort_id JOIN users u ON u.id = c.user_id

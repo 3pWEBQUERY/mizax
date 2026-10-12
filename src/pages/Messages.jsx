@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import Page from '../components/Page.jsx';
 import PageHead from '../components/PageHead.jsx';
@@ -15,7 +15,11 @@ import {
   CheckIcon,
   StarIcon,
   BlockIcon,
+  ImageIcon,
+  SpinnerIcon,
 } from '../components/Icons.jsx';
+import Lightbox from '../components/Lightbox.jsx';
+import { onLive } from '../lib/live.js';
 import ProfileMenu from '../components/ProfileMenu.jsx';
 import { unblock } from '../lib/blocks.js';
 import { api } from '../lib/api.js';
@@ -102,17 +106,56 @@ export function Chat() {
   const [error, setError] = useState(null);
   const [body, setBody] = useState('');
   const [sending, setSending] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [zoom, setZoom] = useState(null);
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
+  const fileRef = useRef(null);
+  const typingSent = useRef(0);
   const lastRef = useRef(0);
   const animateFrom = useRef(Infinity);
   lastRef.current = messages?.length ? messages[messages.length - 1].id : 0;
+  const loadedOnce = messages !== null;
 
-  const scrollDown = (smooth) =>
-    requestAnimationFrame(() => {
-      const el = scrollRef.current;
-      if (el) el.scrollTo({ top: el.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
-    });
+  // Scrollen erst nach dem Zeichnen der neuen Nachrichten (siehe useLayoutEffect unten)
+  const scrollRequest = useRef(null);
+  const scrollNow = useCallback((smooth) => {
+    const el = scrollRef.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+  }, []);
+  const scrollDown = useCallback(
+    (smooth) => {
+      scrollRequest.current = smooth;
+      requestAnimationFrame(() => scrollRequest.current !== null && scrollNow(smooth));
+    },
+    [scrollNow],
+  );
+
+  useLayoutEffect(() => {
+    if (scrollRequest.current === null) return;
+    scrollNow(scrollRequest.current);
+    scrollRequest.current = null;
+  });
+
+  // wer unten ist, bleibt unten – auch wenn Fotos nachladen oder die Tippanzeige erscheint
+  const listRef = useRef(null);
+  const pinned = useRef(true);
+  useEffect(() => {
+    const el = scrollRef.current;
+    const list = listRef.current;
+    if (!el || !list || typeof ResizeObserver === 'undefined') return undefined;
+    const onScroll = () => {
+      pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 160;
+    };
+    const ro = new ResizeObserver(() => pinned.current && scrollNow(false));
+    el.addEventListener('scroll', onScroll, { passive: true });
+    ro.observe(list);
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      ro.disconnect();
+    };
+  }, [loadedOnce, scrollNow]);
   const nearBottom = () => {
     const el = scrollRef.current;
     return !el || el.scrollHeight - el.scrollTop - el.clientHeight < 160;
@@ -137,30 +180,73 @@ export function Chat() {
     return () => {
       alive = false;
     };
-  }, [id, user]);
+  }, [id, user, scrollDown]);
 
-  // neue Nachrichten und Lesestatus regelmäßig abholen
+  // neue Nachrichten und Lesestatus abholen: sofort bei einem Echtzeit-Ereignis,
+  // zusätzlich alle 15 Sekunden als Rückfall (z. B. nach einem Verbindungsabbruch)
   const loaded = messages !== null;
+  const tick = useCallback(async () => {
+    try {
+      const r = await api(`/api/messages/${id}?after=${lastRef.current}`);
+      setReadUpTo(r.readUpTo);
+      if (r.messages.length) {
+        const stick = nearBottom();
+        setMessages((m) => merge(m || [], r.messages));
+        if (r.messages.some((m) => !m.mine)) setTyping(false);
+        refreshUnread();
+        if (stick) scrollDown(true);
+      }
+    } catch {
+      /* offline */
+    }
+  }, [id, scrollDown]);
+
   useEffect(() => {
     if (!loaded) return undefined;
-    const tick = async () => {
-      if (document.visibilityState !== 'visible') return;
-      try {
-        const r = await api(`/api/messages/${id}?after=${lastRef.current}`);
-        setReadUpTo(r.readUpTo);
-        if (r.messages.length) {
-          const stick = nearBottom();
-          setMessages((m) => merge(m || [], r.messages));
-          refreshUnread();
-          if (stick) scrollDown(true);
-        }
-      } catch {
-        /* offline */
-      }
+    const mine = (d) => String(d.conversationId) === String(id);
+    const offs = [
+      onLive('message', (d) => mine(d) && tick()),
+      onLive('read', (d) => mine(d) && tick()),
+      onLive('typing', (d) => mine(d) && setTyping(Date.now())),
+    ];
+    const timer = window.setInterval(() => document.visibilityState === 'visible' && tick(), 15000);
+    return () => {
+      offs.forEach((off) => off());
+      window.clearInterval(timer);
     };
-    const timer = window.setInterval(tick, 4000);
-    return () => window.clearInterval(timer);
-  }, [id, loaded]);
+  }, [id, loaded, tick]);
+
+  // Tippanzeige nach 5 Sekunden ohne neues Signal ausblenden
+  useEffect(() => {
+    if (!typing) return undefined;
+    const t = window.setTimeout(() => setTyping(false), 5000);
+    return () => window.clearTimeout(t);
+  }, [typing]);
+
+  function signalTyping() {
+    if (Date.now() - typingSent.current < 3000) return;
+    typingSent.current = Date.now();
+    api(`/api/messages/${id}/typing`, { method: 'POST' }).catch(() => {});
+  }
+
+  async function sendPhoto(file) {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.append('photos', file);
+      if (body.trim()) form.append('body', body.trim());
+      const m = await api(`/api/messages/${id}/photo`, { method: 'POST', form });
+      setMessages((list) => merge(list || [], [m]));
+      setBody('');
+      scrollDown(true);
+    } catch (err) {
+      toast(errorText(t, err));
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
 
   async function send(e) {
     e?.preventDefault();
@@ -251,7 +337,7 @@ export function Chat() {
         </div>
       )}
 
-      <div className="chat-list">
+      <div className="chat-list" ref={listRef}>
         {messages && !messages.length && <div className="chat-day">{t('msg.start')}</div>}
         {messages?.map((m, idx) => {
           const prev = messages[idx - 1];
@@ -264,12 +350,23 @@ export function Chat() {
             <Fragment key={m.id}>
               {newDay && <div className="chat-day">{dayLabel(m.at, locale)}</div>}
               <motion.div
-                className={`msg ${m.mine ? 'mine' : 'theirs'} ${end ? 'end' : ''}`}
+                className={`msg ${m.mine ? 'mine' : 'theirs'} ${end ? 'end' : ''} ${m.photo ? 'has-photo' : ''}`}
                 initial={fresh ? { opacity: 0, y: 10, scale: 0.96 } : false}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ type: 'spring', stiffness: 420, damping: 32 }}
               >
-                {m.body}
+                {m.photo && (
+                  <button
+                    type="button"
+                    className="msg-photo"
+                    onClick={() => setZoom(m.photo)}
+                    aria-label={t('msg.photo')}
+                    style={m.photo.width ? { aspectRatio: `${m.photo.width} / ${m.photo.height}` } : undefined}
+                  >
+                    <img src={m.photo.thumb} alt="" loading="lazy" />
+                  </button>
+                )}
+                {m.body && <span className="msg-text">{m.body}</span>}
               </motion.div>
               {end && (
                 <div className={`msg-meta ${m.mine ? 'mine' : ''}`}>
@@ -285,7 +382,38 @@ export function Chat() {
             </Fragment>
           );
         })}
+        <AnimatePresence>
+          {typing && conv && (
+            <motion.div
+              className="msg-typing"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              aria-live="polite"
+            >
+              <span className="typing-dots" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+              {t('msg.typing', { name: conv.other.name })}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+
+      <AnimatePresence>
+        {zoom && (
+          <Lightbox
+            photos={[zoom]}
+            index={0}
+            onIndex={() => {}}
+            onClose={() => setZoom(null)}
+            name={conv?.other.name || ''}
+            t={t}
+          />
+        )}
+      </AnimatePresence>
 
       {conv?.blocked ? (
         <div className="dock-wrap chat-dock">
@@ -318,6 +446,23 @@ export function Chat() {
         <div className="dock-wrap chat-dock">
           <form className="dock" onSubmit={send}>
             <div className="dock-bar">
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(e) => sendPhoto(e.target.files?.[0])}
+              />
+              <button
+                type="button"
+                className="dock-btn chat-attach"
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+                aria-label={t('msg.sendPhoto')}
+                title={t('msg.sendPhoto')}
+              >
+                {uploading ? <SpinnerIcon width={18} height={18} /> : <ImageIcon width={20} height={20} />}
+              </button>
               <div className="dock-input-wrap">
                 <textarea
                   ref={inputRef}
@@ -326,7 +471,10 @@ export function Chat() {
                   value={body}
                   maxLength={2000}
                   placeholder={conv ? t('dock.messageTo', { name: conv.other.name }) : ''}
-                  onChange={(e) => setBody(e.target.value)}
+                  onChange={(e) => {
+                    setBody(e.target.value);
+                    if (e.target.value) signalTyping();
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey && !window.matchMedia('(hover: none)').matches) send(e);
                   }}

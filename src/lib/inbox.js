@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { api } from './api.js';
+import { onLive, startLive } from './live.js';
 
 // Anzahl ungelesener Nachrichten (und neuer Vorschläge für Mitglieder) – wird regelmäßig im
 // Hintergrund aktualisiert
@@ -28,10 +29,15 @@ function onVisible() {
   if (document.visibilityState === 'visible') refreshUnread();
 }
 
+// neue Nachrichten und Lesestatus kommen in Echtzeit; das Abzeichen sofort aktualisieren
+onLive('message', () => refreshUnread());
+onLive('read', () => refreshUnread());
+
 export function startInbox(loggedIn) {
   window.clearInterval(timer);
   document.removeEventListener('visibilitychange', onVisible);
   active = loggedIn;
+  startLive(loggedIn);
   if (!loggedIn) {
     unread = 0;
     suggestions = 0;

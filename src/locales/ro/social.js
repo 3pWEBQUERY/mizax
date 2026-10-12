@@ -18,6 +18,9 @@ export default {
     delivered: 'Livrat',
     write: 'Scrie un mesaj',
     sent: 'Mesaj trimis',
+    photo: 'Fotografie',
+    sendPhoto: 'Trimite o fotografie',
+    typing: '{name} scrie …',
   },
   feed: {
     title: 'Feed',

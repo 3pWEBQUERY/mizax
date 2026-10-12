@@ -18,6 +18,9 @@ export default {
     delivered: 'Dostarczono',
     write: 'Napisz wiadomość',
     sent: 'Wiadomość wysłana',
+    photo: 'Zdjęcie',
+    sendPhoto: 'Wyślij zdjęcie',
+    typing: '{name} pisze …',
   },
   feed: {
     title: 'Feed',

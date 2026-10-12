@@ -18,6 +18,9 @@ export default {
     delivered: 'Kézbesítve',
     write: 'Üzenet írása',
     sent: 'Üzenet elküldve',
+    photo: 'Fotó',
+    sendPhoto: 'Fotó küldése',
+    typing: '{name} ír …',
   },
   feed: {
     title: 'Feed',

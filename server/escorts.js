@@ -308,7 +308,9 @@ export async function deleteEscort(id) {
   const { rows } = await query(
     `SELECT key FROM escort_photos WHERE escort_id = $1
      UNION ALL SELECT pp.key FROM post_photos pp JOIN posts p ON p.id = pp.post_id WHERE p.escort_id = $1
-     UNION ALL SELECT photo_key FROM verifications WHERE escort_id = $1 AND photo_key IS NOT NULL`,
+     UNION ALL SELECT photo_key FROM verifications WHERE escort_id = $1 AND photo_key IS NOT NULL
+     UNION ALL SELECT m.photo_key FROM messages m JOIN conversations c ON c.id = m.conversation_id
+       WHERE c.escort_id = $1 AND m.photo_key IS NOT NULL`,
     [id],
   );
   await query('DELETE FROM escorts WHERE id = $1', [id]);

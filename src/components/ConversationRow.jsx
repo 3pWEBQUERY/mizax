@@ -17,7 +17,11 @@ export function ConversationRow({ c, compact = false }) {
           <b>{c.other.name}</b>
           <small>{c.last ? timeAgo(c.last.at, locale, 'short') : ''}</small>
         </span>
-        <span className="conv-snippet">{c.last ? `${c.last.mine ? `${t('msg.you')}: ` : ''}${c.last.body}` : ''}</span>
+        <span className="conv-snippet">
+          {c.last
+            ? `${c.last.mine ? `${t('msg.you')}: ` : ''}${c.last.body || (c.last.photo ? t('msg.photo') : '')}`
+            : ''}
+        </span>
       </span>
       {c.unread > 0 && <span className="count-badge">{c.unread}</span>}
     </Link>

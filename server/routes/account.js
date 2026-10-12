@@ -182,7 +182,11 @@ router.delete(
        SELECT avatar_key FROM users WHERE id = $1 AND avatar_key IS NOT NULL
        UNION ALL
        SELECT v.photo_key FROM verifications v JOIN escorts e ON e.id = v.escort_id
-       WHERE e.user_id = $1 AND v.photo_key IS NOT NULL`,
+       WHERE e.user_id = $1 AND v.photo_key IS NOT NULL
+       UNION ALL
+       SELECT m.photo_key FROM messages m JOIN conversations c ON c.id = m.conversation_id
+       JOIN escorts e ON e.id = c.escort_id
+       WHERE (c.user_id = $1 OR e.user_id = $1) AND m.photo_key IS NOT NULL`,
       [user.id],
     );
     // Profil, Fotos, Beiträge, Favoriten, Unterhaltungen usw. werden per ON DELETE CASCADE entfernt
