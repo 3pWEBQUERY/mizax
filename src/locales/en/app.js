@@ -45,6 +45,10 @@ export default {
     all: 'All',
     empty: 'No profiles found.',
     loadError: 'Profiles could not be loaded.',
+    services: 'Services',
+    servicesTitle: 'Filter by services',
+    servicesText: 'Only profiles that offer all selected services are shown.',
+    servicesApply: 'Apply',
   },
   card: { verified: 'Verified', addFav: 'Add to favorites', removeFav: 'Remove from favorites' },
   dock: {

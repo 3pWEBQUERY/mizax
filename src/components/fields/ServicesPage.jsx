@@ -36,7 +36,7 @@ export function ServicesField({ value, onOpen }) {
 }
 
 // Eigene, animierte Seite zur Auswahl der Leistungen
-export default function ServicesPage({ open, value, onSave, onBack, title, text }) {
+export default function ServicesPage({ open, value, onSave, onBack, title, text, saveLabel }) {
   const t = useT();
   const heading = title || t('services.title').replace(/\.$/, '');
   const [draft, setDraft] = useState(() => new Set(value));
@@ -172,7 +172,7 @@ export default function ServicesPage({ open, value, onSave, onBack, title, text 
               {t('services.back')}
             </button>
             <button type="button" className="white-btn" onClick={save} disabled={busy}>
-              {busy ? <SpinnerIcon /> : `${t('services.save')} · ${draft.size}`}
+              {busy ? <SpinnerIcon /> : `${saveLabel || t('services.save')} · ${draft.size}`}
             </button>
           </motion.div>
         </motion.div>

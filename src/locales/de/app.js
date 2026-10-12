@@ -45,6 +45,10 @@ export default {
     all: 'Alle',
     empty: 'Keine Profile gefunden.',
     loadError: 'Profile konnten nicht geladen werden.',
+    services: 'Leistungen',
+    servicesTitle: 'Nach Leistungen filtern',
+    servicesText: 'Es werden nur Profile angezeigt, die alle gewählten Leistungen anbieten.',
+    servicesApply: 'Anwenden',
   },
   card: { verified: 'Verifiziert', addFav: 'Zu Favoriten hinzufügen', removeFav: 'Aus Favoriten entfernen' },
   dock: {

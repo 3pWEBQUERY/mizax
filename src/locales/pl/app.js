@@ -45,6 +45,10 @@ export default {
     all: 'Wszystkie',
     empty: 'Nie znaleziono profili.',
     loadError: 'Nie udało się wczytać profili.',
+    services: 'Usługi',
+    servicesTitle: 'Filtruj według usług',
+    servicesText: 'Wyświetlane są tylko profile oferujące wszystkie wybrane usługi.',
+    servicesApply: 'Zastosuj',
   },
   card: { verified: 'Zweryfikowana', addFav: 'Dodaj do ulubionych', removeFav: 'Usuń z ulubionych' },
   dock: {

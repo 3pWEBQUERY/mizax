@@ -5,9 +5,11 @@ import EscortCard, { GridSkeleton } from '../components/EscortCard.jsx';
 import Picker from '../components/fields/Picker.jsx';
 import { PinIcon, ChevronDown, SpinnerIcon, SearchIcon } from '../components/Icons.jsx';
 import PageHead from '../components/PageHead.jsx';
+import ServicesPage from '../components/fields/ServicesPage.jsx';
 import Chip from '../components/Chip.jsx';
 import { useToast } from '../components/Toast.jsx';
 import { useEscorts } from '../lib/store.js';
+import { useAuth } from '../lib/auth.jsx';
 import { useDock, useDockState } from '../lib/dock.jsx';
 import { useI18n } from '../lib/i18n.jsx';
 import { CANTONS, cantonName, distanceKm, locate } from '../lib/cantons.js';
@@ -22,12 +24,15 @@ const fold = (s) =>
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '');
 
-// Suche nach Name, Ort, PLZ, Kanton (Kürzel oder Name in allen Sprachen) und Leistungen;
+// Suche nach Name, Ort, PLZ, Kanton (Kürzel oder Name in allen Sprachen) und Leistungen,
+// Filter nach gewählten Leistungen;
 // mit Standort zusätzlich Umkreis-Filter und Sortierung nach Entfernung.
-export function filterEscorts(list, { query = '', canton = '', geo = null, radius = null } = {}) {
+export function filterEscorts(list, { query = '', canton = '', geo = null, radius = null, services = [] } = {}) {
   const q = fold(query.trim());
   let out = list.filter((e) => {
     if (canton && e.canton !== canton) return false;
+    // alle gewählten Leistungen müssen angeboten werden
+    if (services.length && !services.every((k) => e.services?.includes(k))) return false;
     if (!q) return true;
     const c = CANTONS.find((x) => x.code === e.canton);
     const hay = [e.name, e.city, e.zip, e.canton, c?.de, c?.fr, c?.en, e.tagline, ...(e.services || [])];
@@ -46,11 +51,13 @@ export function filterEscorts(list, { query = '', canton = '', geo = null, radiu
 }
 
 export function CantonChips({ escorts }) {
-  const { canton, setCanton, geo, setGeo, radius, setRadius } = useDockState();
+  const { canton, setCanton, geo, setGeo, radius, setRadius, services, setServices } = useDockState();
   const { t, locale } = useI18n();
+  const { user } = useAuth();
   const toast = useToast();
   const [locating, setLocating] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
   const anchor = useRef(null);
 
   const counts = useMemo(() => {
@@ -147,7 +154,33 @@ export function CantonChips({ escorts }) {
             className="picker-canton"
           />
         </div>
+        {user && (
+          <Chip
+            active={services.length > 0}
+            onClick={() => setServicesOpen(true)}
+            aria-haspopup="dialog"
+            className="services-chip"
+          >
+            {t('home.services')}
+            {services.length > 0 && <small>{services.length}</small>}
+          </Chip>
+        )}
       </div>
+
+      {user && (
+        <ServicesPage
+          open={servicesOpen}
+          value={services}
+          title={t('home.servicesTitle')}
+          text={t('home.servicesText')}
+          saveLabel={t('home.servicesApply')}
+          onSave={(next) => {
+            setServices(next);
+            setServicesOpen(false);
+          }}
+          onBack={() => setServicesOpen(false)}
+        />
+      )}
 
       <AnimatePresence initial={false}>
         {geo && (
@@ -203,7 +236,7 @@ export function EscortGrid({ list, instant }) {
 export default function Home() {
   useDock({ mode: 'search' });
   const { escorts, error } = useEscorts();
-  const { query, canton, geo, radius } = useDockState();
+  const { query, canton, geo, radius, services } = useDockState();
   const { t } = useI18n();
   const [instant] = useState(() => introPlayed);
   useEffect(() => {
@@ -211,11 +244,11 @@ export default function Home() {
   }, []);
 
   const filtered = useMemo(
-    () => (escorts ? filterEscorts(escorts, { query, canton, geo, radius }) : []),
-    [escorts, query, canton, geo, radius],
+    () => (escorts ? filterEscorts(escorts, { query, canton, geo, radius, services }) : []),
+    [escorts, query, canton, geo, radius, services],
   );
 
-  const filteredView = Boolean(query.trim() || canton || geo);
+  const filteredView = Boolean(query.trim() || canton || geo || services.length);
   const n = filtered.length;
   const sub = !escorts
     ? null

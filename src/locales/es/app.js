@@ -45,6 +45,10 @@ export default {
     all: 'Todas',
     empty: 'No se encontraron perfiles.',
     loadError: 'No se pudieron cargar los perfiles.',
+    services: 'Servicios',
+    servicesTitle: 'Filtrar por servicios',
+    servicesText: 'Solo se muestran los perfiles que ofrecen todos los servicios elegidos.',
+    servicesApply: 'Aplicar',
   },
   card: { verified: 'Verificada', addFav: 'Añadir a favoritos', removeFav: 'Quitar de favoritos' },
   dock: {

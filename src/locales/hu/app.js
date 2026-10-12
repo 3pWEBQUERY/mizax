@@ -45,6 +45,10 @@ export default {
     all: 'Mind',
     empty: 'Nincs találat.',
     loadError: 'A profilokat nem sikerült betölteni.',
+    services: 'Szolgáltatások',
+    servicesTitle: 'Szűrés szolgáltatások szerint',
+    servicesText: 'Csak azok a profilok jelennek meg, amelyek minden kiválasztott szolgáltatást kínálnak.',
+    servicesApply: 'Alkalmaz',
   },
   card: { verified: 'Ellenőrzött', addFav: 'Hozzáadás a kedvencekhez', removeFav: 'Eltávolítás a kedvencekből' },
   dock: {

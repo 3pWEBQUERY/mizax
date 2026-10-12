@@ -9,6 +9,8 @@ export function DockProvider({ children }) {
   // Standort des Besuchers (nur nach Klick auf „In meiner Nähe“, wird nicht gespeichert)
   const [geo, setGeo] = useState(null);
   const [radius, setRadius] = useState(null);
+  // Leistungsfilter der Startseite (nur für angemeldete Konten, da Gäste keine Leistungen sehen)
+  const [services, setServices] = useState([]);
   // Suchleiste ist standardmäßig versteckt und erscheint erst über den Suchen-Button
   const [searchOpen, setSearchOpen] = useState(false);
   // Nachrichtenleiste auf Profilen erscheint erst über „Nachricht schreiben“
@@ -28,6 +30,8 @@ export function DockProvider({ children }) {
       setGeo,
       radius,
       setRadius,
+      services,
+      setServices,
       inputRef,
       searchOpen,
       setSearchOpen,
@@ -36,7 +40,7 @@ export function DockProvider({ children }) {
       sidebarOpen,
       setSidebarOpen,
     }),
-    [config, query, canton, geo, radius, searchOpen, messageOpen, sidebarOpen],
+    [config, query, canton, geo, radius, services, searchOpen, messageOpen, sidebarOpen],
   );
   return <DockCtx.Provider value={value}>{children}</DockCtx.Provider>;
 }

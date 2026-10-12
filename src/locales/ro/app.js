@@ -45,6 +45,10 @@ export default {
     all: 'Toate',
     empty: 'Nu s-au găsit profiluri.',
     loadError: 'Profilurile nu au putut fi încărcate.',
+    services: 'Servicii',
+    servicesTitle: 'Filtrează după servicii',
+    servicesText: 'Sunt afișate doar profilurile care oferă toate serviciile alese.',
+    servicesApply: 'Aplică',
   },
   card: { verified: 'Verificată', addFav: 'Adaugă la favorite', removeFav: 'Elimină din favorite' },
   dock: {
