@@ -40,6 +40,9 @@ const TARGETS = {
     notify: (e, me, rating) => notifyReview(e.user_id, me.name, rating, `/escort/${e.slug}?tab=reviews`),
     // Wem gehört das bewertete Profil, wer darf antworten?
     owner: (e) => e.user_id,
+    // Bild der bewerteten Person (für Antworten) und der eigenen Person (für „Deine Bewertung“)
+    ownerThumb: `SELECT ${THUMB('e')} AS k FROM escorts e WHERE e.id = $1`,
+    selfThumb: 'SELECT avatar_key AS k FROM users WHERE id = $1',
     ownerOf: `SELECT r.id, r.user_id, r.reply, e.user_id AS owner_id, e.name AS owner_name, '/escort/' || e.slug AS path
       FROM escort_reviews r JOIN escorts e ON e.id = r.escort_id WHERE r.id = $1`,
   },
@@ -62,6 +65,8 @@ const TARGETS = {
     notify: async (m, me, rating) =>
       notifyReview(m.id, (await ownEscort(me.id))?.name || me.name, rating, `/member/${m.id}?tab=reviews`),
     owner: (m) => m.id,
+    ownerThumb: 'SELECT avatar_key AS k FROM users WHERE id = $1',
+    selfThumb: `SELECT ${THUMB('e')} AS k FROM escorts e WHERE e.user_id = $1`,
     ownerOf: `SELECT r.id, r.user_id, r.reply, r.member_id AS owner_id, u.name AS owner_name,
         '/member/' || r.member_id AS path
       FROM member_reviews r JOIN users u ON u.id = r.member_id WHERE r.id = $1`,
@@ -96,12 +101,16 @@ export async function ratingSummary(table, key, id) {
 }
 
 async function summary(T, target, me) {
-  const [x, { rows: mine }, canRate] = await Promise.all([
+  const [x, { rows: mine }, canRate, owner, self] = await Promise.all([
     ratingSummary(T.table, T.key, target.id),
     query(`${T.select} WHERE r.${T.key} = $1 AND r.user_id = $2`, [target.id, me.id]),
     T.canRate(target, me),
+    query(T.ownerThumb, [target.id]),
+    query(T.selfThumb, [me.id]),
   ]);
   return {
+    ownerThumb: thumbUrl(owner.rows[0]?.k),
+    selfThumb: thumbUrl(self.rows[0]?.k),
     average: x.average,
     count: x.count,
     distribution: [x.r5, x.r4, x.r3, x.r2, x.r1],

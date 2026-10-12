@@ -329,3 +329,14 @@
   padding: 0 16px;
   font-size: 14px;
 }
+
+/* Profilbilder in der eigenen Bewertung und in Antworten */
+.review-form-who {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-reply .person {
+  flex: none;
+}

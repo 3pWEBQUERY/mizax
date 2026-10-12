@@ -9,6 +9,7 @@ import { useI18n, errorText } from '../../lib/i18n.jsx';
 import { profilePath } from '../../lib/links.js';
 import { timeAgo } from '../../lib/time.js';
 import { useReport } from '../Report.jsx';
+import { useAuth } from '../../lib/auth.jsx';
 
 export const formatRating = (n, locale) =>
   new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(n);
@@ -55,8 +56,10 @@ function StarPicker({ value, onChange }) {
   );
 }
 
-function ReviewForm({ base, delBase, texts, mine, onSaved }) {
+function ReviewForm({ base, delBase, texts, mine, onSaved, selfThumb }) {
   const { t } = useI18n();
+  const { user } = useAuth();
+  const selfName = mine?.author.name || user?.name;
   const toast = useToast();
   const [rating, setRating] = useState(mine?.rating || 0);
   const [body, setBody] = useState(mine?.body || '');
@@ -94,6 +97,7 @@ function ReviewForm({ base, delBase, texts, mine, onSaved }) {
   if (mine && !editing) {
     return (
       <div className="review-mine">
+        <Avatar name={selfName} thumb={selfThumb} size={32} />
         <span>{t('reviews.yours')}</span>
         <Stars value={mine.rating} />
         <button type="button" className="status-pill" onClick={() => setEditing(true)}>
@@ -106,7 +110,10 @@ function ReviewForm({ base, delBase, texts, mine, onSaved }) {
   return (
     <form className="review-form" onSubmit={save}>
       <div className="review-form-head">
-        <span>{mine ? t('reviews.yours') : texts.rateTitle}</span>
+        <span className="review-form-who">
+          <Avatar name={selfName} thumb={selfThumb} size={32} />
+          {mine ? t('reviews.yours') : texts.rateTitle}
+        </span>
         <StarPicker value={rating} onChange={setRating} />
       </div>
       <AnimatePresence initial={false}>
@@ -147,7 +154,7 @@ function ReviewForm({ base, delBase, texts, mine, onSaved }) {
   );
 }
 
-function ReviewItem({ r, onDelete, onChange, reportKind, ownerName, replyBase }) {
+function ReviewItem({ r, onDelete, onChange, reportKind, ownerName, ownerThumb, replyBase }) {
   const { t, locale } = useI18n();
   const report = useReport();
   const [replying, setReplying] = useState(false);
@@ -192,6 +199,7 @@ function ReviewItem({ r, onDelete, onChange, reportKind, ownerName, replyBase })
         <ReviewReply
           r={r}
           ownerName={ownerName}
+          ownerThumb={ownerThumb}
           editing={replying}
           setEditing={setReplying}
           url={`${replyBase}/${r.id}/reply`}
@@ -203,7 +211,7 @@ function ReviewItem({ r, onDelete, onChange, reportKind, ownerName, replyBase })
 }
 
 // Öffentliche Antwort der bewerteten Person unter einer Bewertung
-function ReviewReply({ r, ownerName, editing, setEditing, url, onChange }) {
+function ReviewReply({ r, ownerName, ownerThumb, editing, setEditing, url, onChange }) {
   const { t, locale } = useI18n();
   const toast = useToast();
   const [draft, setDraft] = useState(r.reply?.body || '');
@@ -264,6 +272,7 @@ function ReviewReply({ r, ownerName, editing, setEditing, url, onChange }) {
   return (
     <div className="review-reply">
       <div className="review-top">
+        <Avatar name={ownerName} thumb={ownerThumb} size={24} />
         <b>{t('reviews.replyFrom', { name: ownerName })}</b>
         <small>{timeAgo(r.reply.at, locale, 'short')}</small>
         {r.canReply && (
@@ -381,6 +390,7 @@ export default function Reviews({ target = 'escort', refId, name, onSummary }) {
           delBase={delBase}
           texts={texts}
           mine={data.mine}
+          selfThumb={data.selfThumb}
           onSaved={apply}
         />
       )}
@@ -398,6 +408,7 @@ export default function Reviews({ target = 'escort', refId, name, onSummary }) {
                 }
                 reportKind={member ? 'member_review' : 'review'}
                 ownerName={name}
+                ownerThumb={data.ownerThumb}
                 replyBase={delBase}
               />
             ))}
@@ -477,6 +488,7 @@ export function GivenReviews({ memberId, name, self }) {
                   {r.reply && (
                     <div className="review-reply">
                       <div className="review-top">
+                        <Avatar name={r.escort.name} thumb={r.escort.thumb} size={24} />
                         <b>{t('reviews.replyFrom', { name: r.escort.name })}</b>
                         <small>{timeAgo(r.reply.at, locale, 'short')}</small>
                       </div>
