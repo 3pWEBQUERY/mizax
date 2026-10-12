@@ -285,5 +285,7 @@ export default {
     block_self: 'You can’t block yourself.',
     block_admin: 'The team can’t be blocked.',
     blocked: 'You can’t message each other.',
+    verify_needs_photos: 'Please upload at least one profile photo first.',
+    already_verified: 'Your profile is already verified.',
   },
 };

@@ -288,5 +288,7 @@ export default {
     block_self: 'Du kannst dich nicht selbst blockieren.',
     block_admin: 'Die Verwaltung kann nicht blockiert werden.',
     blocked: 'Ihr könnt euch keine Nachrichten schreiben.',
+    verify_needs_photos: 'Bitte lade zuerst mindestens ein Profilfoto hoch.',
+    already_verified: 'Dein Profil ist bereits verifiziert.',
   },
 };

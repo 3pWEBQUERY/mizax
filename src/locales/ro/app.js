@@ -286,5 +286,7 @@ export default {
     block_self: 'Nu te poți bloca pe tine.',
     block_admin: 'Echipa nu poate fi blocată.',
     blocked: 'Nu vă puteți scrie.',
+    verify_needs_photos: 'Încarcă mai întâi cel puțin o fotografie de profil.',
+    already_verified: 'Profilul tău este deja verificat.',
   },
 };

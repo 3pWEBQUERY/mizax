@@ -275,6 +275,21 @@ export async function migrate() {
     );
     CREATE INDEX IF NOT EXISTS member_reviews_member_idx ON member_reviews (member_id, id DESC);
 
+    -- Verifizierung: Selfie mit Code, nur für die Verwaltung sichtbar, nach dem Entscheid gelöscht
+    ALTER TABLE escorts ADD COLUMN IF NOT EXISTS verify_code TEXT;
+    CREATE TABLE IF NOT EXISTS verifications (
+      id         SERIAL PRIMARY KEY,
+      escort_id  INTEGER NOT NULL REFERENCES escorts(id) ON DELETE CASCADE,
+      code       TEXT NOT NULL,
+      photo_key  TEXT,
+      status     TEXT NOT NULL DEFAULT 'pending',
+      reason     TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      decided_at TIMESTAMPTZ,
+      decided_by INTEGER REFERENCES users(id) ON DELETE SET NULL
+    );
+    CREATE INDEX IF NOT EXISTS verifications_status_idx ON verifications (status, created_at DESC);
+
     -- Vorschläge: Ereignisse auf Escort-Profilen (wieder aktiv, Standort geändert)
     ALTER TABLE escorts ADD COLUMN IF NOT EXISTS returned_at TIMESTAMPTZ;
     ALTER TABLE escorts ADD COLUMN IF NOT EXISTS moved_at TIMESTAMPTZ;

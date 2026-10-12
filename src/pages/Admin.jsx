@@ -7,6 +7,7 @@ import { Placeholder } from '../components/Media.jsx';
 import { useToast } from '../components/Toast.jsx';
 import ProfileEditor from '../components/ProfileEditor.jsx';
 import Reports from './admin/Reports.jsx';
+import Verifications from './admin/Verifications.jsx';
 import { PlusIcon } from '../components/Icons.jsx';
 import { api } from '../lib/api.js';
 import { useAuth } from '../lib/auth.jsx';
@@ -57,12 +58,19 @@ function Dashboard({ status }) {
   const { t } = useI18n();
   const [tab, setTab] = useState('profiles');
   const [reports, setReports] = useState(0);
+  const [verifications, setVerifications] = useState(0);
   const loadReports = useCallback(() => {
     api('/api/admin/reports/count')
       .then((r) => setReports(r.count))
       .catch(() => {});
   }, []);
+  const loadVerifications = useCallback(() => {
+    api('/api/admin/verifications/count')
+      .then((r) => setVerifications(r.count))
+      .catch(() => {});
+  }, []);
   useEffect(loadReports, [loadReports]);
+  useEffect(loadVerifications, [loadVerifications]);
 
   return (
     <>
@@ -90,6 +98,7 @@ function Dashboard({ status }) {
           ['profiles', t('admin.tabProfiles')],
           ['users', t('admin.tabUsers')],
           ['reports', t('reportAdmin.title'), reports],
+          ['verify', t('verifyAdmin.title'), verifications],
         ].map(([k, label, count]) => (
           <button
             key={k}
@@ -118,8 +127,10 @@ function Dashboard({ status }) {
             <Profiles status={status} />
           ) : tab === 'users' ? (
             <Users />
-          ) : (
+          ) : tab === 'reports' ? (
             <Reports onCount={loadReports} />
+          ) : (
+            <Verifications onCount={loadVerifications} />
           )}
         </motion.div>
       </AnimatePresence>

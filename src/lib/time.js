@@ -54,3 +54,10 @@ export function sameDay(a, b) {
 export function formatNumber(n, locale) {
   return new Intl.NumberFormat(locale).format(n || 0);
 }
+
+// Datum mit Uhrzeit, z. B. „12. Okt., 14:38“
+export function dateTime(date, locale) {
+  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(
+    new Date(date),
+  );
+}

@@ -1,0 +1,274 @@
+/* ---------- Verifizierung ---------- */
+
+.verify-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--tint);
+  border: 1px solid var(--border-strong);
+  white-space: nowrap;
+}
+
+.verify-pill.pending {
+  color: var(--text-2);
+}
+
+.verify-pill.verified {
+  color: var(--ok);
+  border-color: color-mix(in srgb, var(--ok) 35%, transparent);
+}
+
+.verify-pill.rejected {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+}
+
+.panel-title span .verify-pill {
+  font-size: 12px;
+}
+
+.verify-text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
+.verify-rejected {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.verify-rejected b {
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.verify-how {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.verify-code {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 20px;
+  border-radius: 18px;
+  background: var(--tint);
+  border: 1px dashed var(--tint-3);
+}
+
+.verify-code span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.verify-code b {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.verify-steps {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: var(--text-2);
+}
+
+.verify-steps li::marker {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.verify-privacy {
+  margin: 14px 0 0;
+}
+
+.verify-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.verify-actions .toggle:disabled {
+  opacity: 0.5;
+}
+
+@media (max-width: 720px) {
+  .verify-how {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .verify-code {
+    align-items: flex-start;
+  }
+}
+
+/* Verwaltung */
+.verify-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.verify-name:hover b {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.verify-compare {
+  display: grid;
+  grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.verify-proof {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.verify-proof a,
+.verify-gone {
+  display: block;
+  aspect-ratio: 3 / 4;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--tint);
+}
+
+.verify-gone {
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.verify-proof img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.verify-proof figcaption {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.verify-proof figcaption b {
+  margin-left: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+
+.verify-side {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.verify-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.verify-thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.verify-thumbs a {
+  aspect-ratio: 3 / 4;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--tint);
+}
+
+.verify-thumbs img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.verify-reject {
+  display: flex;
+  flex-direction: column;
+}
+
+.verify-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.verify-presets .toggle {
+  padding: 7px 12px;
+  font-size: 13px;
+}
+
+.report-actions .small-btn {
+  gap: 6px;
+}
+
+.report-actions button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@media (max-width: 720px) {
+  .verify-compare {
+    grid-template-columns: 1fr;
+  }
+  .verify-proof {
+    max-width: 280px;
+  }
+  .verify-thumbs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Verwaltung: vier Tabs dürfen auf dem Handy seitlich scrollen */
+@media (max-width: 720px) {
+  .admin-tabs {
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .admin-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .admin-tabs button {
+    flex: none;
+  }
+}

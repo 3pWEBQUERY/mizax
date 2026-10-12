@@ -287,5 +287,7 @@ export default {
     block_self: 'Nie możesz zablokować siebie.',
     block_admin: 'Nie można zablokować zespołu.',
     blocked: 'Nie możecie do siebie pisać.',
+    verify_needs_photos: 'Najpierw prześlij co najmniej jedno zdjęcie profilowe.',
+    already_verified: 'Twój profil jest już zweryfikowany.',
   },
 };

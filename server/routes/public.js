@@ -45,6 +45,8 @@ router.get(
   wrap(async (req, res) => {
     const key = req.params[0];
     if (!/^[a-zA-Z0-9/_\-.]+$/.test(key) || key.includes('..')) return res.status(400).end();
+    // Nachweisfotos der Verifizierung sind nie öffentlich
+    if (key.startsWith('private/')) return res.status(404).end();
     try {
       const obj = await getObject(key);
       res.set('Content-Type', obj.ContentType || 'image/webp');

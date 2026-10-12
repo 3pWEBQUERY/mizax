@@ -34,6 +34,25 @@ const T = {
       lines: ['Hallo {name},', 'es gibt einen neuen Vorschlag, der zu deinen Präferenzen passt.'],
       button: 'Vorschlag ansehen',
     },
+    verifyOk: {
+      subject: 'Dein Profil ist verifiziert',
+      title: 'Profil verifiziert',
+      lines: [
+        'Hallo {name},',
+        'wir haben dein Foto geprüft. Dein Profil trägt ab sofort das Abzeichen „Verifiziert“. Das Nachweisfoto haben wir gelöscht.',
+      ],
+      button: 'Profil ansehen',
+    },
+    verifyNo: {
+      subject: 'Verifizierung nicht bestätigt',
+      title: 'Verifizierung nicht bestätigt',
+      lines: [
+        'Hallo {name},',
+        'wir konnten dein Profil leider noch nicht verifizieren. Grund: {reason}',
+        'Du kannst jederzeit ein neues Foto mit deinem neuen Code hochladen. Das bisherige Foto haben wir gelöscht.',
+      ],
+      button: 'Neues Foto hochladen',
+    },
     footer: 'Diese E-Mail wurde automatisch von Mizax verschickt.',
     reset: {
       subject: 'Passwort zurücksetzen',
@@ -78,6 +97,25 @@ const T = {
       title: 'New suggestion',
       lines: ['Hi {name},', 'there is a new suggestion matching your preferences.'],
       button: 'View suggestion',
+    },
+    verifyOk: {
+      subject: 'Your profile is verified',
+      title: 'Profile verified',
+      lines: [
+        'Hi {name},',
+        'we have checked your photo. Your profile now shows the “Verified” badge. We have deleted the verification photo.',
+      ],
+      button: 'View profile',
+    },
+    verifyNo: {
+      subject: 'Verification not confirmed',
+      title: 'Verification not confirmed',
+      lines: [
+        'Hi {name},',
+        'unfortunately we could not verify your profile yet. Reason: {reason}',
+        'You can upload a new photo with your new code at any time. We have deleted the previous photo.',
+      ],
+      button: 'Upload a new photo',
     },
     footer: 'This email was sent automatically by Mizax.',
     reset: {
@@ -124,6 +162,25 @@ const T = {
       lines: ['Bonjour {name},', 'une nouvelle suggestion correspond à vos préférences.'],
       button: 'Voir la suggestion',
     },
+    verifyOk: {
+      subject: 'Votre profil est vérifié',
+      title: 'Profil vérifié',
+      lines: [
+        'Bonjour {name},',
+        'nous avons vérifié votre photo. Votre profil affiche désormais le badge « Vérifié ». Nous avons supprimé la photo de vérification.',
+      ],
+      button: 'Voir le profil',
+    },
+    verifyNo: {
+      subject: 'Vérification non confirmée',
+      title: 'Vérification non confirmée',
+      lines: [
+        'Bonjour {name},',
+        'nous n’avons malheureusement pas encore pu vérifier votre profil. Motif : {reason}',
+        'Vous pouvez à tout moment envoyer une nouvelle photo avec votre nouveau code. Nous avons supprimé la photo précédente.',
+      ],
+      button: 'Envoyer une nouvelle photo',
+    },
     footer: 'Cet e-mail a été envoyé automatiquement par Mizax.',
     reset: {
       subject: 'Réinitialiser votre mot de passe',
@@ -168,6 +225,25 @@ const T = {
       title: 'Nueva sugerencia',
       lines: ['Hola {name}:', 'hay una nueva sugerencia que encaja con tus preferencias.'],
       button: 'Ver sugerencia',
+    },
+    verifyOk: {
+      subject: 'Tu perfil está verificado',
+      title: 'Perfil verificado',
+      lines: [
+        'Hola {name}:',
+        'hemos revisado tu foto. Tu perfil ya muestra la insignia «Verificado». Hemos eliminado la foto de verificación.',
+      ],
+      button: 'Ver perfil',
+    },
+    verifyNo: {
+      subject: 'Verificación no confirmada',
+      title: 'Verificación no confirmada',
+      lines: [
+        'Hola {name}:',
+        'lamentablemente aún no hemos podido verificar tu perfil. Motivo: {reason}',
+        'Puedes subir en cualquier momento una nueva foto con tu nuevo código. Hemos eliminado la foto anterior.',
+      ],
+      button: 'Subir nueva foto',
     },
     footer: 'Este correo fue enviado automáticamente por Mizax.',
     reset: {
@@ -214,6 +290,25 @@ const T = {
       lines: ['Szia {name}!', 'egy új ajánlat illik a preferenciáidhoz.'],
       button: 'Ajánlat megtekintése',
     },
+    verifyOk: {
+      subject: 'A profilod ellenőrizve',
+      title: 'Profil ellenőrizve',
+      lines: [
+        'Szia {name}!',
+        'Ellenőriztük a fotódat. A profilodon mostantól megjelenik az „Ellenőrzött” jelvény. Az ellenőrző fotót töröltük.',
+      ],
+      button: 'Profil megtekintése',
+    },
+    verifyNo: {
+      subject: 'Az ellenőrzés nem sikerült',
+      title: 'Az ellenőrzés nem sikerült',
+      lines: [
+        'Szia {name}!',
+        'Sajnos még nem tudtuk ellenőrizni a profilodat. Indok: {reason}',
+        'Bármikor feltölthetsz egy új fotót az új kódoddal. Az előző fotót töröltük.',
+      ],
+      button: 'Új fotó feltöltése',
+    },
     footer: 'Ezt az e-mailt a Mizax automatikusan küldte.',
     reset: {
       subject: 'Jelszó visszaállítása',
@@ -258,6 +353,25 @@ const T = {
       title: 'Nowa propozycja',
       lines: ['Cześć {name},', 'pojawiła się nowa propozycja pasująca do Twoich preferencji.'],
       button: 'Zobacz propozycję',
+    },
+    verifyOk: {
+      subject: 'Twój profil jest zweryfikowany',
+      title: 'Profil zweryfikowany',
+      lines: [
+        'Cześć {name},',
+        'sprawdziliśmy Twoje zdjęcie. Twój profil ma teraz odznakę „Zweryfikowany”. Zdjęcie weryfikacyjne zostało usunięte.',
+      ],
+      button: 'Zobacz profil',
+    },
+    verifyNo: {
+      subject: 'Weryfikacja niepotwierdzona',
+      title: 'Weryfikacja niepotwierdzona',
+      lines: [
+        'Cześć {name},',
+        'niestety nie mogliśmy jeszcze zweryfikować Twojego profilu. Powód: {reason}',
+        'W każdej chwili możesz przesłać nowe zdjęcie z nowym kodem. Poprzednie zdjęcie zostało usunięte.',
+      ],
+      button: 'Prześlij nowe zdjęcie',
     },
     footer: 'Ta wiadomość została wysłana automatycznie przez Mizax.',
     reset: {
@@ -304,6 +418,25 @@ const T = {
       lines: ['Bună, {name},', 'există o sugestie nouă potrivită preferințelor tale.'],
       button: 'Vezi sugestia',
     },
+    verifyOk: {
+      subject: 'Profilul tău este verificat',
+      title: 'Profil verificat',
+      lines: [
+        'Bună {name},',
+        'am verificat fotografia ta. Profilul tău afișează acum insigna „Verificat”. Am șters fotografia de verificare.',
+      ],
+      button: 'Vezi profilul',
+    },
+    verifyNo: {
+      subject: 'Verificarea nu a fost confirmată',
+      title: 'Verificarea nu a fost confirmată',
+      lines: [
+        'Bună {name},',
+        'din păcate nu am putut încă verifica profilul tău. Motiv: {reason}',
+        'Poți încărca oricând o fotografie nouă cu noul tău cod. Am șters fotografia anterioară.',
+      ],
+      button: 'Încarcă o fotografie nouă',
+    },
     footer: 'Acest e-mail a fost trimis automat de Mizax.',
     reset: {
       subject: 'Resetarea parolei',
@@ -318,6 +451,9 @@ const T = {
   },
 };
 
+// Pflicht-E-Mails ohne Abschalt-Hinweis
+const TRANSACTIONAL = new Set(['reset', 'verifyOk', 'verifyNo']);
+
 const fill = (s, vars) => String(s).replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? `{${k}}`);
 
 export function mailText(locale, key, vars) {
@@ -329,6 +465,6 @@ export function mailText(locale, key, vars) {
     lines: m.lines.map((l) => fill(l, vars)),
     button: m.button,
     // Benachrichtigungen enthalten den Hinweis, wie man sie abschaltet
-    footer: key === 'reset' ? T[lang].footer : T[lang].footerNotify,
+    footer: TRANSACTIONAL.has(key) ? T[lang].footer : T[lang].footerNotify,
   };
 }

@@ -289,5 +289,7 @@ export default {
     block_self: 'Vous ne pouvez pas vous bloquer vous-même.',
     block_admin: 'L’équipe ne peut pas être bloquée.',
     blocked: 'Vous ne pouvez pas vous écrire.',
+    verify_needs_photos: 'Veuillez d’abord téléverser au moins une photo de profil.',
+    already_verified: 'Votre profil est déjà vérifié.',
   },
 };

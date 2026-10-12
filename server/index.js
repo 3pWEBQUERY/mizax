@@ -20,6 +20,7 @@ import reviewRoutes from './routes/reviews.js';
 import suggestionRoutes from './routes/suggestions.js';
 import passwordRoutes from './routes/password.js';
 import safetyRoutes from './routes/safety.js';
+import verifyRoutes from './routes/verify.js';
 import messageRoutes from './routes/messages.js';
 import feedRoutes from './routes/feed.js';
 
@@ -47,6 +48,7 @@ app.use(reviewRoutes);
 app.use(suggestionRoutes);
 app.use(passwordRoutes);
 app.use(safetyRoutes);
+app.use(verifyRoutes);
 app.use(messageRoutes);
 app.use(feedRoutes);
 app.use('/api', (req, res) => res.status(404).json({ error: 'Nicht gefunden', code: 'not_found' }));

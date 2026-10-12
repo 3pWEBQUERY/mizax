@@ -287,5 +287,7 @@ export default {
     block_self: 'Saját magadat nem tilthatod le.',
     block_admin: 'A csapatot nem lehet letiltani.',
     blocked: 'Nem írhattok egymásnak.',
+    verify_needs_photos: 'Előbb tölts fel legalább egy profilfotót.',
+    already_verified: 'A profilod már ellenőrzött.',
   },
 };

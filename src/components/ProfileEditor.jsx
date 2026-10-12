@@ -8,6 +8,7 @@ import PlaceField from './fields/PlaceField.jsx';
 import ServicesPage, { ServicesField } from './fields/ServicesPage.jsx';
 import PhotoManager, { MAX_PHOTOS } from './fields/PhotoManager.jsx';
 import { Section, Field } from './fields/Form.jsx';
+import VerifySection from './fields/VerifySection.jsx';
 import { api } from '../lib/api.js';
 import { useT, errorText } from '../lib/i18n.jsx';
 
@@ -267,6 +268,8 @@ export default function ProfileEditor({
           <div className="field-empty">{t('editor.saveFirst')}</div>
         )}
       </Section>
+
+      {mode === 'self' && escort && <VerifySection escort={escort} />}
 
       <div className="form-actions">
         {escort && ep.remove && (

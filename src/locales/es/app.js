@@ -288,5 +288,7 @@ export default {
     block_self: 'No puedes bloquearte a ti mismo.',
     block_admin: 'No se puede bloquear al equipo.',
     blocked: 'No podéis escribiros.',
+    verify_needs_photos: 'Sube primero al menos una foto de perfil.',
+    already_verified: 'Tu perfil ya está verificado.',
   },
 };
