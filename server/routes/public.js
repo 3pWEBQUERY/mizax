@@ -18,9 +18,9 @@ router.get(
   '/api/escorts',
   requireDb,
   wrap(async (req, res) => {
-    const escorts = await listEscorts();
+    const escorts = await listEscorts({ coversOnly: true });
     res.set('Cache-Control', 'private, max-age=0');
-    res.json(req.user ? escorts : escorts.map(cardOut));
+    res.json(escorts.map((e) => cardOut(e, { member: Boolean(req.user) })));
   }),
 );
 
@@ -35,7 +35,7 @@ router.get(
     const photos = await loadPhotos([rows[0].id]);
     const escort = escortOut(rows[0], photos.get(rows[0].id) || []);
     res.set('Cache-Control', 'private, max-age=0');
-    res.json(req.user ? escort : cardOut(escort));
+    res.json(req.user ? escort : cardOut(escort, { allPhotos: true }));
   }),
 );
 

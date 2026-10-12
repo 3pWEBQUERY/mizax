@@ -398,3 +398,6 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.grid-sentinel {
+  height: 1px;
+}

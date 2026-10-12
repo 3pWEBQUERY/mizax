@@ -65,8 +65,9 @@ export function escortOut(row, photos = []) {
   };
 }
 
-// Für nicht angemeldete Besucher: nur die Daten der Karte
-export function cardOut(e) {
+// Für die Liste (Startseite, Favoriten, Vorschläge): nur was die Karten, Filter und Suche brauchen –
+// das Vollprofil lädt die Profilseite selbst. Gäste sehen keine Leistungen und keine Zeiten.
+export function cardOut(e, { member = false, allPhotos = false } = {}) {
   return {
     id: e.id,
     slug: e.slug,
@@ -81,13 +82,24 @@ export function cardOut(e) {
     verified: e.verified,
     available: e.available,
     availableNow: e.availableNow,
+    ...(member ? { schedule: e.schedule } : {}),
     featured: e.featured,
-    photos: e.photos,
+    photos: allPhotos ? e.photos : e.photos.slice(0, 1),
     rating: e.rating,
-    tagline: '',
-    services: [],
+    tagline: member ? e.tagline : '',
+    services: member ? e.services : [],
     full: false,
   };
+}
+
+// nur das Titelbild je Profil (für Listen)
+async function loadCovers(ids) {
+  if (!ids.length) return new Map();
+  const { rows } = await query(
+    `SELECT DISTINCT ON (escort_id) * FROM escort_photos WHERE escort_id = ANY($1) ORDER BY escort_id, position, id`,
+    [ids],
+  );
+  return new Map(rows.map((r) => [r.escort_id, [r]]));
 }
 
 export async function loadPhotos(ids) {
@@ -101,12 +113,12 @@ export async function loadPhotos(ids) {
   return map;
 }
 
-export async function listEscorts({ includeUnpublished = false } = {}) {
+export async function listEscorts({ includeUnpublished = false, coversOnly = false } = {}) {
   const { rows } = await query(
     `SELECT *, ${RATING_COLS} FROM escorts ${includeUnpublished ? '' : 'WHERE published = true'}
      ORDER BY created_at DESC, id DESC`,
   );
-  const photos = await loadPhotos(rows.map((r) => r.id));
+  const photos = coversOnly ? await loadCovers(rows.map((r) => r.id)) : await loadPhotos(rows.map((r) => r.id));
   return rows.map((r) => escortOut(r, photos.get(r.id) || []));
 }
 

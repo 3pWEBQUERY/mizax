@@ -32,7 +32,8 @@ export default function Profile() {
   const { t, locale } = useI18n();
   const { user } = useAuth();
   const [active, setActive] = useState(0);
-  const locked = Boolean(escort && !escort.full);
+  // Gäste sehen nur die Vorschau; Angemeldete sehen kurz die Kartendaten, bis das Vollprofil da ist
+  const locked = Boolean(escort && !escort.full && !user);
   const [lightbox, setLightbox] = useState(false);
   const own = Boolean(user && escort?.userId === user.id);
   const { tab, switched, select: selectTab } = useProfileTab(slug);

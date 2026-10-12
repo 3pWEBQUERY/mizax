@@ -212,24 +212,48 @@ export function CantonChips({ escorts }) {
   );
 }
 
-export function EscortGrid({ list, instant }) {
+const PAGE = 24;
+
+// Raster mit Nachladen beim Scrollen: zuerst 24 Karten, weitere kurz bevor das Ende sichtbar wird.
+// resetKey: bei neuem Filter wieder bei der ersten Seite beginnen.
+export function EscortGrid({ list, instant, resetKey = '' }) {
+  const [limit, setLimit] = useState(PAGE);
+  const sentinel = useRef(null);
+  const more = list.length > limit;
+
+  useEffect(() => setLimit(PAGE), [resetKey]);
+
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!more || !el || typeof IntersectionObserver === 'undefined') return undefined;
+    const io = new IntersectionObserver(
+      (entries) => entries.some((e) => e.isIntersecting) && setLimit((n) => n + PAGE),
+      { root: el.closest('.page'), rootMargin: '900px 0px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [more, limit]);
+
   return (
-    <motion.div className="grid" layout="position">
-      <AnimatePresence initial={false} mode="popLayout">
-        {list.map((e, i) => (
-          <motion.div
-            key={e.slug}
-            layout="position"
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <EscortCard escort={e} index={i} instant={instant} />
-          </motion.div>
-        ))}
-      </AnimatePresence>
-    </motion.div>
+    <>
+      <motion.div className="grid" layout="position">
+        <AnimatePresence initial={false} mode="popLayout">
+          {list.slice(0, limit).map((e, i) => (
+            <motion.div
+              key={e.slug}
+              layout="position"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <EscortCard escort={e} index={i % PAGE} instant={instant} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+      {more && <div ref={sentinel} className="grid-sentinel" aria-hidden="true" />}
+    </>
   );
 }
 
@@ -266,7 +290,11 @@ export default function Home() {
       ) : !escorts ? (
         <GridSkeleton />
       ) : filtered.length ? (
-        <EscortGrid list={filtered} instant={instant} />
+        <EscortGrid
+          list={filtered}
+          instant={instant}
+          resetKey={[query, canton, geo?.lat, radius, services.join()].join('|')}
+        />
       ) : (
         <motion.div className="panel conv-panel" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div className="conv-empty">
