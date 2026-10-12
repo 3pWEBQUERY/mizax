@@ -52,6 +52,11 @@ Bei der Registrierung müssen AGB und Datenschutzerklärung akzeptiert werden (Z
 | `ADMIN_PASSWORD` | Passwort, mit dem dieses Konto beim ersten Start angelegt wird |
 | `SESSION_SECRET` | Schlüssel für Login-Sitzungen und Admin-Tokens (unbedingt setzen) |
 | `SEED_DEMO` | `false` = keine Demo-Profile |
+| `RESEND_API_KEY` | E-Mail-Versand über Resend (empfohlen; Railway erlaubt SMTP nur im Pro-Plan) |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | Alternative: E-Mail über SMTP |
+| `MAIL_FROM` | Absender, z. B. `Mizax <no-reply@deine-domain.ch>` |
+| `APP_URL` | Öffentliche Adresse für Links in E-Mails und in der Sitemap (optional) |
+| `SEO_INDEX` | `true` = Suchmaschinen erlauben (Sitemap, robots.txt); sonst gesperrt |
 
 ## Lokal starten
 
@@ -62,6 +67,17 @@ npm run build && node --env-file=.env server/index.js
 # oder Entwicklung mit Hot Reload:
 npm run dev
 ```
+
+## Tests
+
+```bash
+npm run lint && npm run format:check
+npm test                                   # Unit-Tests (Zeitplan, Übersetzungen, E-Mail-Texte)
+TEST_DATABASE_URL=postgres://… npm run test:api   # API-Tests gegen eine leere Test-Datenbank
+```
+
+Die API-Tests leeren die angegebene Datenbank vollständig – nie die echte Datenbank verwenden.
+GitHub Actions (`.github/workflows/ci.yml`) führt bei jedem Push alles mit einer eigenen Postgres aus.
 
 ## Deployment (Railway)
 
