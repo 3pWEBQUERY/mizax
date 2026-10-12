@@ -136,6 +136,20 @@ export default {
     change: 'Schimbă',
     as: 'Înregistrare ca {role}',
     loginRequired: 'Te rugăm să te autentifici',
+    forgot: 'Ai uitat parola?',
+    forgotTitle: 'Parolă uitată',
+    forgotText: 'Introdu adresa de e-mail. Îți trimitem un link pentru a seta o parolă nouă.',
+    forgotSubmit: 'Trimite linkul',
+    forgotSent:
+      'Dacă există un cont pentru {email}, linkul este pe drum. Este valabil o oră – verifică și dosarul spam.',
+    backToLogin: 'Înapoi la autentificare',
+    resetTitle: 'Parolă nouă',
+    resetText: 'Setează o parolă nouă. Vei fi autentificat imediat și deconectat de pe celelalte dispozitive.',
+    resetSubmit: 'Salvează parola',
+    resetDone: 'Parola nouă a fost salvată',
+    resetAgain: 'Cere un link nou',
+    passwordRepeat: 'Repetă parola',
+    passwordMismatch: 'Parolele nu se potrivesc.',
   },
   me: {
     title: 'Profilul meu',
@@ -199,6 +213,9 @@ export default {
       'Contul tău, profilul de escort cu toate fotografiile, postările, mesajele și statisticile tale vor fi șterse definitiv.',
     deleteConfirm: 'Da, vreau să îmi șterg definitiv contul.',
     deleted: 'Contul tău a fost șters.',
+    logoutAll: 'Deconectează-te de pe toate celelalte dispozitive',
+    logoutAllConfirm: 'Te deconectezi de pe toate celelalte dispozitive? Acest dispozitiv rămâne conectat.',
+    loggedOutAll: 'Deconectat de pe toate celelalte dispozitive',
   },
   sidebar: {
     noViews: 'Încă nu există vizualizări în ultimele 14 zile.',
@@ -250,5 +267,6 @@ export default {
     review_members_only: 'Doar membrii pot evalua escortele.',
     members_only: 'Doar pentru membri.',
     review_escorts_only: 'Doar escortele pot evalua membrii.',
+    reset_invalid: 'Linkul este invalid sau a expirat. Cere unul nou.',
   },
 };

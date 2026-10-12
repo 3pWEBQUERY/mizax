@@ -136,6 +136,21 @@ export default {
     change: 'Modifier',
     as: 'Inscription en tant que {role}',
     loginRequired: 'Veuillez vous connecter',
+    forgot: 'Mot de passe oublié ?',
+    forgotTitle: 'Mot de passe oublié',
+    forgotText: 'Saisissez votre adresse e-mail. Nous vous enverrons un lien pour définir un nouveau mot de passe.',
+    forgotSubmit: 'Envoyer le lien',
+    forgotSent:
+      'Si un compte existe pour {email}, le lien est en route. Il est valable une heure – vérifiez aussi vos spams.',
+    backToLogin: 'Retour à la connexion',
+    resetTitle: 'Nouveau mot de passe',
+    resetText:
+      'Définissez un nouveau mot de passe. Vous serez connecté immédiatement et déconnecté sur tous les autres appareils.',
+    resetSubmit: 'Enregistrer le mot de passe',
+    resetDone: 'Nouveau mot de passe enregistré',
+    resetAgain: 'Demander un nouveau lien',
+    passwordRepeat: 'Répéter le mot de passe',
+    passwordMismatch: 'Les mots de passe ne correspondent pas.',
   },
   me: {
     title: 'Mon profil',
@@ -200,6 +215,9 @@ export default {
       'Votre compte, votre profil d’escort avec toutes ses photos, vos publications, messages et statistiques seront définitivement supprimés.',
     deleteConfirm: 'Oui, je veux supprimer définitivement mon compte.',
     deleted: 'Votre compte a été supprimé.',
+    logoutAll: 'Se déconnecter sur tous les autres appareils',
+    logoutAllConfirm: 'Se déconnecter sur tous les autres appareils ? Cet appareil reste connecté.',
+    loggedOutAll: 'Déconnecté sur tous les autres appareils',
   },
   sidebar: {
     noViews: 'Aucune vue au cours des 14 derniers jours.',
@@ -252,5 +270,6 @@ export default {
     review_members_only: 'Seuls les membres peuvent évaluer les escorts.',
     members_only: 'Réservé aux membres.',
     review_escorts_only: 'Seules les escorts peuvent évaluer les membres.',
+    reset_invalid: 'Le lien est invalide ou a expiré. Demandez-en un nouveau.',
   },
 };

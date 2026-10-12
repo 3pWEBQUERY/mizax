@@ -298,3 +298,28 @@
   background: var(--cta-bg);
   color: var(--cta-fg);
 }
+
+/* Passwort vergessen */
+.auth-forgot {
+  align-self: flex-end;
+  margin-top: -4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.auth-forgot:hover {
+  color: var(--text);
+}
+
+.auth-done {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.auth-done p {
+  margin: 4px 0 0;
+}

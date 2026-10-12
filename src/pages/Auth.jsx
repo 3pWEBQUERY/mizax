@@ -17,7 +17,7 @@ const swap = {
   transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
 };
 
-function ErrorBubble({ error }) {
+export function ErrorBubble({ error }) {
   return (
     <AnimatePresence>
       {error && (
@@ -29,7 +29,7 @@ function ErrorBubble({ error }) {
   );
 }
 
-function AuthField({ label, hint, children }) {
+export function AuthField({ label, hint, children }) {
   return (
     <label className="field settings-field">
       <span className="field-label">{label}</span>
@@ -111,6 +111,9 @@ export function Login() {
               required
             />
           </AuthField>
+          <Link to="/forgot" state={{ email }} className="auth-forgot">
+            {t('auth.forgot')}
+          </Link>
           <ErrorBubble error={error} />
           <button className="white-btn auth-submit" disabled={busy}>
             {busy ? <SpinnerIcon /> : t('auth.submitLogin')}

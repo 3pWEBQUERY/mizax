@@ -136,6 +136,20 @@ export default {
     change: 'Change',
     as: 'Signing up as {role}',
     loginRequired: 'Please log in',
+    forgot: 'Forgot password?',
+    forgotTitle: 'Forgot password',
+    forgotText: 'Enter your email address. We’ll send you a link to set a new password.',
+    forgotSubmit: 'Send link',
+    forgotSent:
+      'If an account exists for {email}, the link is on its way. It is valid for one hour – also check your spam folder.',
+    backToLogin: 'Back to sign in',
+    resetTitle: 'New password',
+    resetText: 'Set a new password. You’ll be signed in right away and signed out on all other devices.',
+    resetSubmit: 'Save password',
+    resetDone: 'New password saved',
+    resetAgain: 'Request a new link',
+    passwordRepeat: 'Repeat password',
+    passwordMismatch: 'The passwords don’t match.',
   },
   me: {
     title: 'My profile',
@@ -198,6 +212,9 @@ export default {
       'Your account, your escort profile with all photos, your posts, messages and statistics will be permanently deleted.',
     deleteConfirm: 'Yes, I want to permanently delete my account.',
     deleted: 'Your account has been deleted.',
+    logoutAll: 'Sign out on all other devices',
+    logoutAllConfirm: 'Sign out on all other devices? This device stays signed in.',
+    loggedOutAll: 'Signed out on all other devices',
   },
   sidebar: {
     noViews: 'No profile views in the last 14 days yet.',
@@ -249,5 +266,6 @@ export default {
     review_members_only: 'Only members can review escorts.',
     members_only: 'Members only.',
     review_escorts_only: 'Only escorts can review members.',
+    reset_invalid: 'The link is invalid or has expired. Request a new one.',
   },
 };

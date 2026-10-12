@@ -136,6 +136,20 @@ export default {
     change: 'Zmień',
     as: 'Rejestracja jako: {role}',
     loginRequired: 'Zaloguj się',
+    forgot: 'Nie pamiętasz hasła?',
+    forgotTitle: 'Nie pamiętam hasła',
+    forgotText: 'Podaj swój adres e-mail. Wyślemy link do ustawienia nowego hasła.',
+    forgotSubmit: 'Wyślij link',
+    forgotSent:
+      'Jeśli istnieje konto dla {email}, link jest w drodze. Jest ważny przez godzinę – sprawdź też folder spam.',
+    backToLogin: 'Wróć do logowania',
+    resetTitle: 'Nowe hasło',
+    resetText: 'Ustaw nowe hasło. Od razu zostaniesz zalogowany, a na innych urządzeniach wylogowany.',
+    resetSubmit: 'Zapisz hasło',
+    resetDone: 'Nowe hasło zapisane',
+    resetAgain: 'Poproś o nowy link',
+    passwordRepeat: 'Powtórz hasło',
+    passwordMismatch: 'Hasła nie są takie same.',
   },
   me: {
     title: 'Mój profil',
@@ -199,6 +213,9 @@ export default {
       'Twoje konto, profil escort ze wszystkimi zdjęciami, wpisy, wiadomości i statystyki zostaną trwale usunięte.',
     deleteConfirm: 'Tak, chcę trwale usunąć moje konto.',
     deleted: 'Twoje konto zostało usunięte.',
+    logoutAll: 'Wyloguj na wszystkich innych urządzeniach',
+    logoutAllConfirm: 'Wylogować na wszystkich innych urządzeniach? To urządzenie pozostanie zalogowane.',
+    loggedOutAll: 'Wylogowano na wszystkich innych urządzeniach',
   },
   sidebar: {
     noViews: 'Brak wyświetleń w ciągu ostatnich 14 dni.',
@@ -251,5 +268,6 @@ export default {
     review_members_only: 'Tylko członkowie mogą oceniać escortki.',
     members_only: 'Tylko dla członków.',
     review_escorts_only: 'Tylko escortki mogą oceniać członków.',
+    reset_invalid: 'Link jest nieprawidłowy lub wygasł. Poproś o nowy.',
   },
 };

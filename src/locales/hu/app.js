@@ -136,6 +136,20 @@ export default {
     change: 'Módosítás',
     as: 'Regisztráció mint: {role}',
     loginRequired: 'Kérjük, jelentkezz be',
+    forgot: 'Elfelejtetted a jelszót?',
+    forgotTitle: 'Elfelejtett jelszó',
+    forgotText: 'Add meg az e-mail-címedet. Küldünk egy linket, amellyel új jelszót adhatsz meg.',
+    forgotSubmit: 'Link küldése',
+    forgotSent:
+      'Ha a(z) {email} címhez tartozik fiók, a link úton van. Egy óráig érvényes – nézd meg a spam mappát is.',
+    backToLogin: 'Vissza a bejelentkezéshez',
+    resetTitle: 'Új jelszó',
+    resetText: 'Adj meg új jelszót. Utána azonnal be leszel jelentkezve, a többi eszközön pedig kijelentkeztetünk.',
+    resetSubmit: 'Jelszó mentése',
+    resetDone: 'Új jelszó mentve',
+    resetAgain: 'Új link kérése',
+    passwordRepeat: 'Jelszó újra',
+    passwordMismatch: 'A jelszavak nem egyeznek.',
   },
   me: {
     title: 'Saját profil',
@@ -199,6 +213,9 @@ export default {
       'A fiókod, az escort-profilod az összes fotóval, a bejegyzéseid, üzeneteid és statisztikáid véglegesen törlődnek.',
     deleteConfirm: 'Igen, véglegesen törölni szeretném a fiókomat.',
     deleted: 'A fiókodat töröltük.',
+    logoutAll: 'Kijelentkezés minden más eszközön',
+    logoutAllConfirm: 'Kijelentkezel minden más eszközön? Ez az eszköz bejelentkezve marad.',
+    loggedOutAll: 'Kijelentkeztél minden más eszközön',
   },
   sidebar: {
     noViews: 'Az elmúlt 14 napban még nem volt megtekintés.',
@@ -251,5 +268,6 @@ export default {
     review_members_only: 'Csak tagok értékelhetik az escortokat.',
     members_only: 'Csak tagoknak.',
     review_escorts_only: 'Csak escortok értékelhetnek tagokat.',
+    reset_invalid: 'A link érvénytelen vagy lejárt. Kérj újat.',
   },
 };

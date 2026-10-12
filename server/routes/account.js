@@ -11,6 +11,7 @@ import {
   httpError,
   verifyPassword,
   hashPassword,
+  bumpSessions,
 } from '../auth.js';
 import { wrap, requireDb, text } from '../http.js';
 import { removeImages } from '../media.js';
@@ -29,7 +30,7 @@ router.post(
   requireDb,
   wrap(async (req, res) => {
     const user = await register(req.body || {});
-    setSession(req, res, user.id);
+    setSession(req, res, user);
     res.status(201).json({ user: userOut(user) });
   }),
 );
@@ -40,7 +41,7 @@ router.post(
   requireDb,
   wrap(async (req, res) => {
     const user = await login(req.body || {});
-    setSession(req, res, user.id);
+    setSession(req, res, user);
     res.json({ user: userOut(user) });
   }),
 );
@@ -121,6 +122,8 @@ router.put(
     const next = String(req.body?.next || '');
     if (next.length < 8 || next.length > 200) throw httpError(400, 'weak_password', 'Passwort zu kurz');
     await query('UPDATE users SET password_hash = $1 WHERE id = $2', [await hashPassword(next), user.id]);
+    // andere Geräte abmelden, dieses bleibt angemeldet
+    await bumpSessions(user.id, req, res);
     res.json({ ok: true });
   }),
 );
@@ -134,6 +137,16 @@ router.put(
       req.user.id,
     ]);
     res.json({ user: userOut(rows[0]) });
+  }),
+);
+
+// Auf allen anderen Geräten abmelden
+router.post(
+  '/api/me/logout-all',
+  requireUser,
+  wrap(async (req, res) => {
+    await bumpSessions(req.user.id, req, res);
+    res.json({ ok: true });
   }),
 );
 

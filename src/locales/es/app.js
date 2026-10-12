@@ -136,6 +136,21 @@ export default {
     change: 'Cambiar',
     as: 'Registro como {role}',
     loginRequired: 'Inicia sesión',
+    forgot: '¿Olvidaste la contraseña?',
+    forgotTitle: 'Contraseña olvidada',
+    forgotText: 'Introduce tu correo electrónico. Te enviaremos un enlace para crear una nueva contraseña.',
+    forgotSubmit: 'Enviar enlace',
+    forgotSent:
+      'Si existe una cuenta para {email}, el enlace va en camino. Es válido durante una hora; revisa también la carpeta de spam.',
+    backToLogin: 'Volver al inicio de sesión',
+    resetTitle: 'Nueva contraseña',
+    resetText:
+      'Define una nueva contraseña. Iniciarás sesión al instante y se cerrará la sesión en los demás dispositivos.',
+    resetSubmit: 'Guardar contraseña',
+    resetDone: 'Nueva contraseña guardada',
+    resetAgain: 'Solicitar un nuevo enlace',
+    passwordRepeat: 'Repetir contraseña',
+    passwordMismatch: 'Las contraseñas no coinciden.',
   },
   me: {
     title: 'Mi perfil',
@@ -199,6 +214,9 @@ export default {
       'Tu cuenta, tu perfil de escort con todas las fotos, tus publicaciones, mensajes y estadísticas se eliminarán de forma permanente.',
     deleteConfirm: 'Sí, quiero eliminar mi cuenta definitivamente.',
     deleted: 'Tu cuenta ha sido eliminada.',
+    logoutAll: 'Cerrar sesión en los demás dispositivos',
+    logoutAllConfirm: '¿Cerrar sesión en los demás dispositivos? Este dispositivo seguirá conectado.',
+    loggedOutAll: 'Sesión cerrada en los demás dispositivos',
   },
   sidebar: {
     noViews: 'Aún no hay vistas en los últimos 14 días.',
@@ -251,5 +269,6 @@ export default {
     review_members_only: 'Solo los miembros pueden valorar a las escorts.',
     members_only: 'Solo para miembros.',
     review_escorts_only: 'Solo las escorts pueden valorar a los miembros.',
+    reset_invalid: 'El enlace no es válido o ha caducado. Solicita uno nuevo.',
   },
 };

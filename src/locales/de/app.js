@@ -136,6 +136,21 @@ export default {
     change: 'Ändern',
     as: 'Registrierung als {role}',
     loginRequired: 'Bitte melde dich an',
+    forgot: 'Passwort vergessen?',
+    forgotTitle: 'Passwort vergessen',
+    forgotText: 'Gib deine E-Mail-Adresse ein. Wir schicken dir einen Link, mit dem du ein neues Passwort festlegst.',
+    forgotSubmit: 'Link senden',
+    forgotSent:
+      'Falls zu {email} ein Konto existiert, ist der Link unterwegs. Er ist eine Stunde gültig – schau auch im Spam-Ordner nach.',
+    backToLogin: 'Zurück zur Anmeldung',
+    resetTitle: 'Neues Passwort',
+    resetText:
+      'Lege ein neues Passwort fest. Danach bist du direkt angemeldet und auf allen anderen Geräten abgemeldet.',
+    resetSubmit: 'Passwort speichern',
+    resetDone: 'Neues Passwort gespeichert',
+    resetAgain: 'Neuen Link anfordern',
+    passwordRepeat: 'Passwort wiederholen',
+    passwordMismatch: 'Die Passwörter stimmen nicht überein.',
   },
   me: {
     title: 'Mein Profil',
@@ -199,6 +214,9 @@ export default {
       'Dein Konto, dein Escort-Profil mit allen Fotos, deine Beiträge, Nachrichten und Statistiken werden dauerhaft gelöscht.',
     deleteConfirm: 'Ja, ich möchte mein Konto endgültig löschen.',
     deleted: 'Dein Konto wurde gelöscht.',
+    logoutAll: 'Auf allen anderen Geräten abmelden',
+    logoutAllConfirm: 'Auf allen anderen Geräten abmelden? Dieses Gerät bleibt angemeldet.',
+    loggedOutAll: 'Auf allen anderen Geräten abgemeldet',
   },
   sidebar: {
     noViews: 'Noch keine Aufrufe in den letzten 14 Tagen.',
@@ -251,5 +269,6 @@ export default {
     review_members_only: 'Nur Mitglieder können Escorts bewerten.',
     members_only: 'Nur für Mitglieder.',
     review_escorts_only: 'Nur Escorts können Mitglieder bewerten.',
+    reset_invalid: 'Der Link ist ungültig oder abgelaufen. Fordere einen neuen an.',
   },
 };

@@ -27,6 +27,7 @@ import Stats from './pages/Stats.jsx';
 import Settings from './pages/settings/Settings.jsx';
 import Member from './pages/Member.jsx';
 import Suggestions from './pages/Suggestions.jsx';
+import { Forgot, Reset } from './pages/PasswordReset.jsx';
 
 // Unterseiten, die beim Wechsel innerhalb desselben Bereichs nicht neu eingeblendet werden
 function routeKey(pathname) {
@@ -74,6 +75,8 @@ function Shell() {
               <Route path="/escort/:slug" element={<Profile />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot" element={<Forgot />} />
+              <Route path="/reset" element={<Reset />} />
               <Route path="/me" element={<MyProfile />} />
               <Route path="/me/services" element={<MyProfile />} />
               <Route path="/admin" element={<Admin />} />

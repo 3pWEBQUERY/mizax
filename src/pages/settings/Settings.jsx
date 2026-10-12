@@ -23,7 +23,8 @@ import {
 } from '../../components/Icons.jsx';
 import { useAuth } from '../../lib/auth.jsx';
 import { useDock } from '../../lib/dock.jsx';
-import { useI18n, dictionaries } from '../../lib/i18n.jsx';
+import { useI18n, dictionaries, errorText } from '../../lib/i18n.jsx';
+import { api } from '../../lib/api.js';
 import { useTheme } from '../../lib/theme.jsx';
 import { useUnread } from '../../lib/inbox.js';
 
@@ -186,6 +187,20 @@ export default function Settings() {
                     await logout();
                     toast(t('auth.loggedOut'));
                     navigate('/');
+                  }}
+                />
+                <Row
+                  icon={LogoutIcon}
+                  label={t('settings.logoutAll')}
+                  chevron={false}
+                  onClick={async () => {
+                    if (!window.confirm(t('settings.logoutAllConfirm'))) return;
+                    try {
+                      await api('/api/me/logout-all', { method: 'POST' });
+                      toast(t('settings.loggedOutAll'));
+                    } catch (err) {
+                      toast(errorText(t, err));
+                    }
                   }}
                 />
               </Group>

@@ -61,13 +61,23 @@ function parseCookies(header = '') {
   return out;
 }
 
-export function setSession(req, res, userId) {
-  const payload = `u.${userId}.${Date.now() + MAX_AGE * 1000}`;
+// Cookie: u.<id>.<sitzungsversion>.<ablauf>, signiert. Ältere Cookies ohne Version gelten als Version 0.
+export function setSession(req, res, user) {
+  const payload = `u.${user.id}.${user.session_version || 0}.${Date.now() + MAX_AGE * 1000}`;
   const secure = req.secure || req.get('x-forwarded-proto') === 'https';
   res.append(
     'Set-Cookie',
     `${COOKIE}=${payload}.${sign(payload)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${MAX_AGE}${secure ? '; Secure' : ''}`,
   );
+}
+
+// Alle Sitzungen ungültig machen; das aktuelle Gerät bleibt angemeldet, wenn req/res übergeben werden
+export async function bumpSessions(userId, req, res) {
+  const { rows } = await query(
+    'UPDATE users SET session_version = session_version + 1 WHERE id = $1 RETURNING id, session_version',
+    [userId],
+  );
+  if (req && res) setSession(req, res, rows[0]);
 }
 
 export function clearSession(res) {
@@ -104,10 +114,12 @@ export async function attachUser(req, res, next) {
   if (parts && parts[0] === 'u' && hasDb()) {
     try {
       const { rows } = await query(
-        'SELECT id, email, name, role, locale, is_admin, show_visits, bio, avatar_key, created_at FROM users WHERE id = $1',
+        `SELECT id, email, name, role, locale, is_admin, show_visits, bio, avatar_key, created_at, session_version
+         FROM users WHERE id = $1`,
         [Number(parts[1])],
       );
-      req.user = rows[0] || null;
+      const version = parts.length === 4 ? Number(parts[2]) : 0;
+      req.user = rows[0] && rows[0].session_version === version ? rows[0] : null;
     } catch {
       req.user = null;
     }
@@ -226,7 +238,7 @@ export async function register(body) {
   try {
     const { rows } = await query(
       `INSERT INTO users (email, password_hash, name, role, locale, last_login_at, terms_accepted_at)
-       VALUES ($1,$2,$3,$4,$5, now(), now()) RETURNING id, email, name, role, locale, is_admin, show_visits, bio, avatar_key, created_at`,
+       VALUES ($1,$2,$3,$4,$5, now(), now()) RETURNING id, email, name, role, locale, is_admin, show_visits, bio, avatar_key, created_at, session_version`,
       [email, hash, name, role, locale],
     );
     return rows[0];

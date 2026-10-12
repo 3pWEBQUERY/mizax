@@ -210,6 +210,19 @@ export async function migrate() {
     CREATE INDEX IF NOT EXISTS escort_reviews_escort_idx ON escort_reviews (escort_id, updated_at DESC);
     CREATE INDEX IF NOT EXISTS escort_reviews_user_idx ON escort_reviews (user_id, id DESC);
 
+    -- Sitzungen: Erhöhen der Version meldet alle Geräte ab (z. B. nach Passwortänderung)
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS session_version INTEGER NOT NULL DEFAULT 0;
+
+    -- Passwort vergessen: nur der Hash des Links wird gespeichert, gültig 1 Stunde, einmal nutzbar
+    CREATE TABLE IF NOT EXISTS password_resets (
+      id         SERIAL PRIMARY KEY,
+      user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      token_hash TEXT NOT NULL UNIQUE,
+      expires_at TIMESTAMPTZ NOT NULL,
+      used_at    TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
     -- Bewertungen von Mitgliedern durch Escorts (eine pro Escort-Konto und Mitglied)
     CREATE TABLE IF NOT EXISTS member_reviews (
       id         SERIAL PRIMARY KEY,
