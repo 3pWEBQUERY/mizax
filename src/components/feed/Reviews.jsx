@@ -147,9 +147,10 @@ function ReviewForm({ base, delBase, texts, mine, onSaved }) {
   );
 }
 
-function ReviewItem({ r, onDelete, reportKind }) {
+function ReviewItem({ r, onDelete, onChange, reportKind, ownerName, replyBase }) {
   const { t, locale } = useI18n();
   const report = useReport();
+  const [replying, setReplying] = useState(false);
   const to = profilePath(r.author);
   return (
     <motion.div
@@ -167,6 +168,11 @@ function ReviewItem({ r, onDelete, reportKind }) {
           <Link to={to}>{r.author.name}</Link>
           <Stars value={r.rating} size={13} />
           <small>{timeAgo(r.at, locale, 'short')}</small>
+          {r.canReply && !r.reply && !replying && (
+            <button type="button" className="review-delete plain" onClick={() => setReplying(true)}>
+              {t('reviews.reply')}
+            </button>
+          )}
           {r.canDelete && !r.mine && (
             <button type="button" className="review-delete" onClick={() => onDelete(r)}>
               {t('feed.delete')}
@@ -183,8 +189,101 @@ function ReviewItem({ r, onDelete, reportKind }) {
           )}
         </div>
         <p>{r.body}</p>
+        <ReviewReply
+          r={r}
+          ownerName={ownerName}
+          editing={replying}
+          setEditing={setReplying}
+          url={`${replyBase}/${r.id}/reply`}
+          onChange={onChange}
+        />
       </div>
     </motion.div>
+  );
+}
+
+// Öffentliche Antwort der bewerteten Person unter einer Bewertung
+function ReviewReply({ r, ownerName, editing, setEditing, url, onChange }) {
+  const { t, locale } = useI18n();
+  const toast = useToast();
+  const [draft, setDraft] = useState(r.reply?.body || '');
+  const [busy, setBusy] = useState(false);
+
+  async function save(body) {
+    setBusy(true);
+    try {
+      const next = await api(url, { method: 'PUT', body: { body } });
+      onChange?.(next);
+      setEditing(false);
+      toast(body ? t('reviews.replySaved') : t('reviews.replyDeleted'));
+    } catch (err) {
+      toast(errorText(t, err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (editing) {
+    return (
+      <form
+        className="review-reply-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (draft.trim()) save(draft);
+        }}
+      >
+        <textarea
+          className="input review-input"
+          value={draft}
+          maxLength={1000}
+          autoFocus
+          placeholder={t('reviews.replyPlaceholder')}
+          onChange={(e) => setDraft(e.target.value)}
+        />
+        <div className="review-form-bar">
+          <span className="review-reply-hint">{t('reviews.replyHint')}</span>
+          <button
+            type="button"
+            className="ghost-btn"
+            onClick={() => {
+              setDraft(r.reply?.body || '');
+              setEditing(false);
+            }}
+          >
+            {t('feed.cancel')}
+          </button>
+          <button type="submit" className="white-btn" disabled={busy || !draft.trim()}>
+            {busy ? <SpinnerIcon /> : t('reviews.replySend')}
+          </button>
+        </div>
+      </form>
+    );
+  }
+
+  if (!r.reply) return null;
+  return (
+    <div className="review-reply">
+      <div className="review-top">
+        <b>{t('reviews.replyFrom', { name: ownerName })}</b>
+        <small>{timeAgo(r.reply.at, locale, 'short')}</small>
+        {r.canReply && (
+          <>
+            <button type="button" className="review-delete plain" onClick={() => setEditing(true)}>
+              {t('reviews.replyEdit')}
+            </button>
+            <button
+              type="button"
+              className="review-delete"
+              disabled={busy}
+              onClick={() => window.confirm(t('reviews.replyConfirmDelete')) && save('')}
+            >
+              {t('reviews.replyDelete')}
+            </button>
+          </>
+        )}
+      </div>
+      <p>{r.reply.body}</p>
+    </div>
   );
 }
 
@@ -290,7 +389,17 @@ export default function Reviews({ target = 'escort', refId, name, onSummary }) {
         <div className="review-list">
           <AnimatePresence initial={false}>
             {data.items.map((r) => (
-              <ReviewItem key={r.id} r={r} onDelete={removeOther} reportKind={member ? 'member_review' : 'review'} />
+              <ReviewItem
+                key={r.id}
+                r={r}
+                onDelete={removeOther}
+                onChange={(next) =>
+                  setData((d) => ({ ...d, items: d.items.map((x) => (x.id === next.id ? next : x)) }))
+                }
+                reportKind={member ? 'member_review' : 'review'}
+                ownerName={name}
+                replyBase={delBase}
+              />
             ))}
           </AnimatePresence>
           {!data.done && (
@@ -365,6 +474,15 @@ export function GivenReviews({ memberId, name, self }) {
                     <small>{timeAgo(r.at, locale, 'short')}</small>
                   </div>
                   {r.body && <p>{r.body}</p>}
+                  {r.reply && (
+                    <div className="review-reply">
+                      <div className="review-top">
+                        <b>{t('reviews.replyFrom', { name: r.escort.name })}</b>
+                        <small>{timeAgo(r.reply.at, locale, 'short')}</small>
+                      </div>
+                      <p>{r.reply.body}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             );

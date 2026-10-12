@@ -53,6 +53,12 @@ const T = {
       ],
       button: 'Neues Foto hochladen',
     },
+    reply: {
+      subject: '{from} hat auf deine Bewertung geantwortet',
+      title: 'Neue Antwort auf deine Bewertung',
+      lines: ['Hallo {name},', '{from} hat auf deine Bewertung geantwortet.'],
+      button: 'Antwort lesen',
+    },
     footer: 'Diese E-Mail wurde automatisch von Mizax verschickt.',
     reset: {
       subject: 'Passwort zurücksetzen',
@@ -116,6 +122,12 @@ const T = {
         'You can upload a new photo with your new code at any time. We have deleted the previous photo.',
       ],
       button: 'Upload a new photo',
+    },
+    reply: {
+      subject: '{from} replied to your review',
+      title: 'New reply to your review',
+      lines: ['Hi {name},', '{from} replied to your review.'],
+      button: 'Read reply',
     },
     footer: 'This email was sent automatically by Mizax.',
     reset: {
@@ -181,6 +193,12 @@ const T = {
       ],
       button: 'Envoyer une nouvelle photo',
     },
+    reply: {
+      subject: '{from} a répondu à votre avis',
+      title: 'Nouvelle réponse à votre avis',
+      lines: ['Bonjour {name},', '{from} a répondu à votre avis.'],
+      button: 'Lire la réponse',
+    },
     footer: 'Cet e-mail a été envoyé automatiquement par Mizax.',
     reset: {
       subject: 'Réinitialiser votre mot de passe',
@@ -244,6 +262,12 @@ const T = {
         'Puedes subir en cualquier momento una nueva foto con tu nuevo código. Hemos eliminado la foto anterior.',
       ],
       button: 'Subir nueva foto',
+    },
+    reply: {
+      subject: '{from} ha respondido a tu valoración',
+      title: 'Nueva respuesta a tu valoración',
+      lines: ['Hola {name}:', '{from} ha respondido a tu valoración.'],
+      button: 'Leer respuesta',
     },
     footer: 'Este correo fue enviado automáticamente por Mizax.',
     reset: {
@@ -309,6 +333,12 @@ const T = {
       ],
       button: 'Új fotó feltöltése',
     },
+    reply: {
+      subject: '{from} válaszolt az értékelésedre',
+      title: 'Új válasz az értékelésedre',
+      lines: ['Szia {name}!', '{from} válaszolt az értékelésedre.'],
+      button: 'Válasz elolvasása',
+    },
     footer: 'Ezt az e-mailt a Mizax automatikusan küldte.',
     reset: {
       subject: 'Jelszó visszaállítása',
@@ -373,6 +403,12 @@ const T = {
       ],
       button: 'Prześlij nowe zdjęcie',
     },
+    reply: {
+      subject: '{from} odpowiedział(a) na Twoją opinię',
+      title: 'Nowa odpowiedź na Twoją opinię',
+      lines: ['Cześć {name},', '{from} odpowiedział(a) na Twoją opinię.'],
+      button: 'Przeczytaj odpowiedź',
+    },
     footer: 'Ta wiadomość została wysłana automatycznie przez Mizax.',
     reset: {
       subject: 'Resetowanie hasła',
@@ -436,6 +472,12 @@ const T = {
         'Poți încărca oricând o fotografie nouă cu noul tău cod. Am șters fotografia anterioară.',
       ],
       button: 'Încarcă o fotografie nouă',
+    },
+    reply: {
+      subject: '{from} a răspuns la recenzia ta',
+      title: 'Răspuns nou la recenzia ta',
+      lines: ['Bună {name},', '{from} a răspuns la recenzia ta.'],
+      button: 'Citește răspunsul',
     },
     footer: 'Acest e-mail a fost trimis automat de Mizax.',
     reset: {

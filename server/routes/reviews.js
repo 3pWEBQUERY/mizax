@@ -3,7 +3,7 @@ import { query } from '../db.js';
 import { httpError, requireUser, rateLimit } from '../auth.js';
 import { wrap, requireDb, noStore, text, toId } from '../http.js';
 import { THUMB, thumbUrl, ownEscort } from '../escorts.js';
-import { notifyReview } from '../notify.js';
+import { notifyReview, notifyReply } from '../notify.js';
 import { notBlocked, blockState } from '../safety.js';
 
 // Bewertungen in beide Richtungen, je 1–5 Sterne und optional ein kurzer Text:
@@ -38,6 +38,10 @@ const TARGETS = {
     canRate: async (e, me) => me.role === 'member' && e.user_id !== me.id && !(await blockState(me.id, e.user_id)),
     denied: () => httpError(403, 'review_members_only', 'Nur Mitglieder können Escorts bewerten'),
     notify: (e, me, rating) => notifyReview(e.user_id, me.name, rating, `/escort/${e.slug}?tab=reviews`),
+    // Wem gehört das bewertete Profil, wer darf antworten?
+    owner: (e) => e.user_id,
+    ownerOf: `SELECT r.id, r.user_id, r.reply, e.user_id AS owner_id, e.name AS owner_name, '/escort/' || e.slug AS path
+      FROM escort_reviews r JOIN escorts e ON e.id = r.escort_id WHERE r.id = $1`,
   },
   member: {
     table: 'member_reviews',
@@ -57,10 +61,14 @@ const TARGETS = {
     denied: () => httpError(403, 'review_escorts_only', 'Nur Escorts können Mitglieder bewerten'),
     notify: async (m, me, rating) =>
       notifyReview(m.id, (await ownEscort(me.id))?.name || me.name, rating, `/member/${m.id}?tab=reviews`),
+    owner: (m) => m.id,
+    ownerOf: `SELECT r.id, r.user_id, r.reply, r.member_id AS owner_id, u.name AS owner_name,
+        '/member/' || r.member_id AS path
+      FROM member_reviews r JOIN users u ON u.id = r.member_id WHERE r.id = $1`,
   },
 };
 
-function reviewOut(T, r, me) {
+function reviewOut(T, r, me, ownerId) {
   return {
     id: r.id,
     rating: r.rating,
@@ -70,6 +78,8 @@ function reviewOut(T, r, me) {
     author: T.author(r),
     mine: r.user_id === me.id,
     canDelete: r.user_id === me.id || Boolean(me.is_admin),
+    reply: r.reply ? { body: r.reply, at: r.reply_at } : null,
+    canReply: ownerId === me.id,
   };
 }
 
@@ -95,7 +105,7 @@ async function summary(T, target, me) {
     average: x.average,
     count: x.count,
     distribution: [x.r5, x.r4, x.r3, x.r2, x.r1],
-    mine: mine[0] ? reviewOut(T, mine[0], me) : null,
+    mine: mine[0] ? reviewOut(T, mine[0], me, T.owner(target)) : null,
     canRate,
   };
 }
@@ -111,7 +121,7 @@ async function page(T, target, me, before) {
     `${T.select} WHERE r.${T.key} = $1 AND r.body <> '' ${cond} ORDER BY r.id DESC LIMIT ${PAGE}`,
     args,
   );
-  return { items: rows.map((r) => reviewOut(T, r, me)), done: rows.length < PAGE };
+  return { items: rows.map((r) => reviewOut(T, r, me, T.owner(target))), done: rows.length < PAGE };
 }
 
 const full = async (T, target, me) => ({ ...(await summary(T, target, me)), ...(await page(T, target, me, null)) });
@@ -172,6 +182,29 @@ for (const [kind, T] of Object.entries(TARGETS)) {
       res.json(await full(T, { id: r.target_id, user_id: null }, req.user));
     }),
   );
+
+  // Öffentliche Antwort der bewerteten Person (leer = Antwort löschen)
+  router.put(
+    `${del}/reply`,
+    requireUser,
+    requireDb,
+    rateLimit(60, 60 * 60 * 1000),
+    wrap(async (req, res) => {
+      const { rows } = await query(T.ownerOf, [toId(req.params.id)]);
+      const r = rows[0];
+      if (!r) throw httpError(404, 'not_found', 'Nicht gefunden');
+      if (r.owner_id !== req.user.id) throw httpError(403, 'forbidden', 'Keine Berechtigung');
+      const body = text(req.body?.body, 1000);
+      await query(
+        `UPDATE ${T.table} SET reply = $2, reply_at = CASE WHEN $2 = '' THEN NULL ELSE now() END WHERE id = $1`,
+        [r.id, body],
+      );
+      // E-Mail an die Person, die bewertet hat – nur bei der ersten Antwort
+      if (body && !r.reply) notifyReply(r.user_id, r.owner_name, `${r.path}?tab=reviews`);
+      const { rows: out } = await query(`${T.select} WHERE r.id = $1`, [r.id]);
+      res.json(reviewOut(T, out[0], req.user, r.owner_id));
+    }),
+  );
 }
 
 // Bewertungen, die ein Mitglied an Escorts vergeben hat (für sein Profil)
@@ -202,6 +235,7 @@ router.get(
         rating: r.rating,
         body: r.body,
         at: r.updated_at,
+        reply: r.reply ? { body: r.reply, at: r.reply_at } : null,
         escort: { kind: 'escort', slug: r.slug, name: r.escort_name, thumb: thumbUrl(r.thumb_key) },
       })),
       done: rows.length < PAGE,

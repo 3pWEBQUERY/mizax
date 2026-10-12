@@ -42,6 +42,14 @@ export const notifyReview = safe(async (targetUserId, fromName, rating, path) =>
   if (user) await deliver(user, 'reviews', path, 'review', { from: fromName, stars: '★'.repeat(rating) }, path);
 });
 
+// Antwort der bewerteten Person auf die eigene Bewertung
+export const notifyReply = safe(async (authorId, fromName, path) => {
+  if (!authorId) return;
+  const user = await recipient(authorId, 'reviews');
+  if (!user || (await recentlySent(user.id, 'reply', path, '30 minutes'))) return;
+  await deliver(user, 'reply', path, 'reply', { from: fromName }, path);
+});
+
 // Kommentar auf einen eigenen Beitrag
 export const notifyComment = safe(async (ownerId, commenterId, fromName, postId) => {
   if (!ownerId || ownerId === commenterId) return;

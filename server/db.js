@@ -275,6 +275,12 @@ export async function migrate() {
     );
     CREATE INDEX IF NOT EXISTS member_reviews_member_idx ON member_reviews (member_id, id DESC);
 
+    -- Öffentliche Antwort der bewerteten Person auf eine Bewertung
+    ALTER TABLE escort_reviews ADD COLUMN IF NOT EXISTS reply TEXT NOT NULL DEFAULT '';
+    ALTER TABLE escort_reviews ADD COLUMN IF NOT EXISTS reply_at TIMESTAMPTZ;
+    ALTER TABLE member_reviews ADD COLUMN IF NOT EXISTS reply TEXT NOT NULL DEFAULT '';
+    ALTER TABLE member_reviews ADD COLUMN IF NOT EXISTS reply_at TIMESTAMPTZ;
+
     -- Verifizierung: Selfie mit Code, nur für die Verwaltung sichtbar, nach dem Entscheid gelöscht
     ALTER TABLE escorts ADD COLUMN IF NOT EXISTS verify_code TEXT;
     CREATE TABLE IF NOT EXISTS verifications (
