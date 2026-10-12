@@ -1,5 +1,5 @@
 import { AnimatePresence, LayoutGroup, MotionConfig } from 'framer-motion';
-import { useEffect } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import TopBar from './components/TopBar.jsx';
 import Clock from './components/Clock.jsx';
@@ -17,18 +17,49 @@ import { loadEscorts } from './lib/store.js';
 import Home from './pages/Home.jsx';
 import Favorites from './pages/Favorites.jsx';
 import Profile from './pages/Profile.jsx';
-import Admin from './pages/Admin.jsx';
-import MyProfile from './pages/MyProfile.jsx';
 import NotFound from './pages/NotFound.jsx';
-import { Login, Register } from './pages/Auth.jsx';
+import Page from './components/Page.jsx';
 import { Privacy, Terms } from './pages/Legal.jsx';
-import FeedPage from './pages/Feed.jsx';
-import { Messages, Chat } from './pages/Messages.jsx';
-import Stats from './pages/Stats.jsx';
-import Settings from './pages/settings/Settings.jsx';
-import Member from './pages/Member.jsx';
-import Suggestions from './pages/Suggestions.jsx';
-import { Forgot, Reset } from './pages/PasswordReset.jsx';
+
+// Startseite, Favoriten und Profile sind sofort da; alle übrigen Seiten werden erst bei Bedarf
+// (bzw. kurz nach dem Start im Leerlauf) geladen, damit der erste Aufruf schneller ist.
+const chunks = {
+  admin: () => import('./pages/Admin.jsx'),
+  me: () => import('./pages/MyProfile.jsx'),
+  auth: () => import('./pages/Auth.jsx'),
+  feed: () => import('./pages/Feed.jsx'),
+  messages: () => import('./pages/Messages.jsx'),
+  stats: () => import('./pages/Stats.jsx'),
+  settings: () => import('./pages/settings/Settings.jsx'),
+  member: () => import('./pages/Member.jsx'),
+  suggestions: () => import('./pages/Suggestions.jsx'),
+  password: () => import('./pages/PasswordReset.jsx'),
+};
+
+function lazyPage(chunk, name = 'default') {
+  const Component = lazy(() => chunk().then((m) => ({ default: m[name] })));
+  return function LazyPage(props) {
+    return (
+      <Suspense fallback={<Page />}>
+        <Component {...props} />
+      </Suspense>
+    );
+  };
+}
+
+const Admin = lazyPage(chunks.admin);
+const MyProfile = lazyPage(chunks.me);
+const Login = lazyPage(chunks.auth, 'Login');
+const Register = lazyPage(chunks.auth, 'Register');
+const FeedPage = lazyPage(chunks.feed);
+const Messages = lazyPage(chunks.messages, 'Messages');
+const Chat = lazyPage(chunks.messages, 'Chat');
+const Stats = lazyPage(chunks.stats);
+const Settings = lazyPage(chunks.settings);
+const Member = lazyPage(chunks.member);
+const Suggestions = lazyPage(chunks.suggestions);
+const Forgot = lazyPage(chunks.password, 'Forgot');
+const Reset = lazyPage(chunks.password, 'Reset');
 
 // Unterseiten, die beim Wechsel innerhalb desselben Bereichs nicht neu eingeblendet werden
 function routeKey(pathname) {
@@ -50,6 +81,10 @@ function Shell() {
   // Profile sofort im Hintergrund laden, damit jeder Seitenwechsel ohne Wartezeit läuft
   useEffect(() => {
     loadEscorts().catch(() => {});
+    // übrige Seiten im Leerlauf vorladen, damit spätere Wechsel ohne Wartezeit laufen
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 2500));
+    const id = idle(() => Object.values(chunks).forEach((load) => load().catch(() => {})));
+    return () => (window.cancelIdleCallback || clearTimeout)(id);
   }, []);
 
   const toggleSearch = () => {

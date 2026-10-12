@@ -4,7 +4,7 @@ import { EyeIcon, MoonIcon, SunIcon, InboxIcon, StarIcon, CommentIcon, SparkIcon
 import { Group, Row, Switch } from './ui.jsx';
 import { api } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth.jsx';
-import { useI18n, LOCALES, dictionaries, errorText } from '../../lib/i18n.jsx';
+import { useI18n, LOCALES, LANG_NAMES, errorText } from '../../lib/i18n.jsx';
 import { useTheme } from '../../lib/theme.jsx';
 import { Link } from 'react-router-dom';
 import Avatar from '../../components/Avatar.jsx';
@@ -18,13 +18,7 @@ export function LanguageSection() {
   return (
     <Group>
       {LOCALES.map((l) => (
-        <Row
-          key={l}
-          label={dictionaries[l].langName}
-          code={l.toUpperCase()}
-          checked={locale === l}
-          onClick={() => setLocale(l)}
-        />
+        <Row key={l} label={LANG_NAMES[l]} code={l.toUpperCase()} checked={locale === l} onClick={() => setLocale(l)} />
       ))}
     </Group>
   );

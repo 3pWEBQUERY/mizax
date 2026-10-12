@@ -1,26 +1,45 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import de from '../locales/de.js';
-import en from '../locales/en.js';
-import fr from '../locales/fr.js';
-import es from '../locales/es.js';
-import hu from '../locales/hu.js';
-import pl from '../locales/pl.js';
-import ro from '../locales/ro.js';
 
-export const dictionaries = { de, en, fr, es, hu, pl, ro };
-export const LOCALES = Object.keys(dictionaries);
+// Deutsch ist immer geladen (Rückfall für fehlende Texte); die übrigen Sprachen werden erst
+// geladen, wenn sie gebraucht werden – das hält das Startpaket klein.
+const loaders = {
+  en: () => import('../locales/en.js'),
+  fr: () => import('../locales/fr.js'),
+  es: () => import('../locales/es.js'),
+  hu: () => import('../locales/hu.js'),
+  pl: () => import('../locales/pl.js'),
+  ro: () => import('../locales/ro.js'),
+};
+
+export const LOCALES = ['de', 'en', 'fr', 'es', 'hu', 'pl', 'ro'];
+export const LANG_NAMES = {
+  de: 'Deutsch',
+  en: 'English',
+  fr: 'Français',
+  es: 'Español',
+  hu: 'Magyar',
+  pl: 'Polski',
+  ro: 'Română',
+};
+export const dictionaries = { de };
 const KEY = 'mizax.locale';
 
-function detect() {
+export async function loadLocale(l) {
+  if (!dictionaries[l] && loaders[l]) dictionaries[l] = (await loaders[l]()).default;
+  return dictionaries[l];
+}
+
+export function detectLocale() {
   try {
     const saved = localStorage.getItem(KEY);
-    if (saved && dictionaries[saved]) return saved;
+    if (saved && LOCALES.includes(saved)) return saved;
   } catch {
     /* ignore */
   }
   for (const l of navigator.languages || [navigator.language || 'de']) {
     const code = String(l).slice(0, 2).toLowerCase();
-    if (dictionaries[code]) return code;
+    if (LOCALES.includes(code)) return code;
   }
   return 'de';
 }
@@ -32,20 +51,26 @@ function lookup(dict, key) {
 const I18nCtx = createContext(null);
 
 export function I18nProvider({ children }) {
-  const [locale, setLocaleState] = useState(detect);
+  // main.jsx lädt die erkannte Sprache vor dem ersten Rendern
+  const [locale, setLocaleState] = useState(() => {
+    const l = detectLocale();
+    return dictionaries[l] ? l : 'de';
+  });
 
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
 
   const setLocale = useCallback((l) => {
-    if (!dictionaries[l]) return;
-    setLocaleState(l);
+    if (!LOCALES.includes(l)) return;
     try {
       localStorage.setItem(KEY, l);
     } catch {
       /* ignore */
     }
+    loadLocale(l)
+      .then(() => setLocaleState(l))
+      .catch(() => {});
   }, []);
 
   const t = useCallback(

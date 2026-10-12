@@ -26,7 +26,7 @@ import {
 } from '../../components/Icons.jsx';
 import { useAuth } from '../../lib/auth.jsx';
 import { useDock } from '../../lib/dock.jsx';
-import { useI18n, dictionaries, errorText } from '../../lib/i18n.jsx';
+import { useI18n, LANG_NAMES, errorText } from '../../lib/i18n.jsx';
 import { api } from '../../lib/api.js';
 import { useTheme } from '../../lib/theme.jsx';
 import { useUnread } from '../../lib/inbox.js';
@@ -171,7 +171,7 @@ export default function Settings() {
                 <Row
                   icon={GlobeIcon}
                   label={t('menu.language')}
-                  value={dictionaries[locale].langName}
+                  value={LANG_NAMES[locale]}
                   onClick={() => go('language')}
                 />
                 <Row

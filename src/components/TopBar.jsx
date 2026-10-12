@@ -22,7 +22,7 @@ import {
 import { useUnread, useSuggestionCount } from '../lib/inbox.js';
 import { useDockState } from '../lib/dock.jsx';
 import { LegalLinks } from '../pages/Legal.jsx';
-import { useI18n, LOCALES, dictionaries } from '../lib/i18n.jsx';
+import { useI18n, LOCALES, LANG_NAMES } from '../lib/i18n.jsx';
 import { useTheme } from '../lib/theme.jsx';
 import { useAuth } from '../lib/auth.jsx';
 import { useToast } from './Toast.jsx';
@@ -61,7 +61,7 @@ export function LanguagePicker({ id = 'lang' }) {
           aria-checked={locale === l}
           className={`lang-opt ${locale === l ? 'active' : ''}`}
           onClick={() => setLocale(l)}
-          title={dictionaries[l].langName}
+          title={LANG_NAMES[l]}
         >
           {locale === l && <motion.span layoutId={`${id}-pill`} className="chip-bg" transition={spring} />}
           <span>{l.toUpperCase()}</span>
