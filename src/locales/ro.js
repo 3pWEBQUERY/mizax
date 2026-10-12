@@ -554,6 +554,16 @@ export default {
     more: 'Mai multe recenzii',
     empty: 'Încă nu există recenzii.',
     emptyRate: 'Încă nu există recenzii – scrie prima.',
+    fromMembers: 'de la membri',
+    fromEscorts: 'de la escorte',
+    toEscorts: 'pentru escorte',
+    givenTitle: 'Recenzii acordate',
+    givenEmpty: '{name} nu a evaluat încă nicio escortă.',
+    givenEmptySelf: 'Încă nu ai evaluat nicio escortă. Evaluează escortele în fila „Recenzii” de pe profilul lor.',
+    rateMember: 'Ce impresie ți-a lăsat {name}?',
+    placeholderMember: 'Spune-le altor escorte cum a fost întâlnirea (opțional)',
+    emptyMember: 'Încă nu există recenzii de la escorte.',
+    rateShort: 'Evaluează',
   },
   sug: {
     title: 'Sugestii',
@@ -639,5 +649,6 @@ export default {
     review_rating: 'Alege între 1 și 5 stele.',
     review_members_only: 'Doar membrii pot evalua escortele.',
     members_only: 'Doar pentru membri.',
+    review_escorts_only: 'Doar escortele pot evalua membrii.',
   },
 };

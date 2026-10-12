@@ -288,7 +288,7 @@ export default function Profile() {
             >
               {activeTab === 'reviews' ? (
                 <Rise i={switched ? 0 : i++} className="profile-posts">
-                  <Reviews slug={escort.slug} onSummary={setRating} />
+                  <Reviews target="escort" refId={escort.slug} onSummary={setRating} />
                 </Rise>
               ) : activeTab === 'posts' ? (
                 <Rise i={switched ? 0 : i++} className="profile-posts">

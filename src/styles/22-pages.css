@@ -338,6 +338,11 @@
   color: var(--text);
 }
 
+.chat-profile-link + .chat-profile-link {
+  margin-left: 14px;
+  gap: 4px;
+}
+
 .chat-page .chat-list {
   padding-top: 4px;
   border-top: 1px solid var(--border-strong);

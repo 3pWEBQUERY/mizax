@@ -208,6 +208,20 @@ export async function migrate() {
       UNIQUE (escort_id, user_id)
     );
     CREATE INDEX IF NOT EXISTS escort_reviews_escort_idx ON escort_reviews (escort_id, updated_at DESC);
+    CREATE INDEX IF NOT EXISTS escort_reviews_user_idx ON escort_reviews (user_id, id DESC);
+
+    -- Bewertungen von Mitgliedern durch Escorts (eine pro Escort-Konto und Mitglied)
+    CREATE TABLE IF NOT EXISTS member_reviews (
+      id         SERIAL PRIMARY KEY,
+      member_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      rating     SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+      body       TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      UNIQUE (member_id, user_id)
+    );
+    CREATE INDEX IF NOT EXISTS member_reviews_member_idx ON member_reviews (member_id, id DESC);
 
     -- Vorschläge: Ereignisse auf Escort-Profilen (wieder aktiv, Standort geändert)
     ALTER TABLE escorts ADD COLUMN IF NOT EXISTS returned_at TIMESTAMPTZ;

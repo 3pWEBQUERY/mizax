@@ -265,3 +265,16 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* Kopf der Bewertungskarte: Titel links, von wem (Mitglieder / Escorts) rechts */
+.reviews-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.reviews-head span {
+  font-size: 12.5px;
+  color: var(--muted);
+}

@@ -2,125 +2,201 @@ import express from 'express';
 import { query } from '../db.js';
 import { httpError, requireUser, rateLimit } from '../auth.js';
 import { wrap, requireDb, noStore, text, toId } from '../http.js';
-import { thumbUrl } from '../escorts.js';
+import { THUMB, thumbUrl, ownEscort } from '../escorts.js';
 
-// Bewertungen von Escorts: Mitglieder vergeben 1–5 Sterne und optional einen kurzen Text.
-// Eine Bewertung pro Mitglied und Escort; erneutes Bewerten ersetzt die alte.
+// Bewertungen in beide Richtungen, je 1–5 Sterne und optional ein kurzer Text:
+// - Mitglieder bewerten Escorts (escort_reviews)
+// - Escorts bewerten Mitglieder (member_reviews)
+// Eine Bewertung pro Person und Ziel; erneutes Bewerten ersetzt die alte.
 
 const router = express.Router();
 const PAGE = 10;
 
-async function findEscort(slug, me) {
-  const { rows } = await query('SELECT id, user_id, published FROM escorts WHERE slug = $1', [slug]);
-  const e = rows[0];
-  if (!e || (!e.published && e.user_id !== me.id && !me.is_admin)) {
-    throw httpError(404, 'not_found', 'Profil nicht gefunden');
-  }
-  return e;
-}
+// Autor einer Bewertung: Mitglied (bei Escort-Bewertungen) bzw. Escort-Profil (bei Mitglieder-Bewertungen)
+const memberAuthor = (r) => ({ kind: 'member', memberId: r.user_id, name: r.name, thumb: thumbUrl(r.avatar_key) });
+const escortAuthor = (r) =>
+  r.slug
+    ? { kind: 'escort', slug: r.slug, name: r.escort_name, thumb: thumbUrl(r.thumb_key) }
+    : { kind: 'member', memberId: r.user_id, name: r.name, thumb: null };
 
-const canRate = (escort, me) => me.role === 'member' && escort.user_id !== me.id;
+const TARGETS = {
+  escort: {
+    table: 'escort_reviews',
+    key: 'escort_id',
+    select: `SELECT r.*, u.name, u.avatar_key FROM escort_reviews r JOIN users u ON u.id = r.user_id`,
+    author: memberAuthor,
+    async find(slug, me) {
+      const { rows } = await query('SELECT id, user_id, published FROM escorts WHERE slug = $1', [slug]);
+      const e = rows[0];
+      if (!e || (!e.published && e.user_id !== me.id && !me.is_admin)) {
+        throw httpError(404, 'not_found', 'Profil nicht gefunden');
+      }
+      return e;
+    },
+    canRate: async (e, me) => me.role === 'member' && e.user_id !== me.id,
+    denied: () => httpError(403, 'review_members_only', 'Nur Mitglieder können Escorts bewerten'),
+  },
+  member: {
+    table: 'member_reviews',
+    key: 'member_id',
+    select: `SELECT r.*, u.name, e.slug, e.name AS escort_name, ${THUMB('e')} AS thumb_key
+      FROM member_reviews r JOIN users u ON u.id = r.user_id
+      LEFT JOIN escorts e ON e.user_id = r.user_id`,
+    author: escortAuthor,
+    async find(id) {
+      const { rows } = await query("SELECT id FROM users WHERE id = $1 AND role = 'member'", [toId(id)]);
+      if (!rows[0]) throw httpError(404, 'not_found', 'Nicht gefunden');
+      return rows[0];
+    },
+    // nur Escorts mit eigenem Profil
+    canRate: async (m, me) => me.role === 'escort' && m.id !== me.id && Boolean(await ownEscort(me.id)),
+    denied: () => httpError(403, 'review_escorts_only', 'Nur Escorts können Mitglieder bewerten'),
+  },
+};
 
-function reviewOut(r, me) {
+function reviewOut(T, r, me) {
   return {
     id: r.id,
     rating: r.rating,
     body: r.body,
     at: r.updated_at,
     edited: new Date(r.updated_at) - new Date(r.created_at) > 2000,
-    author: { kind: 'member', memberId: r.user_id, name: r.name, thumb: thumbUrl(r.avatar_key) },
+    author: T.author(r),
     mine: r.user_id === me.id,
     canDelete: r.user_id === me.id || Boolean(me.is_admin),
   };
 }
 
-const SELECT = `SELECT r.*, u.name, u.avatar_key FROM escort_reviews r JOIN users u ON u.id = r.user_id`;
+export async function ratingSummary(table, key, id) {
+  const { rows } = await query(
+    `SELECT round(avg(rating)::numeric, 1)::float AS average, count(*)::int AS count,
+       count(*) FILTER (WHERE rating = 5)::int AS r5, count(*) FILTER (WHERE rating = 4)::int AS r4,
+       count(*) FILTER (WHERE rating = 3)::int AS r3, count(*) FILTER (WHERE rating = 2)::int AS r2,
+       count(*) FILTER (WHERE rating = 1)::int AS r1
+     FROM ${table} WHERE ${key} = $1`,
+    [id],
+  );
+  return rows[0];
+}
 
-async function summary(escort, me) {
-  const [{ rows: s }, { rows: mine }] = await Promise.all([
-    query(
-      `SELECT round(avg(rating)::numeric, 1)::float AS average, count(*)::int AS count,
-         count(*) FILTER (WHERE rating = 5)::int AS r5, count(*) FILTER (WHERE rating = 4)::int AS r4,
-         count(*) FILTER (WHERE rating = 3)::int AS r3, count(*) FILTER (WHERE rating = 2)::int AS r2,
-         count(*) FILTER (WHERE rating = 1)::int AS r1
-       FROM escort_reviews WHERE escort_id = $1`,
-      [escort.id],
-    ),
-    query(`${SELECT} WHERE r.escort_id = $1 AND r.user_id = $2`, [escort.id, me.id]),
+async function summary(T, target, me) {
+  const [x, { rows: mine }, canRate] = await Promise.all([
+    ratingSummary(T.table, T.key, target.id),
+    query(`${T.select} WHERE r.${T.key} = $1 AND r.user_id = $2`, [target.id, me.id]),
+    T.canRate(target, me),
   ]);
-  const x = s[0];
   return {
     average: x.average,
     count: x.count,
     distribution: [x.r5, x.r4, x.r3, x.r2, x.r1],
-    mine: mine[0] ? reviewOut(mine[0], me) : null,
-    canRate: canRate(escort, me),
+    mine: mine[0] ? reviewOut(T, mine[0], me) : null,
+    canRate,
   };
 }
 
-async function page(escort, me, before) {
-  const args = [escort.id];
+async function page(T, target, me, before) {
+  const args = [target.id];
   let cond = '';
   if (before) {
     args.push(before);
     cond = 'AND r.id < $2';
   }
   const { rows } = await query(
-    `${SELECT} WHERE r.escort_id = $1 AND r.body <> '' ${cond} ORDER BY r.id DESC LIMIT ${PAGE}`,
+    `${T.select} WHERE r.${T.key} = $1 AND r.body <> '' ${cond} ORDER BY r.id DESC LIMIT ${PAGE}`,
     args,
   );
-  return { items: rows.map((r) => reviewOut(r, me)), done: rows.length < PAGE };
+  return { items: rows.map((r) => reviewOut(T, r, me)), done: rows.length < PAGE };
 }
 
+const full = async (T, target, me) => ({ ...(await summary(T, target, me)), ...(await page(T, target, me, null)) });
+
+// Routen für beide Richtungen: /api/escorts/:ref/… und /api/members/:ref/…
+for (const [kind, T] of Object.entries(TARGETS)) {
+  const base = kind === 'escort' ? '/api/escorts/:ref' : '/api/members/:ref';
+  const del = kind === 'escort' ? '/api/reviews/:id' : '/api/member-reviews/:id';
+
+  router.get(
+    `${base}/reviews`,
+    requireUser,
+    requireDb,
+    wrap(async (req, res) => {
+      const target = await T.find(req.params.ref, req.user);
+      const before = Number(req.query.before) || null;
+      noStore(res);
+      res.json(before ? await page(T, target, req.user, before) : await full(T, target, req.user));
+    }),
+  );
+
+  router.put(
+    `${base}/review`,
+    requireUser,
+    requireDb,
+    rateLimit(30, 60 * 60 * 1000),
+    wrap(async (req, res) => {
+      const target = await T.find(req.params.ref, req.user);
+      if (!(await T.canRate(target, req.user))) throw T.denied();
+      const rating = Number(req.body?.rating);
+      if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+        throw httpError(400, 'review_rating', 'Bitte 1 bis 5 Sterne wählen');
+      }
+      await query(
+        `INSERT INTO ${T.table} (${T.key}, user_id, rating, body) VALUES ($1, $2, $3, $4)
+         ON CONFLICT (${T.key}, user_id) DO UPDATE SET rating = EXCLUDED.rating, body = EXCLUDED.body, updated_at = now()`,
+        [target.id, req.user.id, rating, text(req.body?.body, 1000)],
+      );
+      res.json(await full(T, target, req.user));
+    }),
+  );
+
+  router.delete(
+    del,
+    requireUser,
+    requireDb,
+    wrap(async (req, res) => {
+      const { rows } = await query(`SELECT id, user_id, ${T.key} AS target_id FROM ${T.table} WHERE id = $1`, [
+        toId(req.params.id),
+      ]);
+      const r = rows[0];
+      if (!r) throw httpError(404, 'not_found', 'Nicht gefunden');
+      if (r.user_id !== req.user.id && !req.user.is_admin) throw httpError(403, 'forbidden', 'Keine Berechtigung');
+      await query(`DELETE FROM ${T.table} WHERE id = $1`, [r.id]);
+      res.json(await full(T, { id: r.target_id, user_id: null }, req.user));
+    }),
+  );
+}
+
+// Bewertungen, die ein Mitglied an Escorts vergeben hat (für sein Profil)
 router.get(
-  '/api/escorts/:slug/reviews',
+  '/api/members/:ref/reviews/given',
   requireUser,
   requireDb,
   wrap(async (req, res) => {
-    const escort = await findEscort(req.params.slug, req.user);
+    const member = await TARGETS.member.find(req.params.ref);
+    const args = [member.id];
+    let cond = '';
     const before = Number(req.query.before) || null;
-    noStore(res);
-    if (before) return res.json(await page(escort, req.user, before));
-    res.json({ ...(await summary(escort, req.user)), ...(await page(escort, req.user, null)) });
-  }),
-);
-
-router.put(
-  '/api/escorts/:slug/review',
-  requireUser,
-  requireDb,
-  rateLimit(30, 60 * 60 * 1000),
-  wrap(async (req, res) => {
-    const escort = await findEscort(req.params.slug, req.user);
-    if (!canRate(escort, req.user)) throw httpError(403, 'review_members_only', 'Nur Mitglieder können bewerten');
-    const rating = Number(req.body?.rating);
-    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
-      throw httpError(400, 'review_rating', 'Bitte 1 bis 5 Sterne wählen');
+    if (before) {
+      args.push(before);
+      cond = 'AND r.id < $2';
     }
-    await query(
-      `INSERT INTO escort_reviews (escort_id, user_id, rating, body) VALUES ($1, $2, $3, $4)
-       ON CONFLICT (escort_id, user_id) DO UPDATE SET rating = EXCLUDED.rating, body = EXCLUDED.body, updated_at = now()`,
-      [escort.id, req.user.id, rating, text(req.body?.body, 1000)],
-    );
-    res.json({ ...(await summary(escort, req.user)), ...(await page(escort, req.user, null)) });
-  }),
-);
-
-router.delete(
-  '/api/reviews/:id',
-  requireUser,
-  requireDb,
-  wrap(async (req, res) => {
     const { rows } = await query(
-      'SELECT r.id, r.user_id, e.slug FROM escort_reviews r JOIN escorts e ON e.id = r.escort_id WHERE r.id = $1',
-      [toId(req.params.id)],
+      `SELECT r.*, e.slug, e.name AS escort_name, ${THUMB('e')} AS thumb_key
+       FROM escort_reviews r JOIN escorts e ON e.id = r.escort_id
+       WHERE r.user_id = $1 AND (e.published = true OR e.user_id = $${args.length + 1}) ${cond}
+       ORDER BY r.id DESC LIMIT ${PAGE}`,
+      [...args, req.user.id],
     );
-    const r = rows[0];
-    if (!r) throw httpError(404, 'not_found', 'Nicht gefunden');
-    if (r.user_id !== req.user.id && !req.user.is_admin) throw httpError(403, 'forbidden', 'Keine Berechtigung');
-    await query('DELETE FROM escort_reviews WHERE id = $1', [r.id]);
-    const escort = await findEscort(r.slug, req.user);
-    res.json({ ...(await summary(escort, req.user)), ...(await page(escort, req.user, null)) });
+    noStore(res);
+    res.json({
+      items: rows.map((r) => ({
+        id: r.id,
+        rating: r.rating,
+        body: r.body,
+        at: r.updated_at,
+        escort: { kind: 'escort', slug: r.slug, name: r.escort_name, thumb: thumbUrl(r.thumb_key) },
+      })),
+      done: rows.length < PAGE,
+    });
   }),
 );
 

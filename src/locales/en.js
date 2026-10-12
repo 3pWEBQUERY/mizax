@@ -553,6 +553,16 @@ export default {
     more: 'More reviews',
     empty: 'No reviews yet.',
     emptyRate: 'No reviews yet – be the first.',
+    fromMembers: 'from members',
+    fromEscorts: 'from escorts',
+    toEscorts: 'for escorts',
+    givenTitle: 'Reviews given',
+    givenEmpty: '{name} hasn’t reviewed any escorts yet.',
+    givenEmptySelf: 'You haven’t reviewed any escorts yet. Review escorts in the “Reviews” tab on their profile.',
+    rateMember: 'What was your impression of {name}?',
+    placeholderMember: 'Tell other escorts how the meeting went (optional)',
+    emptyMember: 'No reviews from escorts yet.',
+    rateShort: 'Rate',
   },
   sug: {
     title: 'Suggestions',
@@ -638,5 +648,6 @@ export default {
     review_rating: 'Please choose 1 to 5 stars.',
     review_members_only: 'Only members can review escorts.',
     members_only: 'Members only.',
+    review_escorts_only: 'Only escorts can review members.',
   },
 };

@@ -14,6 +14,7 @@ import { interestLabel, languageName, parseLanguage } from '../lib/catalog.js';
 import { cantonName } from '../lib/cantons.js';
 import ProfileTabs, { useProfileTab, postCountLabel } from '../components/ProfileTabs.jsx';
 import { Composer, PostList, usePosts } from '../components/feed/index.js';
+import Reviews, { GivenReviews, Stars, formatRating } from '../components/feed/Reviews.jsx';
 
 // Mitgliederprofil – sichtbar für alle angemeldeten Konten. Gleicher Aufbau wie ein Escort-Profil
 // (Bild links, Steckbrief rechts), aber mit Über mich, Details, Interessen und eigenem Feed statt
@@ -27,8 +28,9 @@ export default function Member() {
   const [member, setMember] = useState(null);
   const [error, setError] = useState(null);
   const [zoom, setZoom] = useState(false);
-  const { tab: urlTab, switched, select } = useProfileTab(id);
-  const tab = urlTab === 'posts' ? 'posts' : 'profile';
+  const { tab, switched, select } = useProfileTab(id);
+  const [rating, setRating] = useState(null);
+  useEffect(() => setRating(null), [id]);
   const feed = usePosts(user ? `/api/members/${encodeURIComponent(id)}/posts` : null);
 
   useEffect(() => {
@@ -86,6 +88,7 @@ export default function Member() {
         .join('\n'),
     ],
   ].filter(([, v]) => v);
+  const score = rating || member.rating;
   let i = 6;
   let j = 0;
 
@@ -128,6 +131,15 @@ export default function Member() {
                 </>
               )}
             </Rise>
+            {score?.count > 0 && (
+              <Rise i={2}>
+                <button type="button" className="profile-rating" onClick={() => select('reviews')}>
+                  <Stars value={score.average} size={15} />
+                  <b>{formatRating(score.average, locale)}</b>
+                  <span>{t(score.count === 1 ? 'reviews.countOne' : 'reviews.count', { n: score.count })}</span>
+                </button>
+              </Rise>
+            )}
             {member.tagline && (
               <Rise i={2} className="profile-tagline">
                 {member.tagline}
@@ -160,6 +172,7 @@ export default function Member() {
               tabs={[
                 { key: 'profile', label: t('profile.tabProfile') },
                 { key: 'posts', label: t('feed.profileTitle'), count: postCountLabel(feed) },
+                { key: 'reviews', label: t('reviews.title'), count: score?.count || null },
               ]}
               active={tab}
               onSelect={select}
@@ -167,7 +180,12 @@ export default function Member() {
             />
 
             <div key={tab} className="profile-panel" id="profile-panel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
-              {tab === 'posts' ? (
+              {tab === 'reviews' ? (
+                <Rise i={switched ? 0 : i++} className="profile-posts">
+                  <Reviews target="member" refId={member.id} name={member.name} onSummary={setRating} />
+                  <GivenReviews memberId={member.id} name={member.name} self={member.self} />
+                </Rise>
+              ) : tab === 'posts' ? (
                 <Rise i={switched ? 0 : i++} className="profile-posts">
                   {member.self && <Composer onPosted={feed.prepend} />}
                   <PostList

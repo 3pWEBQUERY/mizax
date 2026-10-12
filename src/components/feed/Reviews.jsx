@@ -54,7 +54,7 @@ function StarPicker({ value, onChange }) {
   );
 }
 
-function ReviewForm({ base, mine, onSaved }) {
+function ReviewForm({ base, delBase, texts, mine, onSaved }) {
   const { t } = useI18n();
   const toast = useToast();
   const [rating, setRating] = useState(mine?.rating || 0);
@@ -87,7 +87,7 @@ function ReviewForm({ base, mine, onSaved }) {
   async function remove() {
     if (!window.confirm(t('reviews.confirmDelete'))) return;
     // danach wird das Formular über den neuen key frisch aufgebaut
-    await run(() => api(`/api/reviews/${mine.id}`, { method: 'DELETE' }), t('reviews.deleted'));
+    await run(() => api(`${delBase}/${mine.id}`, { method: 'DELETE' }), t('reviews.deleted'));
   }
 
   if (mine && !editing) {
@@ -105,7 +105,7 @@ function ReviewForm({ base, mine, onSaved }) {
   return (
     <form className="review-form" onSubmit={save}>
       <div className="review-form-head">
-        <span>{mine ? t('reviews.yours') : t('reviews.rateTitle')}</span>
+        <span>{mine ? t('reviews.yours') : texts.rateTitle}</span>
         <StarPicker value={rating} onChange={setRating} />
       </div>
       <AnimatePresence initial={false}>
@@ -120,7 +120,7 @@ function ReviewForm({ base, mine, onSaved }) {
               className="input review-input"
               value={body}
               maxLength={1000}
-              placeholder={t('reviews.placeholder')}
+              placeholder={texts.placeholder}
               onChange={(e) => setBody(e.target.value)}
             />
             <div className="review-form-bar">
@@ -177,11 +177,20 @@ function ReviewItem({ r, onDelete }) {
   );
 }
 
-// Bewertungen eines Escorts: Durchschnitt, Verteilung, eigene Bewertung und Texte der Mitglieder
-export default function Reviews({ slug, onSummary }) {
+// Bewertungen eines Profils: Durchschnitt, Verteilung, eigene Bewertung und Texte.
+// target 'escort': Mitglieder bewerten die Escort (ref = slug)
+// target 'member': Escorts bewerten das Mitglied (ref = Mitglieds-ID)
+export default function Reviews({ target = 'escort', refId, name, onSummary }) {
   const { t, locale } = useI18n();
   const toast = useToast();
-  const base = `/api/escorts/${encodeURIComponent(slug)}`;
+  const member = target === 'member';
+  const base = member ? `/api/members/${encodeURIComponent(refId)}` : `/api/escorts/${encodeURIComponent(refId)}`;
+  const delBase = member ? '/api/member-reviews' : '/api/reviews';
+  const texts = {
+    rateTitle: member ? t('reviews.rateMember', { name }) : t('reviews.rateTitle'),
+    placeholder: member ? t('reviews.placeholderMember') : t('reviews.placeholder'),
+    from: member ? t('reviews.fromEscorts') : t('reviews.fromMembers'),
+  };
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -215,7 +224,7 @@ export default function Reviews({ slug, onSummary }) {
   async function removeOther(r) {
     if (!window.confirm(t('reviews.confirmDelete'))) return;
     try {
-      apply(await api(`/api/reviews/${r.id}`, { method: 'DELETE' }));
+      apply(await api(`${delBase}/${r.id}`, { method: 'DELETE' }));
     } catch (err) {
       toast(errorText(t, err));
     }
@@ -227,7 +236,10 @@ export default function Reviews({ slug, onSummary }) {
   const max = Math.max(1, ...data.distribution);
   return (
     <section className="profile-card reviews" aria-label={t('reviews.title')}>
-      <h2 className="profile-card-title">{t('reviews.title')}</h2>
+      <div className="reviews-head">
+        <h2 className="profile-card-title">{t('reviews.title')}</h2>
+        <span>{texts.from}</span>
+      </div>
       <div className="reviews-summary">
         <div className="reviews-score">
           <b>{data.count ? formatRating(data.average, locale) : '–'}</b>
@@ -252,7 +264,16 @@ export default function Reviews({ slug, onSummary }) {
         </div>
       </div>
 
-      {data.canRate && <ReviewForm key={data.mine?.id || 'new'} base={base} mine={data.mine} onSaved={apply} />}
+      {data.canRate && (
+        <ReviewForm
+          key={data.mine?.id || 'new'}
+          base={base}
+          delBase={delBase}
+          texts={texts}
+          mine={data.mine}
+          onSaved={apply}
+        />
+      )}
 
       {data.items.length > 0 ? (
         <div className="review-list">
@@ -268,7 +289,83 @@ export default function Reviews({ slug, onSummary }) {
           )}
         </div>
       ) : (
-        !data.count && <p className="panel-empty">{data.canRate ? t('reviews.emptyRate') : t('reviews.empty')}</p>
+        !data.count && (
+          <p className="panel-empty">
+            {data.canRate ? t('reviews.emptyRate') : member ? t('reviews.emptyMember') : t('reviews.empty')}
+          </p>
+        )
+      )}
+    </section>
+  );
+}
+
+// Bewertungen, die ein Mitglied an Escorts vergeben hat – auf seinem Profil
+export function GivenReviews({ memberId, name, self }) {
+  const { t, locale } = useI18n();
+  const toast = useToast();
+  const base = `/api/members/${encodeURIComponent(memberId)}/reviews/given`;
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    api(base)
+      .then((r) => alive && setData(r))
+      .catch(() => alive && setData({ error: true }));
+    return () => {
+      alive = false;
+    };
+  }, [base]);
+
+  async function more() {
+    setLoading(true);
+    try {
+      const r = await api(`${base}?before=${data.items[data.items.length - 1].id}`);
+      setData((d) => ({ ...d, items: [...d.items, ...r.items], done: r.done }));
+    } catch (err) {
+      toast(errorText(t, err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (!data) return <div className="profile-card skeleton" style={{ height: 120, aspectRatio: 'auto' }} />;
+  if (data.error) return null;
+
+  return (
+    <section className="profile-card reviews" aria-label={t('reviews.givenTitle')}>
+      <div className="reviews-head">
+        <h2 className="profile-card-title">{t('reviews.givenTitle')}</h2>
+        <span>{t('reviews.toEscorts')}</span>
+      </div>
+      {data.items.length ? (
+        <div className="review-list">
+          {data.items.map((r) => {
+            const to = profilePath(r.escort);
+            return (
+              <div key={r.id} className="review">
+                <Link to={to} className="review-avatar" aria-label={r.escort.name}>
+                  <Avatar name={r.escort.name} thumb={r.escort.thumb} size={36} />
+                </Link>
+                <div className="review-main">
+                  <div className="review-top">
+                    <Link to={to}>{r.escort.name}</Link>
+                    <Stars value={r.rating} size={13} />
+                    <small>{timeAgo(r.at, locale, 'short')}</small>
+                  </div>
+                  {r.body && <p>{r.body}</p>}
+                </div>
+              </div>
+            );
+          })}
+          {!data.done && (
+            <button type="button" className="comments-more" onClick={more} disabled={loading}>
+              {t('reviews.more')}
+            </button>
+          )}
+        </div>
+      ) : (
+        <p className="panel-empty">{self ? t('reviews.givenEmptySelf') : t('reviews.givenEmpty', { name })}</p>
       )}
     </section>
   );

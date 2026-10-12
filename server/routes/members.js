@@ -6,6 +6,7 @@ import { hasStorage } from '../storage.js';
 import { storeImage, removeImages, isImage } from '../media.js';
 import { ownEscort } from '../escorts.js';
 import { memberInput, memberOut, getMember, updateMember } from '../members.js';
+import { ratingSummary } from './reviews.js';
 
 // Mitgliederprofile: eigenes Profil bearbeiten und Profile ansehen (für alle angemeldeten Konten)
 
@@ -87,8 +88,20 @@ router.get(
         conversationId = c[0]?.id || null;
       }
     }
+    // Bewertungen: erhalten (von Escorts) und abgegeben (an Escorts)
+    const [rating, { rows: given }] = await Promise.all([
+      ratingSummary('member_reviews', 'member_id', m.id),
+      query('SELECT count(*)::int AS n FROM escort_reviews WHERE user_id = $1', [m.id]),
+    ]);
     noStore(res);
-    res.json({ ...memberOut(m), escortSlug: m.escort_slug || null, conversationId, self });
+    res.json({
+      ...memberOut(m),
+      escortSlug: m.escort_slug || null,
+      conversationId,
+      self,
+      rating: { average: rating.average, count: rating.count },
+      givenCount: given[0].n,
+    });
   }),
 );
 

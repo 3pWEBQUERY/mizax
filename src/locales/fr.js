@@ -558,6 +558,17 @@ export default {
     more: "Plus d'avis",
     empty: "Pas encore d'avis.",
     emptyRate: "Pas encore d'avis – donnez le premier.",
+    fromMembers: 'des membres',
+    fromEscorts: 'des escorts',
+    toEscorts: 'aux escorts',
+    givenTitle: 'Avis donnés',
+    givenEmpty: '{name} n’a encore évalué aucune escort.',
+    givenEmptySelf:
+      'Vous n’avez encore évalué aucune escort. Évaluez les escorts dans l’onglet « Avis » de leur profil.',
+    rateMember: 'Quelle impression {name} vous a-t-il laissée ?',
+    placeholderMember: 'Racontez aux autres escorts comment s’est passée la rencontre (facultatif)',
+    emptyMember: 'Pas encore d’avis d’escorts.',
+    rateShort: 'Évaluer',
   },
   sug: {
     title: 'Suggestions',
@@ -644,5 +655,6 @@ export default {
     review_rating: 'Choisissez entre 1 et 5 étoiles.',
     review_members_only: 'Seuls les membres peuvent évaluer les escorts.',
     members_only: 'Réservé aux membres.',
+    review_escorts_only: 'Seules les escorts peuvent évaluer les membres.',
   },
 };

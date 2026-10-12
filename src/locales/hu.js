@@ -556,6 +556,16 @@ export default {
     more: 'További értékelések',
     empty: 'Még nincs értékelés.',
     emptyRate: 'Még nincs értékelés – légy te az első.',
+    fromMembers: 'tagoktól',
+    fromEscorts: 'escortoktól',
+    toEscorts: 'escortoknak',
+    givenTitle: 'Adott értékelések',
+    givenEmpty: '{name} még nem értékelt escortot.',
+    givenEmptySelf: 'Még nem értékeltél escortot. Az escortokat a profiljuk „Értékelések” fülén értékelheted.',
+    rateMember: 'Milyen benyomást tett rád {name}?',
+    placeholderMember: 'Meséld el a többi escortnak, milyen volt a találkozó (nem kötelező)',
+    emptyMember: 'Még nincs értékelés escortoktól.',
+    rateShort: 'Értékelés',
   },
   sug: {
     title: 'Ajánlatok',
@@ -642,5 +652,6 @@ export default {
     review_rating: 'Válassz 1–5 csillagot.',
     review_members_only: 'Csak tagok értékelhetik az escortokat.',
     members_only: 'Csak tagoknak.',
+    review_escorts_only: 'Csak escortok értékelhetnek tagokat.',
   },
 };

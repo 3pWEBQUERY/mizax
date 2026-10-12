@@ -555,6 +555,17 @@ export default {
     more: 'Más valoraciones',
     empty: 'Aún no hay valoraciones.',
     emptyRate: 'Aún no hay valoraciones: sé quien abra la lista.',
+    fromMembers: 'de miembros',
+    fromEscorts: 'de escorts',
+    toEscorts: 'a escorts',
+    givenTitle: 'Valoraciones dadas',
+    givenEmpty: '{name} aún no ha valorado a ninguna escort.',
+    givenEmptySelf:
+      'Aún no has valorado a ninguna escort. Valora a las escorts en la pestaña «Valoraciones» de su perfil.',
+    rateMember: '¿Qué impresión te dejó {name}?',
+    placeholderMember: 'Cuenta a otras escorts cómo fue el encuentro (opcional)',
+    emptyMember: 'Aún no hay valoraciones de escorts.',
+    rateShort: 'Valorar',
   },
   sug: {
     title: 'Sugerencias',
@@ -641,5 +652,6 @@ export default {
     review_rating: 'Elige de 1 a 5 estrellas.',
     review_members_only: 'Solo los miembros pueden valorar a las escorts.',
     members_only: 'Solo para miembros.',
+    review_escorts_only: 'Solo las escorts pueden valorar a los miembros.',
   },
 };

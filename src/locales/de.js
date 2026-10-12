@@ -555,6 +555,16 @@ export default {
     more: 'Weitere Bewertungen',
     empty: 'Noch keine Bewertungen.',
     emptyRate: 'Noch keine Bewertungen – gib die erste ab.',
+    fromMembers: 'von Mitgliedern',
+    fromEscorts: 'von Escorts',
+    toEscorts: 'an Escorts',
+    givenTitle: 'Abgegebene Bewertungen',
+    givenEmpty: '{name} hat noch keine Escorts bewertet.',
+    givenEmptySelf: 'Du hast noch keine Escorts bewertet. Bewerte Escorts im Tab „Bewertungen“ auf ihrem Profil.',
+    rateMember: 'Wie war dein Eindruck von {name}?',
+    placeholderMember: 'Erzähl anderen Escorts, wie die Begegnung war (optional)',
+    emptyMember: 'Noch keine Bewertungen von Escorts.',
+    rateShort: 'Bewerten',
   },
   sug: {
     title: 'Vorschläge',
@@ -641,5 +651,6 @@ export default {
     review_rating: 'Bitte wähle 1 bis 5 Sterne.',
     review_members_only: 'Nur Mitglieder können Escorts bewerten.',
     members_only: 'Nur für Mitglieder.',
+    review_escorts_only: 'Nur Escorts können Mitglieder bewerten.',
   },
 };

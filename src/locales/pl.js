@@ -555,6 +555,16 @@ export default {
     more: 'Więcej opinii',
     empty: 'Brak opinii.',
     emptyRate: 'Brak opinii – dodaj pierwszą.',
+    fromMembers: 'od członków',
+    fromEscorts: 'od escortek',
+    toEscorts: 'dla escortek',
+    givenTitle: 'Wystawione opinie',
+    givenEmpty: '{name} nie ocenił jeszcze żadnej escortki.',
+    givenEmptySelf: 'Nie oceniono jeszcze żadnej escortki. Oceniaj escortki w zakładce „Opinie” na ich profilu.',
+    rateMember: 'Jakie wrażenie zrobił na tobie {name}?',
+    placeholderMember: 'Opowiedz innym escortkom, jak przebiegło spotkanie (opcjonalnie)',
+    emptyMember: 'Brak opinii od escortek.',
+    rateShort: 'Oceń',
   },
   sug: {
     title: 'Propozycje',
@@ -640,5 +650,6 @@ export default {
     review_rating: 'Wybierz od 1 do 5 gwiazdek.',
     review_members_only: 'Tylko członkowie mogą oceniać escortki.',
     members_only: 'Tylko dla członków.',
+    review_escorts_only: 'Tylko escortki mogą oceniać członków.',
   },
 };

@@ -7,7 +7,7 @@ import Avatar from '../components/Avatar.jsx';
 import { ConversationRow, otherLink } from '../components/ConversationRow.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
 import { useToast } from '../components/Toast.jsx';
-import { SendIcon, InboxIcon, ChevronR, DoubleCheckIcon, CheckIcon } from '../components/Icons.jsx';
+import { SendIcon, InboxIcon, ChevronR, DoubleCheckIcon, CheckIcon, StarIcon } from '../components/Icons.jsx';
 import { api } from '../lib/api.js';
 import { useAuth } from '../lib/auth.jsx';
 import { useDock } from '../lib/dock.jsx';
@@ -219,6 +219,11 @@ export function Chat() {
                 <Link to={link} className="chat-profile-link">
                   {conv.other.kind === 'escort' ? t('msg.viewProfile') : t('msg.viewMember')}
                   <ChevronR width={12} height={12} />
+                </Link>
+                {/* Escorts können Mitglieder bewerten, Mitglieder Escorts – direkt aus dem Chat */}
+                <Link to={`${link}?tab=reviews`} className="chat-profile-link">
+                  <StarIcon width={12} height={12} />
+                  {t('reviews.rateShort')}
                 </Link>
               </Rise>
             )}
