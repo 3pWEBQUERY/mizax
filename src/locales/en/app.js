@@ -232,6 +232,8 @@ export default {
     notifySuggestionsHint: 'At most once a day, if suggestions are on',
     notifyInfo:
       'Notifications are sent by email to your account address. For discretion, message content is never included.',
+    export: 'Download my data',
+    exportStarted: 'Your data is being downloaded',
   },
   sidebar: {
     noViews: 'No profile views in the last 14 days yet.',

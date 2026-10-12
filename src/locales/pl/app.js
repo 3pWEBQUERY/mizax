@@ -233,6 +233,8 @@ export default {
     notifySuggestionsHint: 'Najwyżej raz dziennie, jeśli propozycje są włączone',
     notifyInfo:
       'Powiadomienia wysyłamy e-mailem na adres konta. Dla dyskrecji treść wiadomości nigdy się w nich nie pojawia.',
+    export: 'Pobierz moje dane',
+    exportStarted: 'Twoje dane są pobierane',
   },
   sidebar: {
     noViews: 'Brak wyświetleń w ciągu ostatnich 14 dni.',

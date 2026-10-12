@@ -22,6 +22,7 @@ import {
   BlockIcon,
   TrashIcon,
   HeartIcon,
+  DownloadIcon,
 } from '../../components/Icons.jsx';
 import { useAuth } from '../../lib/auth.jsx';
 import { useDock } from '../../lib/dock.jsx';
@@ -204,6 +205,16 @@ export default function Settings() {
               <Group>
                 <Row icon={ShieldIcon} label={t('legal.privacyTitle')} onClick={() => navigate('/datenschutz')} />
                 <Row icon={DocIcon} label={t('legal.termsTitle')} onClick={() => navigate('/agb')} />
+                <Row
+                  icon={DownloadIcon}
+                  label={t('settings.export')}
+                  chevron={false}
+                  onClick={() => {
+                    // Download über die Sitzung (Cookie); der Server liefert die Datei als Anhang
+                    window.location.href = '/api/me/export';
+                    toast(t('settings.exportStarted'));
+                  }}
+                />
               </Group>
 
               <Group>

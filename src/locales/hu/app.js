@@ -233,6 +233,8 @@ export default {
     notifySuggestionsHint: 'Legfeljebb naponta egyszer, ha az ajánlatok be vannak kapcsolva',
     notifyInfo:
       'Az értesítéseket e-mailben küldjük a fiókod címére. Diszkréció miatt az üzenetek tartalma soha nem szerepel bennük.',
+    export: 'Adataim letöltése',
+    exportStarted: 'Az adataid letöltése folyamatban',
   },
   sidebar: {
     noViews: 'Az elmúlt 14 napban még nem volt megtekintés.',

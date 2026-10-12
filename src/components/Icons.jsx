@@ -251,6 +251,11 @@ export const DocIcon = (p) => (
     <path d="M13.5 3.5V8h5M8.5 12.5h7M8.5 16h5" />
   </svg>
 );
+export const DownloadIcon = (p) => (
+  <svg {...base} {...p}>
+    <path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14" />
+  </svg>
+);
 export const InfoIcon = (p) => (
   <svg {...base} {...p}>
     <circle cx="12" cy="12" r="8.5" />

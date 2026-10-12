@@ -234,6 +234,8 @@ export default {
     notifySuggestionsHint: 'Como máximo una vez al día, si las sugerencias están activadas',
     notifyInfo:
       'Las notificaciones se envían por correo a la dirección de tu cuenta. Por discreción, el contenido de los mensajes nunca aparece.',
+    export: 'Descargar mis datos',
+    exportStarted: 'Se están descargando tus datos',
   },
   sidebar: {
     noViews: 'Aún no hay vistas en los últimos 14 días.',

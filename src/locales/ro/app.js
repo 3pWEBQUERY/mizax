@@ -233,6 +233,8 @@ export default {
     notifySuggestionsHint: 'Cel mult o dată pe zi, dacă sugestiile sunt active',
     notifyInfo:
       'Notificările sunt trimise prin e-mail la adresa contului. Din discreție, conținutul mesajelor nu apare niciodată.',
+    export: 'Descarcă datele mele',
+    exportStarted: 'Datele tale se descarcă',
   },
   sidebar: {
     noViews: 'Încă nu există vizualizări în ultimele 14 zile.',
