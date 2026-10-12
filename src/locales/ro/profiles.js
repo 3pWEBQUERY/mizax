@@ -307,4 +307,18 @@ export default {
     hidden: 'Nepublicat',
     zoom: 'Mărește fotografia',
   },
+  schedule: {
+    title: 'Disponibilitate',
+    flexible: 'Fără program fix',
+    fixed: 'Program fix',
+    off: 'Liber',
+    allDay: 'Toată ziua',
+    from: '{day} de la',
+    to: '{day} până la',
+    copyAll: 'Aplică acest program pentru toate zilele',
+    hint: 'În afara acestui program apari ca „indisponibilă” (ora Elveției). Aceeași oră de început și sfârșit înseamnă toată ziua; dacă sfârșitul e înaintea începutului, intervalul trece de miezul nopții.',
+    todayFrom: 'Azi de la {time}',
+    tomorrowFrom: 'Mâine de la {time}',
+    dayFrom: '{day} de la {time}',
+  },
 };

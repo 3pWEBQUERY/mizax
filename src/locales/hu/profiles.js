@@ -307,4 +307,18 @@ export default {
     hidden: 'Nincs közzétéve',
     zoom: 'Fotó nagyítása',
   },
+  schedule: {
+    title: 'Elérhetőség',
+    flexible: 'Nincs fix időpont',
+    fixed: 'Fix időpontok',
+    off: 'Szabad',
+    allDay: 'Egész nap',
+    from: '{day} ettől',
+    to: '{day} eddig',
+    copyAll: 'Időpontok átvétele minden napra',
+    hint: 'Ezen időn kívül „nem elérhető”-ként jelensz meg (svájci idő). Azonos kezdés és vég egész napot jelent; ha a vége a kezdés előtt van, éjfélen túl tart.',
+    todayFrom: 'Ma {time}-tól',
+    tomorrowFrom: 'Holnap {time}-tól',
+    dayFrom: '{day} {time}-tól',
+  },
 };

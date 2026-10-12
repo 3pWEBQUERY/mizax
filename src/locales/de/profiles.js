@@ -308,4 +308,18 @@ export default {
     hidden: 'Nicht veröffentlicht',
     zoom: 'Foto vergrössern',
   },
+  schedule: {
+    title: 'Verfügbarkeit',
+    flexible: 'Keine festen Zeiten',
+    fixed: 'Feste Zeiten',
+    off: 'Frei',
+    allDay: 'Ganzer Tag',
+    from: '{day} von',
+    to: '{day} bis',
+    copyAll: 'Zeiten für alle Tage übernehmen',
+    hint: 'Ausserhalb dieser Zeiten erscheinst du als „nicht verfügbar“ (Schweizer Zeit). Gleiche Start- und Endzeit bedeutet ganzer Tag; endet die Zeit vor dem Beginn, geht sie über Mitternacht.',
+    todayFrom: 'Heute ab {time}',
+    tomorrowFrom: 'Morgen ab {time}',
+    dayFrom: '{day} ab {time}',
+  },
 };

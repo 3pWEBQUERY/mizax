@@ -307,4 +307,18 @@ export default {
     hidden: 'Not published',
     zoom: 'Enlarge photo',
   },
+  schedule: {
+    title: 'Availability',
+    flexible: 'No fixed hours',
+    fixed: 'Fixed hours',
+    off: 'Off',
+    allDay: 'All day',
+    from: '{day} from',
+    to: '{day} until',
+    copyAll: 'Use these hours for all days',
+    hint: 'Outside these hours you appear as “not available” (Swiss time). The same start and end time means all day; if the end is before the start, it runs past midnight.',
+    todayFrom: 'Today from {time}',
+    tomorrowFrom: 'Tomorrow from {time}',
+    dayFrom: '{day} from {time}',
+  },
 };

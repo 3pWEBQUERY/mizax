@@ -307,4 +307,18 @@ export default {
     hidden: 'Nieopublikowany',
     zoom: 'Powiększ zdjęcie',
   },
+  schedule: {
+    title: 'Dostępność',
+    flexible: 'Bez stałych godzin',
+    fixed: 'Stałe godziny',
+    off: 'Wolne',
+    allDay: 'Cały dzień',
+    from: '{day} od',
+    to: '{day} do',
+    copyAll: 'Zastosuj te godziny do wszystkich dni',
+    hint: 'Poza tymi godzinami jesteś widoczna jako „niedostępna” (czas szwajcarski). Ta sama godzina początku i końca oznacza cały dzień; jeśli koniec jest przed początkiem, czas trwa po północy.',
+    todayFrom: 'Dziś od {time}',
+    tomorrowFrom: 'Jutro od {time}',
+    dayFrom: '{day} od {time}',
+  },
 };

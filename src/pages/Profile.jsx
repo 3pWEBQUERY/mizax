@@ -7,6 +7,8 @@ import { Photo } from '../components/Media.jsx';
 import { CheckIcon, ChatIcon, PhoneIcon, MailIcon, HeartIcon, LockIcon, WhatsAppIcon } from '../components/Icons.jsx';
 import Lightbox from '../components/Lightbox.jsx';
 import ProfileMenu from '../components/ProfileMenu.jsx';
+import ScheduleCard, { nextOpeningText } from '../components/ScheduleCard.jsx';
+import { availableNow } from '../lib/schedule.js';
 import { Composer, PostList, usePosts } from '../components/feed/index.js';
 import Reviews, { Stars, formatRating } from '../components/feed/Reviews.jsx';
 import ProfileTabs, { useProfileTab, postCountLabel } from '../components/ProfileTabs.jsx';
@@ -100,6 +102,7 @@ export default function Profile() {
   const photos = escort.photos;
   const current = photos[active] || photos[0];
   const isFav = favs.has(escort.slug);
+  const isNow = availableNow(escort);
   const links = locked ? [] : contactLinks(escort, '', t).filter((l) => l.kind !== 'sms');
   const paragraphs = (escort.bio || '')
     .split(/\n\s*\n/)
@@ -182,8 +185,10 @@ export default function Profile() {
                 </span>
               )}
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <span className={`dot ${escort.available ? '' : 'off'}`} />
-                {escort.available ? t('profile.available') : t('profile.unavailable')}
+                <span className={`dot ${isNow ? '' : 'off'}`} />
+                {isNow
+                  ? t('profile.available')
+                  : (escort.available && nextOpeningText(t, locale, escort.schedule)) || t('profile.unavailable')}
               </span>
             </Rise>
             <Rise i={i++} as="h1" className="profile-title">
@@ -330,6 +335,13 @@ export default function Profile() {
                           </div>
                         ))}
                       </dl>
+                    </Rise>
+                  )}
+
+                  {Array.isArray(escort.schedule) && (
+                    <Rise i={switched ? j++ : i++} className="profile-card">
+                      <h2 className="profile-card-title">{t('schedule.title')}</h2>
+                      <ScheduleCard schedule={escort.schedule} />
                     </Rise>
                   )}
 

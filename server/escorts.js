@@ -4,6 +4,7 @@ import { slugify } from './seed.js';
 import { findPlace } from './places.js';
 import { hasStorage } from './storage.js';
 import { storeImage, removeImages, photoOut, isImage } from './media.js';
+import { cleanSchedule, isOpen } from '../src/lib/schedule.js';
 
 // Datenebene der Escort-Profile: Serialisierung, Eingaben, Speichern, Fotos
 
@@ -50,6 +51,9 @@ export function escortOut(row, photos = []) {
     accent: row.accent,
     verified: row.verified,
     available: row.available,
+    schedule: row.schedule ?? null,
+    // Schalter „verfügbar“ und – falls angegeben – die Zeiten (Schweizer Zeit)
+    availableNow: Boolean(row.available) && isOpen(row.schedule),
     featured: row.featured,
     published: row.published,
     sort: row.sort,
@@ -76,6 +80,7 @@ export function cardOut(e) {
     accent: e.accent,
     verified: e.verified,
     available: e.available,
+    availableNow: e.availableNow,
     featured: e.featured,
     photos: e.photos,
     rating: e.rating,
@@ -141,6 +146,7 @@ export function escortInput(body) {
       .slice(0, n);
   // Ort immer serverseitig aus dem Schweizer Ortsverzeichnis auflösen (Kanton + Ortszentrum)
   const place = findPlace(body.zip, body.city);
+  const schedule = cleanSchedule(body.schedule);
   return {
     name: str(body.name, 60),
     age,
@@ -162,6 +168,7 @@ export function escortInput(body) {
     accent: /^#[0-9a-fA-F]{6}$/.test(body.accent || '') ? body.accent : '#6d4aff',
     verified: Boolean(body.verified),
     available: body.available === undefined ? true : Boolean(body.available),
+    schedule: schedule ? JSON.stringify(schedule) : null,
     featured: Boolean(body.featured),
     published: body.published === undefined ? true : Boolean(body.published),
     sort: Number(body.sort) || 0,
@@ -189,6 +196,7 @@ export const FIELDS = [
   'accent',
   'verified',
   'available',
+  'schedule',
   'featured',
   'published',
   'sort',

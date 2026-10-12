@@ -9,6 +9,7 @@ import ServicesPage, { ServicesField } from './fields/ServicesPage.jsx';
 import PhotoManager, { MAX_PHOTOS } from './fields/PhotoManager.jsx';
 import { Section, Field } from './fields/Form.jsx';
 import VerifySection from './fields/VerifySection.jsx';
+import ScheduleField from './fields/ScheduleField.jsx';
 import { api } from '../lib/api.js';
 import { useT, errorText } from '../lib/i18n.jsx';
 
@@ -31,6 +32,7 @@ const empty = {
   accent: '#6d4aff',
   verified: false,
   available: true,
+  schedule: null,
   featured: false,
   published: true,
   sort: 0,
@@ -222,6 +224,10 @@ export default function ProfileEditor({
             </button>
           ))}
         </div>
+      </Section>
+
+      <Section title={t('schedule.title')}>
+        <ScheduleField value={form.schedule} onChange={setValue('schedule')} />
       </Section>
 
       <Section title={t('editor.rates')}>

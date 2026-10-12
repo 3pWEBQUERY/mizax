@@ -307,4 +307,18 @@ export default {
     hidden: 'No publicado',
     zoom: 'Ampliar foto',
   },
+  schedule: {
+    title: 'Disponibilidad',
+    flexible: 'Sin horario fijo',
+    fixed: 'Horario fijo',
+    off: 'Libre',
+    allDay: 'Todo el día',
+    from: '{day} desde',
+    to: '{day} hasta',
+    copyAll: 'Usar este horario para todos los días',
+    hint: 'Fuera de este horario apareces como «no disponible» (hora de Suiza). La misma hora de inicio y fin significa todo el día; si el fin es antes del inicio, pasa la medianoche.',
+    todayFrom: 'Hoy desde las {time}',
+    tomorrowFrom: 'Mañana desde las {time}',
+    dayFrom: '{day} desde las {time}',
+  },
 };

@@ -1,3 +1,4 @@
+import { availableNow } from '../lib/schedule.js';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Photo } from './Media.jsx';
@@ -107,7 +108,7 @@ export default function EscortCard({ escort, index = 0, instant = false, note })
             )}
           </div>
           <div className="card-city">
-            <span className={`dot ${escort.available ? '' : 'off'}`} />
+            <span className={`dot ${availableNow(escort) ? '' : 'off'}`} />
             {escort.city ? <span className="city">{escort.city}</span> : <PinIcon />}
             {escort.canton && <span className="card-canton">{escort.canton}</span>}
             {escort.distance != null && (

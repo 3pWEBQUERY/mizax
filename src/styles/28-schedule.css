@@ -1,0 +1,177 @@
+/* ---------- Verfügbarkeitszeiten ---------- */
+
+.schedule-rows {
+  display: flex;
+  flex-direction: column;
+  margin-top: 14px;
+  border-radius: 16px;
+  background: var(--tint);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.schedule-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 54px;
+  padding: 6px 10px 6px 14px;
+}
+
+.schedule-row + .schedule-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 1px;
+  background: var(--row-sep);
+}
+
+.schedule-day {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.schedule-row.off .schedule-day {
+  color: var(--muted);
+}
+
+.schedule-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1.5px solid var(--tint-3);
+  display: grid;
+  place-items: center;
+  transition:
+    background 0.2s var(--ease),
+    border-color 0.2s var(--ease);
+}
+
+.schedule-day.on .schedule-check {
+  background: var(--cta-bg);
+  border-color: var(--cta-bg);
+}
+
+.schedule-day.on .schedule-check::after {
+  content: '';
+  width: 8px;
+  height: 4px;
+  border: 2px solid var(--cta-fg);
+  border-top: 0;
+  border-right: 0;
+  rotate: -45deg;
+  translate: 0 -1px;
+}
+
+.schedule-times {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.time-select {
+  position: relative;
+  display: inline-block;
+}
+
+.time-select .input {
+  width: 84px;
+  padding: 8px 26px 8px 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+/* kleiner Pfeil wie bei den übrigen Auswahlfeldern */
+.time-select::after {
+  content: '';
+  position: absolute;
+  right: 11px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid var(--muted);
+  border-bottom: 1.5px solid var(--muted);
+  rotate: 45deg;
+  translate: 0 -70%;
+  pointer-events: none;
+}
+
+.schedule-dash,
+.schedule-off {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.schedule-off {
+  padding-right: 6px;
+}
+
+.schedule-tools {
+  margin-top: 10px;
+}
+
+/* Profil */
+.schedule-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  font-size: 14.5px;
+}
+
+.schedule-item + .schedule-item {
+  border-top: 1px solid var(--row-sep);
+}
+
+.schedule-item dt {
+  color: var(--text-2);
+}
+
+.schedule-item dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.schedule-item.off dd {
+  color: var(--muted);
+}
+
+.schedule-item.today dt,
+.schedule-item.today dd {
+  font-weight: 600;
+  color: var(--text);
+}
+
+@media (max-width: 720px) {
+  .schedule-row {
+    padding-left: 12px;
+  }
+  .time-select .input {
+    width: 80px;
+    padding: 8px 20px 8px 10px;
+    font-size: 14px;
+  }
+  .time-select::after {
+    right: 9px;
+  }
+  .schedule-times {
+    gap: 4px;
+  }
+}

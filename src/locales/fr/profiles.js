@@ -308,4 +308,18 @@ export default {
     hidden: 'Non publié',
     zoom: 'Agrandir la photo',
   },
+  schedule: {
+    title: 'Disponibilités',
+    flexible: 'Pas d’horaires fixes',
+    fixed: 'Horaires fixes',
+    off: 'Libre',
+    allDay: 'Toute la journée',
+    from: '{day} de',
+    to: '{day} à',
+    copyAll: 'Appliquer ces horaires à tous les jours',
+    hint: 'En dehors de ces horaires, vous apparaissez comme « non disponible » (heure suisse). Même heure de début et de fin = toute la journée ; si la fin précède le début, la plage passe minuit.',
+    todayFrom: 'Aujourd’hui dès {time}',
+    tomorrowFrom: 'Demain dès {time}',
+    dayFrom: '{day} dès {time}',
+  },
 };

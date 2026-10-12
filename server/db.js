@@ -275,6 +275,9 @@ export async function migrate() {
     );
     CREATE INDEX IF NOT EXISTS member_reviews_member_idx ON member_reviews (member_id, id DESC);
 
+    -- Verfügbarkeitszeiten (7 Tage, siehe src/lib/schedule.js); NULL = nur der Schalter „verfügbar“ zählt
+    ALTER TABLE escorts ADD COLUMN IF NOT EXISTS schedule JSONB;
+
     -- Öffentliche Antwort der bewerteten Person auf eine Bewertung
     ALTER TABLE escort_reviews ADD COLUMN IF NOT EXISTS reply TEXT NOT NULL DEFAULT '';
     ALTER TABLE escort_reviews ADD COLUMN IF NOT EXISTS reply_at TIMESTAMPTZ;
