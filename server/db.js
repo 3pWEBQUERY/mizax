@@ -190,5 +190,23 @@ export async function migrate() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
     CREATE INDEX IF NOT EXISTS post_comments_post_idx ON post_comments (post_id, id);
+
+    -- Beiträge auch von Mitgliedern: Autor-Konto (user_id); escort_id nur bei Escort-Beiträgen
+    ALTER TABLE posts ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE;
+    ALTER TABLE posts ALTER COLUMN escort_id DROP NOT NULL;
+    CREATE INDEX IF NOT EXISTS posts_user_idx ON posts (user_id, id DESC);
+
+    -- Bewertungen von Escorts durch Mitglieder (eine pro Mitglied und Escort)
+    CREATE TABLE IF NOT EXISTS escort_reviews (
+      id         SERIAL PRIMARY KEY,
+      escort_id  INTEGER NOT NULL REFERENCES escorts(id) ON DELETE CASCADE,
+      user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      rating     SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+      body       TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      UNIQUE (escort_id, user_id)
+    );
+    CREATE INDEX IF NOT EXISTS escort_reviews_escort_idx ON escort_reviews (escort_id, updated_at DESC);
   `);
 }

@@ -139,7 +139,8 @@ export default {
   me: {
     title: 'Saját profil',
     intro: 'Itt kezelheted az escort-profilodat. Mentsd el egyszer, utána feltölthetsz fotókat.',
-    introMember: 'A tagi profilod. Az escortok akkor látják, ha írsz nekik – így tudják, kivel beszélnek.',
+    introMember:
+      'A tagi profilod – adatokkal, érdeklődési körökkel és saját hírfolyammal. Minden bejelentkezett fiók látja.',
     published: 'A profilod elérhető.',
     draft: 'A profilod még nincs közzétéve.',
     view: 'Megtekintés',
@@ -328,7 +329,7 @@ export default {
   feed: {
     title: 'Feed',
     introEscort: 'Tartsd naprakészen a látogatóidat – hírekkel, fotókkal és időpontokkal.',
-    introMember: 'Hírek közvetlenül az escortoktól.',
+    introMember: 'Hírek escortoktól és tagoktól – oszd meg a sajátjaidat is.',
     guest:
       'Itt osztják meg az escortok a híreiket, fotóikat és szabad időpontjaikat. Jelentkezz be, hogy lásd a feedet.',
     all: 'Mind',
@@ -360,6 +361,7 @@ export default {
     confirmDelete: 'Biztosan törlöd ezt a bejegyzést?',
     confirmDeleteComment: 'Törlöd ezt a hozzászólást?',
     deleted: 'Bejegyzés törölve',
+    emptySelf: 'Még nem posztoltál semmit. Oszd meg, mi foglalkoztat.',
   },
   stats: {
     title: 'Statisztika',
@@ -458,7 +460,7 @@ export default {
   },
   mp: {
     photo: 'Profilkép',
-    photoHint: 'Egy barátságos fotó bizalmat ébreszt. Csak azok az escortok látják, akiknek írsz.',
+    photoHint: 'Egy barátságos fotó bizalmat ébreszt. Minden bejelentkezett tag és escort látja.',
     photoUpload: 'Fotó feltöltése',
     photoChange: 'Fotó cseréje',
     photoRemove: 'Eltávolítás',
@@ -490,11 +492,29 @@ export default {
     cars: 'Autók',
     business: 'Üzleti események',
   },
+  reviews: {
+    title: 'Értékelések',
+    yourRating: 'Értékelésed',
+    stars: '{n} csillag',
+    yours: 'Értékelésed',
+    rateTitle: 'Milyen volt az élményed?',
+    placeholder: 'Meséld el a többi tagnak az élményedet (nem kötelező)',
+    submit: 'Értékelés mentése',
+    saved: 'Köszönjük az értékelést!',
+    deleted: 'Értékelés törölve',
+    confirmDelete: 'Biztosan törlöd az értékelést?',
+    count: '{n} értékelés',
+    countOne: '1 értékelés',
+    barLabel: '{stars} csillag: {n}',
+    more: 'További értékelések',
+    empty: 'Még nincs értékelés.',
+    emptyRate: 'Még nincs értékelés – légy te az első.',
+  },
   member: {
     since: 'Tag {date} óta',
     noBio: 'Ez a tag még nem írt magáról semmit.',
     noBioSelf: 'Még nem írtál magadról semmit.',
-    selfHint: 'Így látják az escortok a profilodat, amikor írsz nekik.',
+    selfHint: 'Így látják a profilodat a többi tag és az escortok.',
     edit: 'Szerkesztés',
     openChat: 'Tovább a beszélgetéshez',
   },
@@ -529,5 +549,7 @@ export default {
     upload_invalid: 'A feltöltés sikertelen (max. 20 kép, egyenként 20 MB).',
     server_error: 'Szerverhiba – próbáld újra később.',
     network: 'Nincs kapcsolat a szerverrel.',
+    review_rating: 'Válassz 1–5 csillagot.',
+    review_members_only: 'Csak tagok értékelhetik az escortokat.',
   },
 };

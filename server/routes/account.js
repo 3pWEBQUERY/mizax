@@ -148,8 +148,8 @@ router.delete(
     const { rows } = await query(
       `SELECT ep.key FROM escort_photos ep JOIN escorts e ON e.id = ep.escort_id WHERE e.user_id = $1
        UNION ALL
-       SELECT pp.key FROM post_photos pp JOIN posts p ON p.id = pp.post_id JOIN escorts e ON e.id = p.escort_id
-       WHERE e.user_id = $1
+       SELECT pp.key FROM post_photos pp JOIN posts p ON p.id = pp.post_id LEFT JOIN escorts e ON e.id = p.escort_id
+       WHERE e.user_id = $1 OR p.user_id = $1
        UNION ALL
        SELECT avatar_key FROM users WHERE id = $1 AND avatar_key IS NOT NULL`,
       [user.id],

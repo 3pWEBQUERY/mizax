@@ -10,6 +10,7 @@ import useAutosize from './useAutosize.js';
 import { api } from '../../lib/api.js';
 import { useI18n, errorText } from '../../lib/i18n.jsx';
 import { timeAgo } from '../../lib/time.js';
+import { profilePath } from '../../lib/links.js';
 
 const spring = { type: 'spring', stiffness: 380, damping: 30 };
 
@@ -103,7 +104,7 @@ export default function PostCard({ post: initial, onDeleted, i = 0 }) {
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: Math.min(i, 4) * 0.06 }}
     >
       <header className="post-head">
-        <Link to={`/escort/${a.slug}`} className="post-author">
+        <Link to={profilePath(a) || '/feed'} className="post-author">
           <Avatar name={a.name} thumb={a.thumb} size={44} />
           <span>
             <b>

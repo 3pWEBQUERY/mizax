@@ -5,28 +5,15 @@ import Avatar from '../Avatar.jsx';
 import { useToast } from '../Toast.jsx';
 import { SendIcon } from '../Icons.jsx';
 import { api } from '../../lib/api.js';
-import { useAuth } from '../../lib/auth.jsx';
 import { useI18n, errorText } from '../../lib/i18n.jsx';
 import { timeAgo } from '../../lib/time.js';
+import { profilePath } from '../../lib/links.js';
 
 // ---------- Kommentare ----------
 
-function personLink(author, viewer) {
-  if (author.kind === 'escort' && author.slug) return `/escort/${author.slug}`;
-  if (author.memberId && viewer && (viewer.role === 'escort' || viewer.isAdmin || viewer.id === author.memberId)) {
-    return `/member/${author.memberId}`;
-  }
-  return null;
-}
-
-function PersonName({ author, viewer }) {
-  const to = personLink(author, viewer);
-  return to ? <Link to={to}>{author.name}</Link> : <span>{author.name}</span>;
-}
-
 function Comment({ c, onDelete }) {
   const { t, locale } = useI18n();
-  const { user } = useAuth();
+  const to = profilePath(c.author);
   return (
     <motion.div
       className="comment"
@@ -35,12 +22,16 @@ function Comment({ c, onDelete }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
     >
-      <Avatar name={c.author.name} thumb={c.author.thumb} size={30} />
+      {to ? (
+        <Link to={to} className="comment-avatar" aria-label={c.author.name}>
+          <Avatar name={c.author.name} thumb={c.author.thumb} size={30} />
+        </Link>
+      ) : (
+        <Avatar name={c.author.name} thumb={c.author.thumb} size={30} />
+      )}
       <div className="comment-main">
         <div className="comment-bubble">
-          <b>
-            <PersonName author={c.author} viewer={user} />
-          </b>
+          <b>{to ? <Link to={to}>{c.author.name}</Link> : <span>{c.author.name}</span>}</b>
           <p>{c.body}</p>
         </div>
         <div className="comment-meta">

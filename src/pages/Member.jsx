@@ -13,9 +13,11 @@ import { useMedia } from '../lib/useMedia.js';
 import { useI18n, errorText } from '../lib/i18n.jsx';
 import { interestLabel, languageName, parseLanguage } from '../lib/catalog.js';
 import { cantonName } from '../lib/cantons.js';
+import ProfileTabs, { useProfileTab, postCountLabel } from '../components/ProfileTabs.jsx';
+import { Composer, PostList, usePosts } from '../components/feed/index.js';
 
-// Mitgliederprofil – sichtbar für Escorts (z. B. nach einer Anfrage), die Verwaltung und das Mitglied selbst.
-// Anders aufgebaut als ein Escort-Profil: Profilbild, Steckbrief, Über mich, Interessen.
+// Mitgliederprofil – sichtbar für alle angemeldeten Konten. Anders aufgebaut als ein Escort-Profil:
+// Profilbild, Steckbrief, Über mich, Interessen und ein eigener Feed (Tab „Neuigkeiten“).
 export default function Member() {
   useDock({ mode: 'hidden' });
   const { id } = useParams();
@@ -26,6 +28,8 @@ export default function Member() {
   const [error, setError] = useState(null);
   const [zoom, setZoom] = useState(false);
   const size = useMedia('(max-width: 640px)') ? 76 : 104;
+  const { tab, switched, select } = useProfileTab(id);
+  const feed = usePosts(user ? `/api/members/${encodeURIComponent(id)}/posts` : null);
 
   useEffect(() => {
     if (!user) return;
@@ -87,6 +91,7 @@ export default function Member() {
     ],
   ].filter(([, v]) => v);
   let i = 2;
+  let j = 0;
 
   return (
     <Page>
@@ -145,45 +150,59 @@ export default function Member() {
           </Rise>
         )}
 
-        <div className="member-cards">
-          <Rise i={i++} className="profile-card member-about">
-            <h2 className="profile-card-title">{t('settings.about')}</h2>
-            {paragraphs.length ? (
-              paragraphs.map((p, idx) => (
-                <p key={idx} className="profile-text">
-                  {p}
-                </p>
-              ))
-            ) : (
-              <p className="profile-text member-empty">{member.self ? t('member.noBioSelf') : t('member.noBio')}</p>
-            )}
-          </Rise>
+        <ProfileTabs active={tab} onSelect={select} postCount={postCountLabel(feed)} i={i++} />
 
-          {facts.length > 0 && (
-            <Rise i={i++} className="profile-card">
-              <h2 className="profile-card-title">{t('profile.details')}</h2>
-              <dl className="facts" style={{ margin: 0 }}>
-                {facts.map(([k, v]) => (
-                  <div className="fact" key={k}>
-                    <dt>{k}</dt>
-                    <dd>{v}</dd>
+        <div key={tab} className="profile-panel" id="profile-panel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
+          {tab === 'posts' ? (
+            <Rise i={switched ? 0 : i++} className="profile-posts">
+              {member.self && <Composer onPosted={feed.prepend} />}
+              <PostList
+                feed={feed}
+                empty={member.self ? t('feed.emptySelf') : t('feed.emptyOwn', { name: member.name })}
+              />
+            </Rise>
+          ) : (
+            <div className="member-cards">
+              <Rise i={switched ? j++ : i++} className="profile-card member-about">
+                <h2 className="profile-card-title">{t('settings.about')}</h2>
+                {paragraphs.length ? (
+                  paragraphs.map((p, idx) => (
+                    <p key={idx} className="profile-text">
+                      {p}
+                    </p>
+                  ))
+                ) : (
+                  <p className="profile-text member-empty">{member.self ? t('member.noBioSelf') : t('member.noBio')}</p>
+                )}
+              </Rise>
+
+              {facts.length > 0 && (
+                <Rise i={switched ? j++ : i++} className="profile-card">
+                  <h2 className="profile-card-title">{t('profile.details')}</h2>
+                  <dl className="facts" style={{ margin: 0 }}>
+                    {facts.map(([k, v]) => (
+                      <div className="fact" key={k}>
+                        <dt>{k}</dt>
+                        <dd>{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </Rise>
+              )}
+
+              {member.interests.length > 0 && (
+                <Rise i={switched ? j++ : i++} className="profile-card">
+                  <h2 className="profile-card-title">{t('mp.interests')}</h2>
+                  <div className="tags">
+                    {member.interests.map((k) => (
+                      <span className="tag" key={k}>
+                        {interestLabel(t, k)}
+                      </span>
+                    ))}
                   </div>
-                ))}
-              </dl>
-            </Rise>
-          )}
-
-          {member.interests.length > 0 && (
-            <Rise i={i++} className="profile-card">
-              <h2 className="profile-card-title">{t('mp.interests')}</h2>
-              <div className="tags">
-                {member.interests.map((k) => (
-                  <span className="tag" key={k}>
-                    {interestLabel(t, k)}
-                  </span>
-                ))}
-              </div>
-            </Rise>
+                </Rise>
+              )}
+            </div>
           )}
         </div>
       </div>

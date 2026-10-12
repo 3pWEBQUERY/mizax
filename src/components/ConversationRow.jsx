@@ -2,13 +2,10 @@ import { Link } from 'react-router-dom';
 import Avatar from './Avatar.jsx';
 import { useI18n } from '../lib/i18n.jsx';
 import { timeAgo } from '../lib/time.js';
+import { profilePath } from '../lib/links.js';
 
-// Link zur Gegenseite einer Unterhaltung (Mitgliederprofile nur für Escorts und Admins)
-export function otherLink(other, viewer) {
-  if (other.kind === 'escort') return `/escort/${other.slug}`;
-  if (viewer && (viewer.role === 'escort' || viewer.isAdmin)) return `/member/${other.memberId}`;
-  return null;
-}
+// Link zur Gegenseite einer Unterhaltung
+export const otherLink = (other) => profilePath(other);
 
 export function ConversationRow({ c, compact = false }) {
   const { t, locale } = useI18n();

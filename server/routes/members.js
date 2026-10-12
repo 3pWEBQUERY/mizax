@@ -7,8 +7,7 @@ import { storeImage, removeImages, isImage } from '../media.js';
 import { ownEscort } from '../escorts.js';
 import { memberInput, memberOut, getMember, updateMember } from '../members.js';
 
-// Mitgliederprofile: eigenes Profil bearbeiten und Profile ansehen
-// (sichtbar für Escorts, die Verwaltung und das Mitglied selbst)
+// Mitgliederprofile: eigenes Profil bearbeiten und Profile ansehen (für alle angemeldeten Konten)
 
 const router = express.Router();
 
@@ -71,8 +70,6 @@ router.get(
   wrap(async (req, res) => {
     const memberId = toId(req.params.id);
     const self = memberId === req.user.id;
-    if (!self && req.user.role !== 'escort' && !req.user.is_admin)
-      throw httpError(403, 'forbidden', 'Keine Berechtigung');
     const { rows } = await query(
       `SELECT u.*, e.slug AS escort_slug FROM users u LEFT JOIN escorts e ON e.user_id = u.id WHERE u.id = $1`,
       [memberId],
@@ -100,7 +97,7 @@ router.post(
   requireUser,
   wrap(async (req, res) => {
     const memberId = toId(req.params.id);
-    if (memberId !== req.user.id && req.user.role === 'escort') {
+    if (memberId !== req.user.id) {
       await query(
         `INSERT INTO member_views (member_id, viewer_id)
          SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM users WHERE id = $1 AND role = 'member')

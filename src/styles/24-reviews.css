@@ -1,0 +1,267 @@
+/* ---------- Bewertungen ---------- */
+
+.stars {
+  display: inline-flex;
+  gap: 1px;
+  color: var(--tint-3);
+  flex: none;
+}
+
+.stars .on {
+  color: var(--text);
+}
+
+/* Kurzanzeige unter dem Namen im Escort-Profil */
+.profile-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.profile-rating b {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.profile-rating:not(:disabled):hover span {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.profile-rating:disabled {
+  cursor: default;
+}
+
+.reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reviews .profile-card-title {
+  margin-bottom: 0;
+}
+
+.reviews-summary {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.reviews-score {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 110px;
+}
+
+.reviews-score b {
+  font-size: 38px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.reviews-score small {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.reviews-bars {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.reviews-bar {
+  display: grid;
+  grid-template-columns: 12px 1fr 24px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.reviews-bar small {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.reviews-bar-track {
+  height: 6px;
+  border-radius: 4px;
+  background: var(--tint-2);
+  overflow: hidden;
+}
+
+.reviews-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--chart-1);
+}
+
+/* eigene Bewertung */
+.review-form,
+.review-mine {
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--tint);
+  border: 1px solid var(--border);
+}
+
+.review-mine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.review-mine .status-pill {
+  margin-left: auto;
+}
+
+.review-form-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.star-picker {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star-picker button {
+  padding: 2px;
+  color: var(--tint-3);
+  transition:
+    color 0.2s var(--ease),
+    transform 0.2s var(--ease);
+}
+
+.star-picker button.on {
+  color: var(--text);
+}
+
+.star-picker button:hover {
+  transform: scale(1.12);
+}
+
+.star-picker button:active {
+  transform: scale(0.92);
+}
+
+.review-input {
+  margin-top: 12px;
+  min-height: 84px;
+}
+
+.review-form-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* Liste */
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.review {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.review-avatar {
+  flex: none;
+  border-radius: 50%;
+}
+
+.review-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.review-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-size: 14px;
+}
+
+.review-top a {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.review-top a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.review-top small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.review-delete {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.review-delete:hover {
+  color: var(--danger);
+}
+
+.review-main p {
+  margin: 4px 0 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--text-2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .reviews-summary {
+    gap: 16px;
+  }
+  .reviews-score {
+    min-width: 92px;
+  }
+  .reviews-score b {
+    font-size: 32px;
+  }
+}
+
+/* Feed: Avatare und Namen führen zum Profil */
+.comment-avatar {
+  flex: none;
+  border-radius: 50%;
+}
+
+.post-author:hover b,
+.comment-bubble b a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

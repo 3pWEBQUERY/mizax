@@ -1,12 +1,14 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Page from '../components/Page.jsx';
 import { Bubble, Rise } from '../components/Bubble.jsx';
 import { Photo } from '../components/Media.jsx';
 import { CheckIcon, ChatIcon, PhoneIcon, MailIcon, HeartIcon, LockIcon, WhatsAppIcon } from '../components/Icons.jsx';
 import Lightbox from '../components/Lightbox.jsx';
 import { Composer, PostList, usePosts } from '../components/feed/index.js';
+import Reviews, { Stars, formatRating } from '../components/feed/Reviews.jsx';
+import ProfileTabs, { useProfileTab, postCountLabel } from '../components/ProfileTabs.jsx';
 import { api } from '../lib/api.js';
 import { useI18n } from '../lib/i18n.jsx';
 import { countryName, flag, languageName, parseLanguage, serviceLabel } from '../lib/catalog.js';
@@ -18,7 +20,6 @@ import { contactLinks } from '../lib/contact.js';
 import { layoutTransition } from '../lib/motion.js';
 
 const kindIcon = { whatsapp: WhatsAppIcon, call: PhoneIcon, mail: MailIcon, sms: ChatIcon };
-const spring = { type: 'spring', stiffness: 420, damping: 34 };
 
 export default function Profile() {
   const { slug } = useParams();
@@ -31,10 +32,9 @@ export default function Profile() {
   const locked = Boolean(escort && !escort.full);
   const [lightbox, setLightbox] = useState(false);
   const own = Boolean(user && escort?.userId === user.id);
-  const [params, setParams] = useSearchParams();
-  const tab = params.get('tab') === 'posts' ? 'posts' : 'profile';
-  const [switched, setSwitched] = useState(false);
-  useEffect(() => setSwitched(false), [slug]);
+  const { tab, switched, select: selectTab } = useProfileTab(slug);
+  const [rating, setRating] = useState(null);
+  useEffect(() => setRating(null), [slug]);
   const feed = usePosts(escort && !locked && user ? `/api/escorts/${encodeURIComponent(escort.slug)}/posts` : null);
 
   // Aufruf für die Statistik zählen (einmal pro Seitenaufruf, eigenes Profil zählt serverseitig nicht)
@@ -123,24 +123,10 @@ export default function Profile() {
         .join('\n'),
     ],
   ].filter(([, v]) => v);
-  // Neuigkeiten-Tab nur zeigen, wenn es Beiträge gibt (bzw. für das eigene Profil zum Posten)
-  const showTabs = Boolean(
-    !locked && user && (own || feed.posts?.length > 0 || (feed.posts === null && tab === 'posts')),
-  );
+  // Tabs für angemeldete Besucher: Profil | Neuigkeiten (Bewertungen und Beiträge)
+  const showTabs = Boolean(!locked && user);
   const activeTab = showTabs ? tab : 'profile';
-  const selectTab = (next) => {
-    setSwitched(true);
-    setParams(
-      (p) => {
-        const q = new URLSearchParams(p);
-        if (next === 'posts') q.set('tab', 'posts');
-        else q.delete('tab');
-        return q;
-      },
-      { replace: true },
-    );
-  };
-  const postCount = feed.posts?.length ? `${feed.posts.length}${feed.done ? '' : '+'}` : null;
+  const score = rating || escort.rating;
   let i = 0;
   let j = 0;
 
@@ -202,6 +188,20 @@ export default function Profile() {
             <Rise i={i++} as="h1" className="profile-title">
               {escort.name}, <span className="age">{escort.age}</span>
             </Rise>
+            {score?.count > 0 && (
+              <Rise i={i++}>
+                <button
+                  type="button"
+                  className="profile-rating"
+                  onClick={() => showTabs && selectTab('posts')}
+                  disabled={!showTabs}
+                >
+                  <Stars value={score.average} size={15} />
+                  <b>{formatRating(score.average, locale)}</b>
+                  <span>{t(score.count === 1 ? 'reviews.countOne' : 'reviews.count', { n: score.count })}</span>
+                </button>
+              </Rise>
+            )}
             {locked && (
               <Rise i={i++} className="locked">
                 <div className="lock-icon">
@@ -267,29 +267,7 @@ export default function Profile() {
             )}
 
             {showTabs && (
-              <Rise i={i++} className="range-switch profile-tabs" role="tablist" aria-label={t('profile.tabs')}>
-                {[
-                  ['profile', t('profile.tabProfile')],
-                  ['posts', t('feed.profileTitle'), postCount],
-                ].map(([key, label, count]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    role="tab"
-                    id={`tab-${key}`}
-                    aria-selected={activeTab === key}
-                    aria-controls="profile-panel"
-                    className={activeTab === key ? 'active' : ''}
-                    onClick={() => selectTab(key)}
-                  >
-                    {activeTab === key && (
-                      <motion.span layoutId="profile-tab" className="chip-bg" transition={spring} />
-                    )}
-                    <span>{label}</span>
-                    {count && <span className="tab-count">{count}</span>}
-                  </button>
-                ))}
-              </Rise>
+              <ProfileTabs active={activeTab} onSelect={selectTab} postCount={postCountLabel(feed)} i={i++} />
             )}
 
             <div
@@ -301,6 +279,7 @@ export default function Profile() {
             >
               {activeTab === 'posts' ? (
                 <Rise i={switched ? 0 : i++} className="profile-posts">
+                  <Reviews slug={escort.slug} onSummary={setRating} />
                   {own && <Composer onPosted={feed.prepend} />}
                   <PostList feed={feed} empty={t('feed.emptyOwn', { name: escort.name })} />
                 </Rise>

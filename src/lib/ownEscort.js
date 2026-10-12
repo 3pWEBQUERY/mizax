@@ -40,3 +40,12 @@ export function useOwnEscort() {
   }, [escortUserId, snap.userId]);
   return escortUserId && snap.userId === escortUserId ? snap.escort : null;
 }
+
+// Wer einen Beitrag verfasst: Escorts mit ihrem Profil (sobald gespeichert), Mitglieder mit ihrem Konto
+export function usePoster() {
+  const { user } = useAuth();
+  const own = useOwnEscort();
+  if (!user) return null;
+  if (user.role === 'escort') return own ? { name: own.name, thumb: own.photos?.[0]?.thumb } : null;
+  return { name: user.name, thumb: user.avatar };
+}

@@ -14,6 +14,11 @@ export const THUMB = (alias) =>
   `(SELECT key FROM escort_photos WHERE escort_id = ${alias}.id ORDER BY position, id LIMIT 1)`;
 export const thumbUrl = (key) => (key ? `/media/${key}_sm.webp` : null);
 
+// Durchschnitt und Anzahl der Bewertungen als zusätzliche Spalten (für SELECT … FROM escorts)
+export const RATING_COLS = `
+  (SELECT round(avg(rating)::numeric, 1) FROM escort_reviews WHERE escort_id = escorts.id)::float AS rating_avg,
+  (SELECT count(*) FROM escort_reviews WHERE escort_id = escorts.id)::int AS rating_count`;
+
 export async function ownEscort(userId) {
   const { rows } = await query('SELECT id, slug, name, published FROM escorts WHERE user_id = $1', [userId]);
   return rows[0] || null;
@@ -50,6 +55,7 @@ export function escortOut(row, photos = []) {
     sort: row.sort,
     userId: row.user_id,
     inbox: Boolean(row.user_id),
+    rating: { average: row.rating_avg ?? null, count: row.rating_count ?? 0 },
     photos: photos.map(photoOut),
     full: true,
   };
@@ -72,6 +78,7 @@ export function cardOut(e) {
     available: e.available,
     featured: e.featured,
     photos: e.photos,
+    rating: e.rating,
     tagline: '',
     services: [],
     full: false,
@@ -91,7 +98,7 @@ export async function loadPhotos(ids) {
 
 export async function listEscorts({ includeUnpublished = false } = {}) {
   const { rows } = await query(
-    `SELECT * FROM escorts ${includeUnpublished ? '' : 'WHERE published = true'}
+    `SELECT *, ${RATING_COLS} FROM escorts ${includeUnpublished ? '' : 'WHERE published = true'}
      ORDER BY created_at DESC, id DESC`,
   );
   const photos = await loadPhotos(rows.map((r) => r.id));
@@ -99,7 +106,7 @@ export async function listEscorts({ includeUnpublished = false } = {}) {
 }
 
 export async function getEscortById(id) {
-  const { rows } = await query('SELECT * FROM escorts WHERE id = $1', [id]);
+  const { rows } = await query(`SELECT *, ${RATING_COLS} FROM escorts WHERE id = $1`, [id]);
   if (!rows[0]) return null;
   const photos = await loadPhotos([id]);
   return escortOut(rows[0], photos.get(id) || []);

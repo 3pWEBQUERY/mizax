@@ -150,19 +150,15 @@ export default function Sidebar() {
                   <StatsCard i={i++} stats={data?.stats} />
 
                   <Card i={i++} title={t('feed.title')} to="/feed">
-                    {escort && (
-                      <QuickPost
-                        onPosted={(post) => setData((d) => d && { ...d, posts: [post, ...d.posts].slice(0, 2) })}
-                      />
-                    )}
-                    {data?.posts?.length ? (
+                    <QuickPost
+                      onPosted={(post) => setData((d) => d && { ...d, posts: [post, ...d.posts].slice(0, 2) })}
+                    />
+                    {data?.posts?.length > 0 && (
                       <div className="side-list">
                         {data.posts.map((p) => (
                           <MiniPost key={p.id} p={p} />
                         ))}
                       </div>
-                    ) : (
-                      data && !escort && <p className="side-text">{t('feed.empty')}</p>
                     )}
                   </Card>
 

@@ -1,12 +1,12 @@
 import express from 'express';
 import { query } from '../db.js';
 import { hasStorage } from '../storage.js';
-import { httpError, requireUser, requireEscort, rateLimit } from '../auth.js';
+import { httpError, requireUser, rateLimit } from '../auth.js';
 import { wrap, requireDb, noStore, text, toId, uploadImages } from '../http.js';
 import { storeImage, removeImages, photoOut, isImage } from '../media.js';
 import { THUMB, thumbUrl, ownEscort } from '../escorts.js';
 
-// Feed der Escorts: Beiträge, Fotos, Likes und Kommentare
+// Feed: Beiträge von Escorts und Mitgliedern, Fotos, Likes und Kommentare
 
 const MAX_POST_PHOTOS = 6;
 
@@ -16,19 +16,22 @@ const router = express.Router();
 
 export async function loadPosts(me, { where = [], params = [], before = null, limit = 10 } = {}) {
   const args = [me.id, ...params];
-  const conds = ['(e.published = true OR e.user_id = $1)', ...where];
+  const conds = ['(p.escort_id IS NULL OR e.published = true OR e.user_id = $1)', ...where];
   if (before) {
     args.push(before);
     conds.push(`p.id < $${args.length}`);
   }
   args.push(limit);
   const { rows } = await query(
-    `SELECT p.id, p.body, p.created_at, p.updated_at, p.escort_id,
-       e.slug, e.name, e.verified, e.accent, e.user_id AS owner_id, ${THUMB('e')} AS thumb_key,
+    `SELECT p.id, p.body, p.created_at, p.updated_at, p.escort_id, p.user_id,
+       e.slug, e.name, e.verified, e.accent, COALESCE(e.user_id, p.user_id) AS owner_id, ${THUMB('e')} AS thumb_key,
+       u.name AS member_name, u.avatar_key,
        (SELECT count(*) FROM post_likes WHERE post_id = p.id)::int AS likes,
        (SELECT count(*) FROM post_comments WHERE post_id = p.id)::int AS comments,
        EXISTS (SELECT 1 FROM post_likes WHERE post_id = p.id AND user_id = $1) AS liked
-     FROM posts p JOIN escorts e ON e.id = p.escort_id
+     FROM posts p
+     LEFT JOIN escorts e ON e.id = p.escort_id
+     LEFT JOIN users u ON u.id = p.user_id
      WHERE ${conds.join(' AND ')}
      ORDER BY p.id DESC LIMIT $${args.length}`,
     args,
@@ -67,13 +70,16 @@ function postOut(r, photos, comments, me) {
     body: r.body,
     createdAt: r.created_at,
     edited: new Date(r.updated_at) - new Date(r.created_at) > 2000,
-    author: {
-      slug: r.slug,
-      name: r.name,
-      verified: r.verified,
-      accent: r.accent,
-      thumb: thumbUrl(r.thumb_key),
-    },
+    author: r.escort_id
+      ? {
+          kind: 'escort',
+          slug: r.slug,
+          name: r.name,
+          verified: r.verified,
+          accent: r.accent,
+          thumb: thumbUrl(r.thumb_key),
+        }
+      : { kind: 'member', memberId: r.user_id, name: r.member_name, thumb: thumbUrl(r.avatar_key) },
     photos: photos.map(photoOut),
     likes: r.likes,
     liked: r.liked,
@@ -117,8 +123,8 @@ function commentOut(c, authors, me, postOwnerId) {
 
 async function visiblePost(postId, me) {
   const { rows } = await query(
-    `SELECT p.id, p.escort_id, e.user_id AS owner_id, e.published
-     FROM posts p JOIN escorts e ON e.id = p.escort_id WHERE p.id = $1`,
+    `SELECT p.id, p.escort_id, COALESCE(e.user_id, p.user_id) AS owner_id, COALESCE(e.published, true) AS published
+     FROM posts p LEFT JOIN escorts e ON e.id = p.escort_id WHERE p.id = $1`,
     [postId],
   );
   const p = rows[0];
@@ -171,25 +177,49 @@ router.get(
   }),
 );
 
+router.get(
+  '/api/members/:id/posts',
+  requireUser,
+  wrap(async (req, res) => {
+    const before = Number(req.query.before) || null;
+    noStore(res);
+    res.json(
+      await loadPosts(req.user, {
+        where: ['p.escort_id IS NULL', 'p.user_id = $2'],
+        params: [toId(req.params.id)],
+        before,
+        limit: 10,
+      }),
+    );
+  }),
+);
+
+// Escorts posten für ihr Profil, Mitglieder in ihr eigenes Mitgliederprofil
 router.post(
   '/api/me/posts',
-  requireEscort,
+  requireUser,
   requireDb,
   rateLimit(40, 60 * 60 * 1000),
   uploadImages(MAX_POST_PHOTOS),
   wrap(async (req, res) => {
-    const escort = await ownEscort(req.user.id);
-    if (!escort) throw httpError(404, 'profile_missing', 'Bitte speichere zuerst dein Profil');
+    const escort = req.user.role === 'escort' ? await ownEscort(req.user.id) : null;
+    if (req.user.role === 'escort' && !escort) {
+      throw httpError(404, 'profile_missing', 'Bitte speichere zuerst dein Profil');
+    }
     const body = text(req.body?.body, 5000);
     const files = (req.files || []).filter(isImage);
     if (!body && !files.length) throw httpError(400, 'post_empty', 'Beitrag ist leer');
     if (files.length && !hasStorage()) throw httpError(503, 'storage_unavailable', 'Bucket nicht verbunden');
-    const { rows } = await query('INSERT INTO posts (escort_id, body) VALUES ($1, $2) RETURNING id', [escort.id, body]);
+    const { rows } = await query('INSERT INTO posts (escort_id, user_id, body) VALUES ($1, $2, $3) RETURNING id', [
+      escort?.id ?? null,
+      req.user.id,
+      body,
+    ]);
     const postId = rows[0].id;
     try {
       let position = 0;
       for (const file of files) {
-        const img = await storeImage(file, `posts/${escort.id}`);
+        const img = await storeImage(file, escort ? `posts/${escort.id}` : `posts/u${req.user.id}`);
         await query('INSERT INTO post_photos (post_id, key, width, height, position) VALUES ($1,$2,$3,$4,$5)', [
           postId,
           img.key,
@@ -292,8 +322,8 @@ router.delete(
   requireUser,
   wrap(async (req, res) => {
     const { rows } = await query(
-      `SELECT k.id, k.user_id, e.user_id AS owner_id FROM post_comments k
-       JOIN posts p ON p.id = k.post_id JOIN escorts e ON e.id = p.escort_id WHERE k.id = $1`,
+      `SELECT k.id, k.user_id, COALESCE(e.user_id, p.user_id) AS owner_id FROM post_comments k
+       JOIN posts p ON p.id = k.post_id LEFT JOIN escorts e ON e.id = p.escort_id WHERE k.id = $1`,
       [toId(req.params.id)],
     );
     const c = rows[0];

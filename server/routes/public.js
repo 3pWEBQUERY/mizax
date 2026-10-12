@@ -4,7 +4,7 @@ import { hasStorage, getObject } from '../storage.js';
 import { httpError } from '../auth.js';
 import { searchPlaces, nearestPlace } from '../places.js';
 import { wrap, requireDb } from '../http.js';
-import { listEscorts, loadPhotos, escortOut, cardOut } from '../escorts.js';
+import { listEscorts, loadPhotos, escortOut, cardOut, RATING_COLS } from '../escorts.js';
 
 // Öffentliche API: Profile, Medien aus dem Bucket, Schweizer Orte
 
@@ -28,7 +28,9 @@ router.get(
   '/api/escorts/:slug',
   requireDb,
   wrap(async (req, res) => {
-    const { rows } = await query('SELECT * FROM escorts WHERE slug = $1 AND published = true', [req.params.slug]);
+    const { rows } = await query(`SELECT *, ${RATING_COLS} FROM escorts WHERE slug = $1 AND published = true`, [
+      req.params.slug,
+    ]);
     if (!rows[0]) throw httpError(404, 'not_found', 'Profil nicht gefunden');
     const photos = await loadPhotos([rows[0].id]);
     const escort = escortOut(rows[0], photos.get(rows[0].id) || []);

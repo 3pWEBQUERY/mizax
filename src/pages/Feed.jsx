@@ -59,11 +59,9 @@ export default function FeedPage() {
             </button>
           ))}
         </Rise>
-        {escort && (
-          <Rise i={3}>
-            <Composer onPosted={feed.prepend} autoFocus={params.get('compose') === '1'} />
-          </Rise>
-        )}
+        <Rise i={3}>
+          <Composer onPosted={feed.prepend} autoFocus={params.get('compose') === '1'} />
+        </Rise>
         <Rise i={4}>
           <PostList feed={feed} empty={scope === 'favorites' ? t('feed.emptyFavorites') : t('feed.empty')} />
         </Rise>

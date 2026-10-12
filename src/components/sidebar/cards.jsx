@@ -8,7 +8,7 @@ import { useToast } from '../Toast.jsx';
 import { ChartIcon, ChevronR, ImageIcon, SpinnerIcon } from '../Icons.jsx';
 import { api } from '../../lib/api.js';
 import { useI18n, errorText } from '../../lib/i18n.jsx';
-import { useOwnEscort } from '../../lib/ownEscort.js';
+import { usePoster } from '../../lib/ownEscort.js';
 import { formatNumber, timeAgo } from '../../lib/time.js';
 
 // Karten der Seitenleiste
@@ -128,7 +128,7 @@ export function QuickPost({ onPosted }) {
   const { t } = useI18n();
   const toast = useToast();
   const navigate = useNavigate();
-  const own = useOwnEscort();
+  const own = usePoster();
   const [body, setBody] = useState('');
   const [busy, setBusy] = useState(false);
   const ref = useRef(null);

@@ -45,6 +45,11 @@ export const HeartIcon = ({ filled, ...p }) => (
     <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
   </svg>
 );
+export const StarIcon = ({ filled, ...p }) => (
+  <svg {...base} width={16} height={16} strokeWidth={1.6} fill={filled ? 'currentColor' : 'none'} {...p}>
+    <path d="M12 3.8l2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8z" />
+  </svg>
+);
 export const CheckIcon = (p) => (
   <svg {...base} width={13} height={13} strokeWidth={2.6} {...p}>
     <path d="M5 12.5l4.2 4L19 7" />

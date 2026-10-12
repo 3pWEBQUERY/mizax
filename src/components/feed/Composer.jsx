@@ -6,9 +6,8 @@ import { useToast } from '../Toast.jsx';
 import { ImageIcon, CloseIcon, SpinnerIcon } from '../Icons.jsx';
 import useAutosize from './useAutosize.js';
 import { api } from '../../lib/api.js';
-import { useAuth } from '../../lib/auth.jsx';
 import { useI18n, errorText } from '../../lib/i18n.jsx';
-import { useOwnEscort } from '../../lib/ownEscort.js';
+import { usePoster } from '../../lib/ownEscort.js';
 
 const MAX_PHOTOS = 6;
 
@@ -17,8 +16,7 @@ const MAX_PHOTOS = 6;
 export default function Composer({ onPosted, autoFocus = false }) {
   const { t } = useI18n();
   const toast = useToast();
-  const own = useOwnEscort();
-  const { user } = useAuth();
+  const own = usePoster();
   const [body, setBody] = useState('');
   const [files, setFiles] = useState([]);
   const [busy, setBusy] = useState(false);
@@ -78,7 +76,7 @@ export default function Composer({ onPosted, autoFocus = false }) {
   return (
     <form className={`post-card composer ${open ? 'open' : ''}`} onSubmit={submit}>
       <div className="composer-row">
-        <Avatar name={own.name || user?.name} thumb={own.photos?.[0]?.thumb} size={42} />
+        <Avatar name={own.name} thumb={own.thumb} size={42} />
         <textarea
           ref={inputRef}
           className="composer-input"

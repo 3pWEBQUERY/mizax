@@ -194,7 +194,7 @@ export function Chat() {
     );
   }
 
-  const link = conv && otherLink(conv.other, user);
+  const link = conv && otherLink(conv.other);
   const lastMine = messages ? [...messages].reverse().find((m) => m.mine) : null;
 
   return (
