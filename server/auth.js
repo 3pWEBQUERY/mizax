@@ -101,6 +101,12 @@ export function userOut(u) {
       showVisits: showsVisits(u),
       bio: u.bio || '',
       avatar: u.avatar_key ? `/media/${u.avatar_key}_sm.webp` : null,
+      notify: {
+        messages: u.notify_messages ?? true,
+        reviews: u.notify_reviews ?? true,
+        comments: u.notify_comments ?? true,
+        suggestions: u.notify_suggestions ?? true,
+      },
       createdAt: u.created_at,
     }
   );
@@ -114,7 +120,8 @@ export async function attachUser(req, res, next) {
   if (parts && parts[0] === 'u' && hasDb()) {
     try {
       const { rows } = await query(
-        `SELECT id, email, name, role, locale, is_admin, show_visits, bio, avatar_key, created_at, session_version
+        `SELECT id, email, name, role, locale, is_admin, show_visits, bio, avatar_key, created_at, session_version,
+           notify_messages, notify_reviews, notify_comments, notify_suggestions
          FROM users WHERE id = $1`,
         [Number(parts[1])],
       );

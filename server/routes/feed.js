@@ -5,6 +5,7 @@ import { httpError, requireUser, rateLimit } from '../auth.js';
 import { wrap, requireDb, noStore, text, toId, uploadImages } from '../http.js';
 import { storeImage, removeImages, photoOut, isImage } from '../media.js';
 import { THUMB, thumbUrl, ownEscort } from '../escorts.js';
+import { notifyComment } from '../notify.js';
 
 // Feed: Beiträge von Escorts und Mitgliedern, Fotos, Likes und Kommentare
 
@@ -313,6 +314,8 @@ router.post(
       body,
     ]);
     const authors = await commentAuthors([req.user.id]);
+    const a = authors.get(req.user.id);
+    notifyComment(post.owner_id, req.user.id, a?.escort_name || req.user.name, post.id);
     res.status(201).json(commentOut(rows[0], authors, req.user, post.owner_id));
   }),
 );

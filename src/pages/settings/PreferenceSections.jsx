@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useToast } from '../../components/Toast.jsx';
-import { EyeIcon, MoonIcon, SunIcon } from '../../components/Icons.jsx';
+import { EyeIcon, MoonIcon, SunIcon, InboxIcon, StarIcon, CommentIcon, SparkIcon } from '../../components/Icons.jsx';
 import { Group, Row, Switch } from './ui.jsx';
 import { api } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth.jsx';
 import { useI18n, LOCALES, dictionaries, errorText } from '../../lib/i18n.jsx';
 import { useTheme } from '../../lib/theme.jsx';
 
-// Unterseiten: Sprache, Design, Privatsphäre
+// Unterseiten: Sprache, Design, Privatsphäre, Benachrichtigungen
 
 export function LanguageSection() {
   const { locale, setLocale } = useI18n();
@@ -74,6 +74,56 @@ export function PrivacySection() {
       <div className="settings-info">
         <p>{t('settings.privacyInfo1')}</p>
         <p>{t('settings.privacyInfo2')}</p>
+      </div>
+    </>
+  );
+}
+
+// E-Mail-Benachrichtigungen je Art ein-/ausschalten
+export function NotificationsSection() {
+  const { t } = useI18n();
+  const toast = useToast();
+  const { user, updateUser } = useAuth();
+  const notify = user.notify || {};
+  const kinds = [
+    ['messages', InboxIcon, t('settings.notifyMessages'), t('settings.notifyMessagesHint')],
+    ['reviews', StarIcon, t('settings.notifyReviews'), t('settings.notifyReviewsHint')],
+    ['comments', CommentIcon, t('settings.notifyComments'), t('settings.notifyCommentsHint')],
+    ...(user.role === 'escort'
+      ? []
+      : [['suggestions', SparkIcon, t('settings.notifySuggestions'), t('settings.notifySuggestionsHint')]]),
+  ];
+
+  async function change(key, on) {
+    const next = { ...notify, [key]: on };
+    updateUser({ notify: next });
+    try {
+      const r = await api('/api/me/notifications', { method: 'PUT', body: next });
+      updateUser(r.user);
+    } catch (err) {
+      updateUser({ notify });
+      toast(errorText(t, err));
+    }
+  }
+
+  return (
+    <>
+      <Group>
+        {kinds.map(([key, Icon, label, hint]) => (
+          <div key={key} className="settings-row static">
+            <span className="settings-icon">
+              <Icon width={19} height={19} />
+            </span>
+            <span className="settings-label">
+              {label}
+              <small>{hint}</small>
+            </span>
+            <Switch on={notify[key] !== false} onChange={(v) => change(key, v)} label={label} />
+          </div>
+        ))}
+      </Group>
+      <div className="settings-info">
+        <p>{t('settings.notifyInfo')}</p>
       </div>
     </>
   );

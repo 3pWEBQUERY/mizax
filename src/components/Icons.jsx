@@ -71,6 +71,12 @@ export const ChatIcon = (p) => (
     <path d="M4 18.5V6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v8a2.5 2.5 0 0 1-2.5 2.5H8z" />
   </svg>
 );
+export const BellIcon = (p) => (
+  <svg {...base} {...p}>
+    <path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z" />
+    <path d="M10 20.5a2 2 0 0 0 4 0" />
+  </svg>
+);
 export const MailIcon = (p) => (
   <svg {...base} {...p}>
     <rect x="3.5" y="5.5" width="17" height="13" rx="2.5" />

@@ -18,6 +18,7 @@ import {
   ShieldIcon,
   DocIcon,
   LogoutIcon,
+  BellIcon,
   TrashIcon,
   HeartIcon,
 } from '../../components/Icons.jsx';
@@ -28,7 +29,7 @@ import { api } from '../../lib/api.js';
 import { useTheme } from '../../lib/theme.jsx';
 import { useUnread } from '../../lib/inbox.js';
 
-const SECTIONS = ['account', 'password', 'language', 'theme', 'privacy', 'delete'];
+const SECTIONS = ['account', 'password', 'language', 'theme', 'privacy', 'notifications', 'delete'];
 
 const slide = {
   enter: (dir) => ({ opacity: 0, x: dir * 40, filter: 'blur(4px)' }),
@@ -37,7 +38,7 @@ const slide = {
 };
 import { Group, Row } from './ui.jsx';
 import { AccountSection, PasswordSection, DeleteSection } from './AccountSections.jsx';
-import { LanguageSection, ThemeSection, PrivacySection } from './PreferenceSections.jsx';
+import { LanguageSection, ThemeSection, PrivacySection, NotificationsSection } from './PreferenceSections.jsx';
 
 // ---------- Seite ----------
 
@@ -64,6 +65,7 @@ export default function Settings() {
     language: t('menu.language'),
     theme: t('menu.theme'),
     privacy: t('settings.privacy'),
+    notifications: t('settings.notifications'),
     delete: t('settings.deleteAccount'),
   };
 
@@ -73,6 +75,7 @@ export default function Settings() {
     language: <LanguageSection />,
     theme: <ThemeSection />,
     privacy: <PrivacySection />,
+    notifications: <NotificationsSection />,
     delete: <DeleteSection />,
   };
 
@@ -170,6 +173,14 @@ export default function Settings() {
                   label={t('settings.privacy')}
                   value={user.showVisits ? t('settings.visible') : t('settings.anonymous')}
                   onClick={() => go('privacy')}
+                />
+                <Row
+                  icon={BellIcon}
+                  label={t('settings.notifications')}
+                  value={
+                    Object.values(user.notify || {}).some(Boolean) ? t('settings.notifyOn') : t('settings.notifyOff')
+                  }
+                  onClick={() => go('notifications')}
                 />
               </Group>
 

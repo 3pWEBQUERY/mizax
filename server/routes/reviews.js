@@ -3,6 +3,7 @@ import { query } from '../db.js';
 import { httpError, requireUser, rateLimit } from '../auth.js';
 import { wrap, requireDb, noStore, text, toId } from '../http.js';
 import { THUMB, thumbUrl, ownEscort } from '../escorts.js';
+import { notifyReview } from '../notify.js';
 
 // Bewertungen in beide Richtungen, je 1–5 Sterne und optional ein kurzer Text:
 // - Mitglieder bewerten Escorts (escort_reviews)
@@ -26,7 +27,7 @@ const TARGETS = {
     select: `SELECT r.*, u.name, u.avatar_key FROM escort_reviews r JOIN users u ON u.id = r.user_id`,
     author: memberAuthor,
     async find(slug, me) {
-      const { rows } = await query('SELECT id, user_id, published FROM escorts WHERE slug = $1', [slug]);
+      const { rows } = await query('SELECT id, user_id, published, slug FROM escorts WHERE slug = $1', [slug]);
       const e = rows[0];
       if (!e || (!e.published && e.user_id !== me.id && !me.is_admin)) {
         throw httpError(404, 'not_found', 'Profil nicht gefunden');
@@ -35,6 +36,7 @@ const TARGETS = {
     },
     canRate: async (e, me) => me.role === 'member' && e.user_id !== me.id,
     denied: () => httpError(403, 'review_members_only', 'Nur Mitglieder können Escorts bewerten'),
+    notify: (e, me, rating) => notifyReview(e.user_id, me.name, rating, `/escort/${e.slug}?tab=reviews`),
   },
   member: {
     table: 'member_reviews',
@@ -51,6 +53,8 @@ const TARGETS = {
     // nur Escorts mit eigenem Profil
     canRate: async (m, me) => me.role === 'escort' && m.id !== me.id && Boolean(await ownEscort(me.id)),
     denied: () => httpError(403, 'review_escorts_only', 'Nur Escorts können Mitglieder bewerten'),
+    notify: async (m, me, rating) =>
+      notifyReview(m.id, (await ownEscort(me.id))?.name || me.name, rating, `/member/${m.id}?tab=reviews`),
   },
 };
 
@@ -139,11 +143,14 @@ for (const [kind, T] of Object.entries(TARGETS)) {
       if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
         throw httpError(400, 'review_rating', 'Bitte 1 bis 5 Sterne wählen');
       }
-      await query(
+      const { rows: saved } = await query(
         `INSERT INTO ${T.table} (${T.key}, user_id, rating, body) VALUES ($1, $2, $3, $4)
-         ON CONFLICT (${T.key}, user_id) DO UPDATE SET rating = EXCLUDED.rating, body = EXCLUDED.body, updated_at = now()`,
+         ON CONFLICT (${T.key}, user_id) DO UPDATE SET rating = EXCLUDED.rating, body = EXCLUDED.body, updated_at = now()
+         RETURNING (xmax = 0) AS inserted`,
         [target.id, req.user.id, rating, text(req.body?.body, 1000)],
       );
+      // E-Mail nur bei einer neuen Bewertung, nicht beim Bearbeiten
+      if (saved[0].inserted) T.notify(target, req.user, rating);
       res.json(await full(T, target, req.user));
     }),
   );

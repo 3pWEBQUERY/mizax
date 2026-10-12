@@ -223,6 +223,20 @@ export async function migrate() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
 
+    -- E-Mail-Benachrichtigungen (je Art abschaltbar) und Protokoll gegen zu viele E-Mails
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS notify_messages BOOLEAN NOT NULL DEFAULT true;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS notify_reviews BOOLEAN NOT NULL DEFAULT true;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS notify_comments BOOLEAN NOT NULL DEFAULT true;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS notify_suggestions BOOLEAN NOT NULL DEFAULT true;
+    CREATE TABLE IF NOT EXISTS notify_log (
+      id      SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      kind    TEXT NOT NULL,
+      ref     TEXT NOT NULL DEFAULT '',
+      sent_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE INDEX IF NOT EXISTS notify_log_lookup_idx ON notify_log (user_id, kind, ref, sent_at DESC);
+
     -- Bewertungen von Mitgliedern durch Escorts (eine pro Escort-Konto und Mitglied)
     CREATE TABLE IF NOT EXISTS member_reviews (
       id         SERIAL PRIMARY KEY,

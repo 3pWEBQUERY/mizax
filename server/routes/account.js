@@ -140,6 +140,21 @@ router.put(
   }),
 );
 
+// E-Mail-Benachrichtigungen ein-/ausschalten
+router.put(
+  '/api/me/notifications',
+  requireUser,
+  wrap(async (req, res) => {
+    const b = req.body || {};
+    const { rows } = await query(
+      `UPDATE users SET notify_messages = $1, notify_reviews = $2, notify_comments = $3, notify_suggestions = $4
+       WHERE id = $5 RETURNING *`,
+      [b.messages !== false, b.reviews !== false, b.comments !== false, b.suggestions !== false, req.user.id],
+    );
+    res.json({ user: userOut(rows[0]) });
+  }),
+);
+
 // Auf allen anderen Geräten abmelden
 router.post(
   '/api/me/logout-all',

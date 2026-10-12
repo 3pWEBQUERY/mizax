@@ -8,6 +8,8 @@ import { hasStorage } from './storage.js';
 import { seedIfEmpty, normalizeLegacy } from './seed.js';
 import { attachUser, ensureAdmin } from './auth.js';
 import { isUploadError } from './http.js';
+import { hasMail } from './mail/index.js';
+import { startNotifier } from './notify.js';
 import publicRoutes from './routes/public.js';
 import accountRoutes from './routes/account.js';
 import meRoutes from './routes/me.js';
@@ -101,6 +103,8 @@ async function start() {
   }
   if (!hasStorage()) console.warn('[storage] Railway Bucket nicht konfiguriert – Uploads deaktiviert');
   if (!process.env.SESSION_SECRET) console.warn('[auth] SESSION_SECRET fehlt – abgeleiteter Schlüssel wird verwendet');
+  if (!hasMail()) console.warn('[mail] SMTP_HOST fehlt – E-Mails (Passwort vergessen, Benachrichtigungen) deaktiviert');
+  if (hasDb()) startNotifier();
   app.listen(PORT, '0.0.0.0', () => console.log(`Mizax läuft auf Port ${PORT}`));
 }
 
