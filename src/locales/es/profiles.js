@@ -92,7 +92,7 @@ export default {
     role: 'Tipo',
     mailOk: 'Correo activo',
     mailNo: 'Correo no configurado',
-    mailHint: 'Configura SMTP_HOST, SMTP_USER, SMTP_PASS y MAIL_FROM en Railway',
+    mailHint: 'Configura RESEND_API_KEY y MAIL_FROM en Railway',
   },
   services: {
     title: 'Servicios.',

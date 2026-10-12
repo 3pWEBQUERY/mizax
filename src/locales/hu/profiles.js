@@ -92,7 +92,7 @@ export default {
     role: 'Típus',
     mailOk: 'E-mail aktív',
     mailNo: 'E-mail nincs beállítva',
-    mailHint: 'Állítsd be a Railway-ben: SMTP_HOST, SMTP_USER, SMTP_PASS és MAIL_FROM',
+    mailHint: 'Állítsd be a Railway-ben: RESEND_API_KEY és MAIL_FROM',
   },
   services: {
     title: 'Szolgáltatások.',

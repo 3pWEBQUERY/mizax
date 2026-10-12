@@ -1,13 +1,34 @@
 import nodemailer from 'nodemailer';
 import { mailText } from './texts.js';
 
-// E-Mail-Versand über SMTP (funktioniert mit jedem Anbieter: Infomaniak, Postmark, Resend, Brevo, …).
-// Konfiguration über SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_FROM und APP_URL.
-// Ohne SMTP_HOST wird nichts verschickt; die App funktioniert sonst unverändert.
+// E-Mail-Versand auf zwei Wegen:
+// 1. Resend über HTTPS (RESEND_API_KEY) – funktioniert auf allen Railway-Plänen. Railway erlaubt
+//    ausgehendes SMTP nur im Pro-Plan und empfiehlt deshalb Resend.
+// 2. SMTP (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS) mit jedem Anbieter, nur Railway Pro.
+// Dazu MAIL_FROM (Absender) und optional APP_URL (Adresse für Links in E-Mails).
+// Ohne beides wird nichts verschickt; die App funktioniert sonst unverändert.
 
 let transport = null;
 
-export const hasMail = () => Boolean(process.env.SMTP_HOST);
+const resendKey = () => process.env.RESEND_API_KEY;
+export const hasMail = () => Boolean(resendKey() || process.env.SMTP_HOST);
+
+// Absender: bei Resend ohne eigene Domain nur die Testadresse von Resend möglich
+const sender = () =>
+  process.env.MAIL_FROM || (resendKey() ? 'Mizax <onboarding@resend.dev>' : 'Mizax <no-reply@mizax.ch>');
+
+async function sendViaResend(mail) {
+  const res = await fetch(process.env.RESEND_API_URL || 'https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${resendKey()}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: mail.from, to: [mail.to], subject: mail.subject, text: mail.text, html: mail.html }),
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '');
+    throw new Error(`Resend ${res.status}: ${detail.slice(0, 200)}`);
+  }
+}
 
 function getTransport() {
   if (!transport) {
@@ -56,17 +77,19 @@ export async function sendTemplate(user, key, vars = {}, url = null) {
   const m = mailText(user.locale, key, { name: user.name, ...vars });
   const text = [...m.lines, url ? `${m.button}: ${url}` : '', '', m.footer].filter((x) => x !== null).join('\n');
   if (!hasMail()) {
-    console.log(`[mail] SMTP nicht konfiguriert – E-Mail "${key}" an Konto ${user.id} nicht verschickt`);
+    console.log(`[mail] kein E-Mail-Versand eingerichtet – E-Mail "${key}" an Konto ${user.id} nicht verschickt`);
     return false;
   }
   try {
-    await getTransport().sendMail({
-      from: process.env.MAIL_FROM || 'Mizax <no-reply@mizax.ch>',
+    const mail = {
+      from: sender(),
       to: user.email,
       subject: m.subject,
       text,
       html: layout({ title: m.title, lines: m.lines, button: url ? { url, label: m.button } : null, footer: m.footer }),
-    });
+    };
+    if (resendKey()) await sendViaResend(mail);
+    else await getTransport().sendMail(mail);
     return true;
   } catch (err) {
     console.error(`[mail] Versand fehlgeschlagen (${key}): ${err.message}`);

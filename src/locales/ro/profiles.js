@@ -92,7 +92,7 @@ export default {
     role: 'Tip',
     mailOk: 'E-mail activ',
     mailNo: 'E-mail neconfigurat',
-    mailHint: 'Setează în Railway SMTP_HOST, SMTP_USER, SMTP_PASS și MAIL_FROM',
+    mailHint: 'Setează în Railway RESEND_API_KEY și MAIL_FROM',
   },
   services: {
     title: 'Servicii.',

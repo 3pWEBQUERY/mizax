@@ -109,7 +109,10 @@ async function start() {
   }
   if (!hasStorage()) console.warn('[storage] Railway Bucket nicht konfiguriert – Uploads deaktiviert');
   if (!process.env.SESSION_SECRET) console.warn('[auth] SESSION_SECRET fehlt – abgeleiteter Schlüssel wird verwendet');
-  if (!hasMail()) console.warn('[mail] SMTP_HOST fehlt – E-Mails (Passwort vergessen, Benachrichtigungen) deaktiviert');
+  if (!hasMail())
+    console.warn(
+      '[mail] RESEND_API_KEY bzw. SMTP_HOST fehlt – E-Mails (Passwort vergessen, Benachrichtigungen) deaktiviert',
+    );
   if (hasDb()) startNotifier();
   app.listen(PORT, '0.0.0.0', () => console.log(`Mizax läuft auf Port ${PORT}`));
 }
